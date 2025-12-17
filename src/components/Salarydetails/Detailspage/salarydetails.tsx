@@ -33,16 +33,18 @@ export default function SalaryDetailsPage() {
 
         <div className="space-y-4 md:space-y-6">
           <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
-            <Card className="bg-blue-50 p-4 sm:p-5 md:p-6">
-              <p className="text-xs sm:text-sm text-blue-700">Monthly CTC</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900">
+            <Card className="bg-blue-50 p-4 sm:p-5 md:p-6 relative">
+              <FileText className="absolute top-4 right-4 h-5 w-5 text-blue-600" />
+              <p className="text-xs sm:text-sm text-gray-600">Monthly CTC</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                 ₹125,000
               </h2>
             </Card> 
 
-            <Card className="bg-green-50 p-4 sm:p-5 md:p-6">
-              <p className="text-xs sm:text-sm text-green-700">Yearly CTC</p>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-900">
+            <Card className="bg-green-50 p-4 sm:p-5 md:p-6 relative">
+              <FileText className="absolute top-4 right-4 h-5 w-5 text-green-600" />
+              <p className="text-xs sm:text-sm text-gray-600">Yearly CTC</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                 ₹1,500,000
               </h2>
             </Card>
@@ -76,30 +78,77 @@ export default function SalaryDetailsPage() {
             </Card>
           </div>
 
-          <Card className="p-4 sm:p-5 md:p-6">
-            <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold">
-              Earnings Breakdown
-            </h3>
-
-            <div className="space-y-2 sm:space-y-3">
-              {earningsData.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex justify-between border-b pb-2 text-xs sm:text-sm"
-                >
-                  <span className="text-gray-700">{item.label}</span>
-                  <span className="font-semibold">
-                    ₹{item.amount.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-
-              <div className="flex justify-between rounded bg-blue-50 p-2 sm:p-3 font-bold text-xs sm:text-sm">
-                <span>Total Earnings</span>
-                <span>₹{totalEarnings.toLocaleString()}</span>
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+            <Card className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                <h3 className="text-base sm:text-lg font-semibold">Earnings</h3>
               </div>
-            </div>
-          </Card>
+
+              <div className="space-y-2 sm:space-y-3">
+                {earningsData.map((item) => (
+                  <div
+                    key={item.label}
+                    className="flex justify-between text-xs sm:text-sm"
+                  >
+                    <span className="text-gray-700">{item.label}</span>
+                    <span className="font-semibold">
+                      ₹{item.amount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+
+                <div className="flex justify-between bg-blue-50 p-2 sm:p-3 mt-3 font-bold text-xs sm:text-sm rounded">
+                  <span>Total Earnings</span>
+                  <span className="text-blue-600">₹{totalEarnings.toLocaleString()}</span>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-4 sm:p-5 md:p-6">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Gift className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                <h3 className="text-base sm:text-lg font-semibold">Benefits & EPF</h3>
+              </div>
+
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <p className="text-xs font-medium text-gray-600 mb-2">EPF Contribution</p>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs sm:text-sm">
+                      <span className="text-gray-700">Employee Contribution (Restricted to)</span>
+                      <span className="font-semibold">₹1,800</span>
+                    </div>
+                    <div className="flex justify-between text-xs sm:text-sm">
+                      <span className="text-gray-700">Your Contribution</span>
+                      <span className="font-semibold">₹1,800</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 p-2 sm:p-3 rounded">
+                  <div className="flex justify-between text-xs font-medium text-gray-700 mb-1">
+                    <span>Monthly CTC (Incl. EPF)</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm sm:text-base">
+                    <span>Employee contribution included.</span>
+                    <span className="text-green-600">₹125,000</span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-medium text-gray-600 mb-2">Other Benefits</p>
+                  <div className="flex justify-between items-center text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-700">EPF Employer Contribution</span>
+                      <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-medium">Benefit</span>
+                    </div>
+                    <span className="font-semibold">₹1,800</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
