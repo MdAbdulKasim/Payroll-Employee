@@ -4,8 +4,10 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Eye, FileDown, ChevronDown } from "lucide-react"
 import SalaryTabs from "@/components/Salarydetails/Tabs"
+import { useRouter } from "next/navigation"
 
 export default function Payslip() {
+  const router = useRouter();
   const [selectedYear, setSelectedYear] = useState("FY 2024-25")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -157,7 +159,8 @@ export default function Payslip() {
                         {item.takeHome}
                       </td>
                       <td className="px-3 lg:px-4 py-3 lg:py-4">
-                        <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600">
+                        <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
+                        onClick={()=> router.push("/salary/payslip/view")}>
                           <Eye className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                           View
                         </button>
@@ -206,10 +209,11 @@ export default function Payslip() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded">
+                    <button className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                    >
                       <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Payslip
-                    </button>
+                    </button >
                     <button className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded">
                       <FileDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Tax Sheet

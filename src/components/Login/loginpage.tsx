@@ -4,16 +4,22 @@ import { useRouter } from "next/navigation";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Mail, ArrowRight, FileText } from 'lucide-react';
+import { Mail, ArrowRight, FileText, Lock } from 'lucide-react';
 
 export default function PayrollLogin() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSendOTP = () => {
     if (!email || !email.includes('@')) {
       alert('Please enter a valid email address');
+      return;
+    }
+
+    if (!password) {
+      alert('Please enter your password');
       return;
     }
 
@@ -77,6 +83,27 @@ export default function PayrollLogin() {
                   placeholder="your.email@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 text-xs xs:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5 xs:space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-xs xs:text-sm font-medium text-gray-700"
+              >
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 xs:w-5 xs:h-5 text-gray-400" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={handleKeyPress}
                   className="pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 text-xs xs:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 />

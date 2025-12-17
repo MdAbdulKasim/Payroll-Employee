@@ -1,29 +1,52 @@
-import React from 'react';
-import { Download, Eye, File } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, Eye, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-interface Form16 {
+interface Payslip {
   id: string;
-  financialYear: string;
-  generatedDate: string;
-  status: 'Available' | 'Processing';
+  month: string;
+  year: number;
+  takeHome: number;
 }
 
-const Form16Page: React.FC = () => {
-  const form16Data: Form16[] = [
-    { id: '1', financialYear: 'FY 2023-24', generatedDate: '15 Jun 2024', status: 'Available' },
-    { id: '2', financialYear: 'FY 2022-23', generatedDate: '15 Jun 2023', status: 'Available' },
-    { id: '3', financialYear: 'FY 2021-22', generatedDate: '15 Jun 2022', status: 'Available' },
+const PayslipsPage: React.FC = () => {
+  const router = useRouter();
+  const [selectedYear, setSelectedYear] = useState('FY 2024-25');
+
+  const payslips: Payslip[] = [
+    { id: '1', month: 'December', year: 2024, takeHome: 108000 },
+    { id: '2', month: 'November', year: 2024, takeHome: 108000 },
+    { id: '3', month: 'October', year: 2024, takeHome: 104452 },
+    { id: '4', month: 'September', year: 2024, takeHome: 108000 },
+    { id: '5', month: 'August', year: 2024, takeHome: 108000 },
+    { id: '6', month: 'July', year: 2024, takeHome: 108000 },
   ];
+
+  const formatCurrency = (amount: number) => {
+    return `₹${amount.toLocaleString('en-IN')}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-2">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-       
+      
 
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
-          Annual Tax Certificates
-        </h2>
+        {/* Title and Year Selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+            Monthly Payslips
+          </h2>
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-auto"
+          >
+            <option>FY 2024-25</option>
+            <option>FY 2023-24</option>
+            <option>FY 2022-23</option>
+          </select>
+        </div>
 
         {/* Desktop Table View */}
         <div className="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -31,10 +54,10 @@ const Form16Page: React.FC = () => {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Financial Year
+                  Month
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Generated Date
+                  Take Home
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -45,26 +68,27 @@ const Form16Page: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {form16Data.map((form) => (
-                <tr key={form.id} className="hover:bg-gray-50 transition-colors">
+              {payslips.map((payslip) => (
+                <tr key={payslip.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-5">
                     <span className="text-sm font-medium text-gray-900">
-                      {form.financialYear}
+                      {payslip.month} {payslip.year}
                     </span>
                   </td>
                   <td className="px-6 py-5">
                     <span className="text-sm text-gray-600">
-                      {form.generatedDate}
+                      {formatCurrency(payslip.takeHome)}
                     </span>
                   </td>
                   <td className="px-6 py-5">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {form.status}
+                      Available
                     </span>
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                      onClick={()=> router.push("/documents/payslips/view")}>
                         <Eye className="w-4 h-4" />
                         View
                       </button>
@@ -82,30 +106,30 @@ const Form16Page: React.FC = () => {
 
         {/* Mobile View */}
         <div className="md:hidden space-y-4">
-          {form16Data.map((form) => (
+          {payslips.map((payslip) => (
             <div
-              key={form.id}
+              key={payslip.id}
               className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                    <File className="w-6 h-6 text-blue-600" />
+                    <FileText className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-base font-semibold text-gray-900 mb-1">
-                      {form.financialYear}
+                    <h3 className="text-base font-bold text-gray-900">
+                      {payslip.month} {payslip.year}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {form.generatedDate}
+                    <p className="text-sm text-gray-600">
+                      Take Home: {formatCurrency(payslip.takeHome)}
                     </p>
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {form.status}
-                    </span>
                   </div>
                 </div>
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+                  PDF
+                </span>
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2">
                 <button className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                   <Eye className="w-4 h-4" />
                   View
@@ -123,4 +147,4 @@ const Form16Page: React.FC = () => {
   );
 };
 
-export default Form16Page;
+export default PayslipsPage;
