@@ -2,6 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import SalaryTabs from "@/components/Salarydetails/Tabs"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import {
   Gift,
   Wallet,
@@ -9,16 +10,16 @@ import {
 } from "lucide-react"
 
 export default function EPFContributionPage() {
-  const months = [
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
+  const chartData = [
+    { month: "Apr", yourContribution: 1800, employerContribution: 1800 },
+    { month: "May", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Jun", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Jul", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Aug", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Sep", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Oct", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Nov", yourContribution: 1800, employerContribution: 1800 },
+    { month: "Dec", yourContribution: 1800, employerContribution: 1800 },
   ]
 
   return (
@@ -98,35 +99,56 @@ export default function EPFContributionPage() {
           </Card>
         </div>
 
-        {/* Monthly EPF Graph (Static UI like image) */}
+        {/* Monthly EPF Graph (Now with Recharts) */}
         <Card className="mt-5 p-4 sm:p-5">
           <h3 className="mb-4 text-sm sm:text-base font-semibold">
             Monthly EPF Contributions
           </h3>
 
-          <div className="flex items-end justify-between gap-2 h-40">
-            {months.map((month) => (
-              <div key={month} className="flex flex-col items-center gap-1">
-                <div className="flex gap-1">
-                  <div className="h-28 w-4 rounded bg-blue-500" />
-                  <div className="h-28 w-4 rounded bg-green-500" />
-                </div>
-                <span className="text-[10px] text-gray-600">
-                  {month}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-3 flex justify-center gap-4 text-xs">
-            <span className="flex items-center gap-1">
-              <span className="h-2 w-2 rounded bg-blue-500" />
-              Your Contribution
-            </span>
-            <span className="flex items-center gap-1">
-              <span className="h-2 w-2 rounded bg-green-500" />
-              Employer Contribution
-            </span>
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="month" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                />
+                <YAxis 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                  }}
+                  formatter={(value) => `₹${value}`}
+                />
+                <Legend 
+                  wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
+                  iconType="square"
+                />
+                <Bar 
+                  dataKey="yourContribution" 
+                  fill="#3b82f6" 
+                  name="Your Contribution"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar 
+                  dataKey="employerContribution" 
+                  fill="#22c55e" 
+                  name="Employer Contribution"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </Card>
 

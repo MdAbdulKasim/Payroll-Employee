@@ -43,7 +43,7 @@ export default function Dashboard() {
   const [hoveredBar, setHoveredBar] = useState<string | null>(null)
 
   return (
-    <div className="min-h-screen bg-white p-2 ">
+    <div className="min-h-screen bg-gray-50 p-2 ">
       <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
