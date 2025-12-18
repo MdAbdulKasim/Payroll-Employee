@@ -1,20 +1,31 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import { Lock, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function PayrollProOTPVerify() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
+  const router = useRouter();
 
   useEffect(() => {
+    // Get user email from sessionStorage
+    const email = sessionStorage.getItem('userEmail');
+    if (email) {
+      setUserEmail(email);
+    } else {
+      // If no email found, redirect back to login
+      router.push('/login');
+    }
+
     // Focus first input on mount
     if (inputRefs.current[0]) {
       inputRefs.current[0].focus();
     }
-  }, []);
+  }, [router]);
 
   const handleChange = (index: number, value: string) => {
     // Only allow numbers
@@ -69,12 +80,26 @@ export default function PayrollProOTPVerify() {
       setIsLoading(false);
       setIsVerified(true);
       
-      // Redirect to dashboard after 2 seconds
+      // Redirect to appropriate dashboard after 2 seconds
       setTimeout(() => {
-        // Replace this with your actual dashboard route
-        window.location.href = '/dashboard';
-        // Or if using Next.js router:
-        // router.push('/dashboard');
+        const redirectTo = sessionStorage.getItem('redirectTo');
+        const userRole = sessionStorage.getItem('userRole');
+        
+        // Clear session storage
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userRole');
+        sessionStorage.removeItem('redirectTo');
+        
+        // Redirect based on role
+        if (redirectTo) {
+          router.push(redirectTo);
+        } else if (userRole === 'admin') {
+          router.push('/admin/setup');
+        } else if (userRole === 'employee') {
+          router.push('/employee/dashboard');
+        } else {
+          router.push('/dashboard');
+        }
       }, 2000);
     }, 1500);
   };
@@ -82,11 +107,15 @@ export default function PayrollProOTPVerify() {
   const handleResendOTP = () => {
     setOtp(['', '', '', '', '', '']);
     inputRefs.current[0]?.focus();
-    alert('OTP has been resent to nan@gmail.com');
+    alert(`OTP has been resent to ${userEmail}`);
   };
 
   const handleChangeEmail = () => {
-    alert('Redirecting to change email address...');
+    // Clear session storage and redirect to login
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('redirectTo');
+    router.push('/login');
   };
 
   // Success Screen
@@ -184,7 +213,7 @@ export default function PayrollProOTPVerify() {
               Enter the 6-digit code sent to
             </p>
             <p className="text-xs xs:text-sm font-medium text-gray-900 mt-1">
-              nan@gmail.com
+              {userEmail || 'your email'}
             </p>
           </div>
 
@@ -209,7 +238,7 @@ export default function PayrollProOTPVerify() {
           </div>
 
           {/* Verify Button */}
-          <Button
+          <button
             onClick={handleVerify}
             disabled={isLoading}
             className="w-full h-10 xs:h-11 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs xs:text-sm sm:text-base rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed mb-4 xs:mb-5"
@@ -225,7 +254,7 @@ export default function PayrollProOTPVerify() {
             ) : (
               'Verify & Continue'
             )}
-          </Button>
+          </button>
 
           {/* Links */}
           <div className="space-y-2 xs:space-y-2.5">

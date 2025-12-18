@@ -28,13 +28,21 @@ export default function PayrollLogin() {
 
       // Admin
       if (email === "admin@company.com" && password === "admin123") {
-        router.push("/admin/dashboard");
+        // Store user info in sessionStorage to identify role in OTP page
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userRole", "admin");
+        sessionStorage.setItem("redirectTo", "/admin/setup");
+        router.push("/login/otp");
         return;
       }
 
       // Employee
       if (email === "employee@company.com" && password === "emp123") {
-        router.push("/employee/dashboard");
+        // Store user info in sessionStorage to identify role in OTP page
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userRole", "employee");
+        sessionStorage.setItem("redirectTo", "/employee/dashboard");
+        router.push("/login/otp");
         return;
       }
 
@@ -114,7 +122,7 @@ export default function PayrollLogin() {
 
             {/* Register */}
             <p className="text-sm text-center text-gray-600">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <button
                 onClick={() => router.push("/admin/auth/registration")}
                 className="text-blue-600 font-medium hover:underline"
