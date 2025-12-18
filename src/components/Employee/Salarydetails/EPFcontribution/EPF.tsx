@@ -1,7 +1,7 @@
 "use client"
 
 import { Card } from "@/components/ui/card"
-import SalaryTabs from "@/components/Salarydetails/Tabs"
+import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import {
   Gift,
@@ -112,12 +112,12 @@ export default function EPFContributionPage() {
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={false}
@@ -131,19 +131,19 @@ export default function EPFContributionPage() {
                   }}
                   formatter={(value) => `₹${value}`}
                 />
-                <Legend 
+                <Legend
                   wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
                   iconType="square"
                 />
-                <Bar 
-                  dataKey="yourContribution" 
-                  fill="#3b82f6" 
+                <Bar
+                  dataKey="yourContribution"
+                  fill="#3b82f6"
                   name="Your Contribution"
                   radius={[4, 4, 0, 0]}
                 />
-                <Bar 
-                  dataKey="employerContribution" 
-                  fill="#22c55e" 
+                <Bar
+                  dataKey="employerContribution"
+                  fill="#22c55e"
                   name="Employer Contribution"
                   radius={[4, 4, 0, 0]}
                 />

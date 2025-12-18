@@ -38,7 +38,7 @@ export default function OrganizationSetupPage() {
     localStorage.setItem("isAuthenticated", "true");
 
     // Redirect to dashboard
-    router.push("/dashboard");
+    router.push("/admin/setup");
   };
 
   const handleChange = (field: string, value: string) => {

@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { FileText, Briefcase, Gift, Download } from "lucide-react"
-import SalaryTabs from "@/components/Salarydetails/Tabs"
+import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
 
 export default function SalaryDetailsPage() {
@@ -101,11 +101,10 @@ export default function SalaryDetailsPage() {
                         <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                           <td className="py-2 sm:py-3 px-2 text-gray-700">{item.category}</td>
                           <td className="py-2 sm:py-3 px-2">
-                            <span className={`inline-block px-2 py-1 rounded text-[10px] font-medium ${
-                              item.type === "Earnings" ? "bg-blue-100 text-blue-700" :
-                              item.type === "Reimbursement" ? "bg-orange-100 text-orange-700" :
-                              "bg-green-100 text-green-700"
-                            }`}>
+                            <span className={`inline-block px-2 py-1 rounded text-[10px] font-medium ${item.type === "Earnings" ? "bg-blue-100 text-blue-700" :
+                                item.type === "Reimbursement" ? "bg-orange-100 text-orange-700" :
+                                  "bg-green-100 text-green-700"
+                              }`}>
                               {item.type}
                             </span>
                           </td>
@@ -145,13 +144,13 @@ export default function SalaryDetailsPage() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value) => `₹${value.toLocaleString()}`}
                     />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
-                
+
                 {/* Summary Cards Below Chart */}
                 <div className="grid grid-cols-3 gap-2 mt-4">
                   <div className="text-center p-2 bg-blue-50 rounded">
