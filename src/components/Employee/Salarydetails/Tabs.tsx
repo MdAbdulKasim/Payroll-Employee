@@ -13,25 +13,25 @@ export default function SalaryTabs() {
       label: "Salary Structure",
       shortLabel: "Salary",
       icon: FileText,
-      path: "/salary",
+      path: "/employee/salary",
     },
     {
       label: "Payslips",
       shortLabel: "Payslips",
       icon: FileText,
-      path: "/salary/payslip",
+      path: "/employee/salary/payslip",
     },
     {
       label: "Annual Earnings",
       shortLabel: "Annual",
       icon: Briefcase,
-      path: "/salary/annual",
+      path: "/employee/salary/annual",
     },
     {
       label: "EPF Contribution",
       shortLabel: "EPF",
       icon: Gift,
-      path: "/salary/epf",
+      path: "/employee/salary/epf",
     },
   ]
 
