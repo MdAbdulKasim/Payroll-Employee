@@ -1,162 +1,138 @@
 "use client";
-import React, { useState } from 'react';
+
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Mail, ArrowRight, FileText, Lock } from 'lucide-react';
+import { Mail, Lock, FileText, ArrowRight } from "lucide-react";
 
 export default function PayrollLogin() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSendOTP = () => {
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address');
+  const handleLogin = () => {
+    if (!email || !email.includes("@")) {
+      alert("Please enter a valid email");
       return;
     }
 
     if (!password) {
-      alert('Please enter your password');
+      alert("Please enter your password");
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
 
-      // Navigate to OTP page
-      router.push("/login/otp");
-    }, 1500);
-  };
+      // Admin
+      if (email === "admin@company.com" && password === "admin123") {
+        router.push("/admin/dashboard");
+        return;
+      }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSendOTP();
-    }
+      // Employee
+      if (email === "employee@company.com" && password === "emp123") {
+        router.push("/employee/dashboard");
+        return;
+      }
+
+      alert("Invalid credentials");
+    }, 1200);
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-2 xs:p-4">
-      <div className="w-full max-w-[280px] xs:max-w-sm sm:max-w-md">
-        {/* Logo and Brand */}
-        <div className="flex flex-col items-center mb-6 xs:mb-8">
-          <div className="bg-blue-600 rounded-xl p-2.5 xs:p-3 mb-3 xs:mb-4 shadow-lg">
-            <FileText className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="bg-blue-600 p-3 rounded-xl shadow">
+            <FileText className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-xl xs:text-2xl sm:text-3xl font-bold text-gray-900">
+          <h1 className="mt-3 text-2xl font-bold text-gray-900">
             PayrollPro
           </h1>
-          <p className="text-xs xs:text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500">
             Employee Portal
           </p>
         </div>
 
-        {/* Login Card */}
-        <div className="bg-white rounded-lg xs:rounded-xl shadow-xl p-4 xs:p-6 sm:p-8">
-          <div className="text-center mb-4 xs:mb-6">
-            <h2 className="text-lg xs:text-xl sm:text-2xl font-semibold text-gray-900 mb-1.5 xs:mb-2">
-              Welcome Back
-            </h2>
-            <p className="text-xs xs:text-sm text-gray-600 leading-relaxed">
-              Enter your email to receive a verification code
-            </p>
-          </div>
+        {/* Card */}
+        <div className="bg-white rounded-xl shadow-md px-6 py-8">
+          <h2 className="text-xl font-semibold text-center text-gray-900">
+            Welcome Back
+          </h2>
+          <p className="text-sm text-center text-gray-500 mt-1">
+            Enter your email to receive a verification code
+          </p>
 
-          <div className="space-y-4 xs:space-y-5">
-            <div className="space-y-1.5 xs:space-y-2">
-              <Label
-                htmlFor="email"
-                className="text-xs xs:text-sm font-medium text-gray-700"
-              >
+          <div className="mt-6 space-y-4">
+            {/* Email */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
                 Email Address
-              </Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 xs:w-5 xs:h-5 text-gray-400" />
-                <Input
-                  id="email"
+              </label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
                   type="email"
                   placeholder="your.email@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 text-xs xs:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full h-11 pl-10 pr-3 rounded-md border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            <div className="space-y-1.5 xs:space-y-2">
-              <Label
-                htmlFor="password"
-                className="text-xs xs:text-sm font-medium text-gray-700"
-              >
+            {/* Password */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
                 Password
-              </Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 xs:w-5 xs:h-5 text-gray-400" />
-                <Input
-                  id="password"
+              </label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
                   type="password"
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  className="pl-9 xs:pl-10 h-10 xs:h-11 sm:h-12 text-xs xs:text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="w-full h-11 pl-10 pr-3 rounded-md border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            <Button
-              onClick={handleSendOTP}
+            {/* Button */}
+            <button
+              onClick={handleLogin}
               disabled={isLoading}
-              className="w-full h-10 xs:h-11 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs xs:text-sm sm:text-base rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-11 mt-2 rounded-md bg-blue-600 text-white text-sm font-medium flex items-center justify-center gap-2 hover:bg-blue-700 transition disabled:opacity-50"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Sending...
-                </span>
-              ) : (
-                <span className="flex items-center justify-center">
-                  Send OTP
-                  <ArrowRight className="ml-2 w-4 h-4 xs:w-5 xs:h-5" />
-                </span>
-              )}
-            </Button>
+              {isLoading ? "Sending..." : "Send OTP"}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            {/* Register */}
+            <p className="text-sm text-center text-gray-600">
+              Don’t have an account?{" "}
+              <button
+                onClick={() => router.push("/admin/auth/registration")}
+                className="text-blue-600 font-medium hover:underline"
+              >
+                Register
+              </button>
+            </p>
           </div>
 
-          <div className="mt-5 xs:mt-6 pt-4 xs:pt-5 border-t border-gray-200">
-            <p className="text-center text-[10px] xs:text-xs text-gray-600 leading-relaxed">
-              Need help?{' '}
+          {/* Help */}
+          <div className="mt-6 border-t pt-4">
+            <p className="text-xs text-center text-gray-500">
+              Need help?{" "}
               <button
-                type="button"
                 onClick={() =>
-                  alert('Please contact your HR department for assistance')
+                  alert("Please contact your HR department for assistance")
                 }
-                className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+                className="text-blue-600 hover:underline"
               >
                 Contact your HR department
               </button>
@@ -165,11 +141,9 @@ export default function PayrollLogin() {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 xs:mt-6 text-center">
-          <p className="text-[10px] xs:text-xs text-gray-500">
-            © 2024 PayrollPro. All rights reserved.
-          </p>
-        </div>
+        <p className="mt-6 text-xs text-center text-gray-400">
+          © 2024 PayrollPro. All rights reserved.
+        </p>
       </div>
     </div>
   );
