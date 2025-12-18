@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Bell, Menu, ChevronDown, Building2, User, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -12,8 +12,36 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Get user data and role from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedUserData = localStorage.getItem('user_data');
+      if (storedUserData) {
+        setUserData(JSON.parse(storedUserData));
+      }
+    }
+  }, []);
+
+  // Determine current role based on pathname or stored role
+  const storedRole = typeof window !== 'undefined' 
+    ? localStorage.getItem('user_role') 
+    : null;
+
+  const currentRole = pathname?.startsWith('/admin') 
+    ? 'admin' 
+    : pathname?.startsWith('/employee') 
+    ? 'employee' 
+    : storedRole || 'employee';
+
+  // Get user info with fallbacks
+  const userName = userData?.name || 'User';
+  const userInitial = userName.charAt(0).toUpperCase();
+  const userEmployeeId = userData?.employeeId || (currentRole === 'admin' ? 'ADMIN' : 'EMP-001');
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -31,12 +59,22 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, []);
 
   const handleLogout = () => {
-    // Optional: clear auth/session data here
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('user_data');
     router.push('/login');
   };
 
+  const handleProfileClick = () => {
+    if (currentRole === 'admin') {
+      router.push('/admin/settings'); // or '/admin/profile' if you have one
+    } else {
+      router.push('/employee/profile');
+    }
+    setShowProfileDropdown(false);
+  };
+
   return (
-    <header className="fixed top-0 left-0 right-0 h-20 bg-gray-50 border-b border-gray-200 z-40">
+    <header className="fixed top-0 left-0 right-0 h-20 bg-white border-b border-gray-200 z-40">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         {/* Left: Mobile Menu + Logo */}
         <div className="flex items-center gap-4">
@@ -78,9 +116,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             ref={dropdownRef}
           >
             <div className="hidden sm:block text-right">
-              <p className="text-sm font-semibold text-gray-800">Naveen</p>
+              <p className="text-sm font-semibold text-gray-800">{userName}</p>
               <p className="text-xs text-gray-500">
-                Building A - Main Facility
+                {userEmployeeId}
               </p>
             </div>
 
@@ -89,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               className="flex items-center gap-2 hover:bg-gray-100 p-1.5 rounded-lg transition-colors"
             >
               <div className="w-9 h-9 bg-blue-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">N</span>
+                <span className="text-white font-semibold text-sm">{userInitial}</span>
               </div>
               <ChevronDown
                 size={16}
@@ -101,10 +139,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             {showProfileDropdown && (
               <div className="absolute right-0 top-14 w-52 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
                 <button
+                  onClick={handleProfileClick}
                   className="w-full flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={()=> router.push('/profile')}>
+                >
                   <User size={16} />
-                  View My Profile
+                  {currentRole === 'admin' ? 'Settings' : 'View My Profile'}
                 </button>
 
                 <button
