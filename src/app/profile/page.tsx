@@ -1,4 +1,4 @@
-import MyProfile from "@/components/Profile/Profilepage";
+import MyProfile from "@/components/Employee/Profile/Profilepage";
 import Layout from "@/components/Rootlayout/Layout";
 export default function ProfilePage() {
   return (

@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import SalaryTabs from "@/components/Salarydetails/Tabs"
+import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function AnnualEarningsPage() {

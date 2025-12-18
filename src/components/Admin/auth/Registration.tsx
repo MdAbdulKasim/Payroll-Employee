@@ -33,7 +33,7 @@ export default function LoginPage() {
     localStorage.setItem("isAuthenticated", "true");
     
     // Redirect to dashboard or home page
-    router.push("/dashboard");
+    router.push("/admin/auth/organisation_setup");
   };
 
   const handleChange = (field: string, value: string) => {
@@ -189,6 +189,18 @@ export default function LoginPage() {
               Continue
             </button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <button
+                onClick={() => router.push("/login")}
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

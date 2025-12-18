@@ -1,4 +1,4 @@
-import PayslipStaticPage from "@/components/Salarydetails/Payslip/Viewpage";
+import PayslipStaticPage from "@/components/Employee/Salarydetails/Payslip/Viewpage";
 import Layout from "@/components/Rootlayout/Layout";
 export default function PayslipViewPage() {
   return (

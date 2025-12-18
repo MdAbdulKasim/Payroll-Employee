@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Eye, FileDown, ChevronDown } from "lucide-react"
-import SalaryTabs from "@/components/Salarydetails/Tabs"
+import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
 import { useRouter } from "next/navigation"
 
 export default function Payslip() {
@@ -160,7 +160,7 @@ export default function Payslip() {
                       </td>
                       <td className="px-3 lg:px-4 py-3 lg:py-4">
                         <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
-                        onClick={()=> router.push("/salary/payslip/view")}>
+                          onClick={() => router.push("/salary/payslip/view")}>
                           <Eye className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                           View
                         </button>

@@ -1,4 +1,4 @@
-import Dashboard from "@/components/Dashboard/dashboardpage";
+import Dashboard from "@/components/Employee/Dashboard/dashboardpage";
 import Layout from "@/components/Rootlayout/Layout";
 export default function Page() {
   return(

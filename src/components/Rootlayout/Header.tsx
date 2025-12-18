@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
               <Building2 size={24} className="text-white" />
             </div>
             <span className="text-xl font-bold text-gray-800 hidden sm:block">
-              AMS
+              PAYROLL
             </span>
           </div>
         </div>

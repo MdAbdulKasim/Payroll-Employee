@@ -1,7 +1,7 @@
 "use client";
 
-import DocumentsLayout from "@/components/Documents/mainpage";
-import PayslipsPage from "@/components/Documents/DocPayslip/payslips";
+import DocumentsLayout from "@/components/Employee/Documents/mainpage";
+import PayslipsPage from "@/components/Employee/Documents/DocPayslip/payslips";
 import Layout from "@/components/Rootlayout/Layout";
 
 export default function DocumentPage() {
