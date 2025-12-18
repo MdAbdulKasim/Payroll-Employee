@@ -88,7 +88,7 @@ const PayslipsPage: React.FC = () => {
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">
                       <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                      onClick={()=> router.push("/documents/payslips/view")}>
+                      onClick={()=> router.push("/employee/documents/payslips/view")}>
                         <Eye className="w-4 h-4" />
                         View
                       </button>
