@@ -75,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
       items: [
         { icon: <LayoutDashboard size={18} />, label: 'Dashboard', href: '/admin/setup' },
         { icon: <Users size={18} />, label: 'Employees', href: '/admin/employee' },
-        { icon: <CalendarCheck size={18} />, label: 'Pay Runs', href: '/admin/payruns' },
+        { icon: <CalendarCheck size={18} />, label: 'Pay Runs', href: '/admin/payrun' },
         { icon: <Banknote size={18} />, label: 'Loans', href: '/admin/loans' },
         { icon: <FileText size={18} />, label: 'Documents', href: '/admin/documents' },
         { icon: <BarChart3 size={18} />, label: 'Reports', href: '/admin/reports' },
