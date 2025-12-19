@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 
 // Import step components
-// Note: Adjust these import paths based on your project structure
 const OrganizationDetails = dynamic(() => import("@/components/Admin/setup/OrganisationDetails"), {
     ssr: false,
 });
@@ -14,12 +13,12 @@ const TaxDetails = dynamic(() => import("@/components/Admin/setup/Taxdetails"), 
 const SetupConfiguration = dynamic(() => import("@/components/Admin/setup/Setupconfiguration"), {
     ssr: false,
 });
-const StatutoryComponents = dynamic(() => import("@/components/Admin/setup/Satuarycomponents"), {
+const StatutoryComponents = dynamic(() => import("@/components/Admin/setup/statuarycomponents/Satuarycomponents"), {
     ssr: false,
 });
-const SalaryComponents = dynamic(() => import("@/components/Admin/setup/Salarycomponents"), {
+const SalaryComponents = dynamic(() => import("@/components/Admin/setup/salarycomponents/Salarycomponents"), {
     ssr: false,
-}); 
+});
 const AddEmployees = dynamic(() => import("@/components/Admin/setup/AddEmployee"), { ssr: false });
 const PriorPayroll = dynamic(() => import("@/components/Admin/setup/PriorPayroll"), { ssr: false });
 
@@ -80,9 +79,7 @@ const steps: Step[] = [
 export default function SetupWizard() {
     const router = useRouter();
     const [completedSteps, setCompletedSteps] = useState<StepId[]>([]);
-    const [expandedStep, setExpandedStep] = useState<StepId | null>(
-        "organization-details"
-    );
+    const [activeStep, setActiveStep] = useState<StepId | null>(null);
 
     // Load completed steps from localStorage on mount
     useEffect(() => {
@@ -102,14 +99,15 @@ export default function SetupWizard() {
             const saved = localStorage.getItem("completedSteps");
             if (saved) {
                 try {
-                    setCompletedSteps(JSON.parse(saved));
+                    const steps = JSON.parse(saved);
+                    setCompletedSteps(steps);
                 } catch (error) {
                     console.error("Error parsing completed steps:", error);
                 }
             }
         };
 
-        // Poll for changes every 500ms (since localStorage events don't fire in same tab)
+        // Poll for changes every 500ms
         const interval = setInterval(handleStorageChange, 500);
 
         return () => clearInterval(interval);
@@ -124,31 +122,37 @@ export default function SetupWizard() {
         }
     }, [completedSteps, router]);
 
-    // Auto-expand next step when a step is completed
-    useEffect(() => {
-        const currentIndex = steps.findIndex((s) => s.id === expandedStep);
-        if (currentIndex !== -1 && currentIndex < steps.length - 1) {
-            const currentStepCompleted = completedSteps.includes(
-                steps[currentIndex].id
-            );
-            if (currentStepCompleted) {
-                const nextStep = steps[currentIndex + 1];
-                const nextStepCompleted = completedSteps.includes(nextStep.id);
-                if (!nextStepCompleted) {
-                    setExpandedStep(nextStep.id);
-                }
-            }
-        }
-    }, [completedSteps, expandedStep]);
-
-    const handleToggleStep = (stepId: StepId) => {
-        setExpandedStep(expandedStep === stepId ? null : stepId);
+    const handleStepClick = (stepId: StepId) => {
+        setActiveStep(stepId);
     };
 
     const handleStepComplete = (stepId: StepId) => {
         if (!completedSteps.includes(stepId)) {
-            setCompletedSteps([...completedSteps, stepId]);
+            const updatedSteps = [...completedSteps, stepId];
+            setCompletedSteps(updatedSteps);
+            localStorage.setItem("completedSteps", JSON.stringify(updatedSteps));
         }
+
+        // Return to wizard overview
+        setActiveStep(null);
+
+        // Auto-open next incomplete step
+        const currentIndex = steps.findIndex((s) => s.id === stepId);
+        if (currentIndex !== -1 && currentIndex < steps.length - 1) {
+            // Find next incomplete step
+            for (let i = currentIndex + 1; i < steps.length; i++) {
+                if (!completedSteps.includes(steps[i].id)) {
+                    setTimeout(() => {
+                        setActiveStep(steps[i].id);
+                    }, 300);
+                    break;
+                }
+            }
+        }
+    };
+
+    const handleBackToWizard = () => {
+        setActiveStep(null);
     };
 
     // Helper function to combine class names
@@ -156,6 +160,58 @@ export default function SetupWizard() {
         return classes.filter(Boolean).join(" ");
     };
 
+    // If a step is active, show full-page view
+    if (activeStep) {
+        const step = steps.find((s) => s.id === activeStep);
+        if (!step) return null;
+
+        const StepComponent = step.component;
+        const stepIndex = steps.findIndex((s) => s.id === activeStep);
+
+        return (
+            <div className="min-h-screen bg-gray-50">
+                {/* Header */}
+                <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={handleBackToWizard}
+                                    className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                                >
+                                    <ArrowLeft className="h-5 w-5" />
+                                    <span className="text-sm font-medium">Back to Setup</span>
+                                </button>
+                                <div className="h-6 w-px bg-gray-300"></div>
+                                <div>
+                                    <p className="text-sm text-gray-500">
+                                        Step {stepIndex + 1} of {steps.length}
+                                    </p>
+                                    <h1 className="text-lg font-semibold text-gray-900">
+                                        {step.title}
+                                    </h1>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">
+                                    {completedSteps.length} / {steps.length} completed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
+                        <StepComponent onComplete={() => handleStepComplete(activeStep)} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show wizard overview
     return (
         <div className="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8">
             <div className="mb-8">
@@ -170,23 +226,19 @@ export default function SetupWizard() {
 
             <div className="space-y-4">
                 {steps.map((step, index) => {
-                    const StepComponent = step.component;
                     const isCompleted = completedSteps.includes(step.id);
-                    const isExpanded = expandedStep === step.id;
 
                     return (
                         <div
                             key={step.id}
                             className={cn(
-                                "bg-white rounded-lg shadow border-l-4 transition-all",
+                                "bg-white rounded-lg shadow border-l-4 transition-all hover:shadow-md cursor-pointer",
                                 isCompleted ? "border-l-green-500" : "border-l-blue-500"
                             )}
+                            onClick={() => handleStepClick(step.id)}
                         >
                             {/* Card Header */}
-                            <div
-                                className="p-4 sm:p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                                onClick={() => handleToggleStep(step.id)}
-                            >
+                            <div className="p-4 sm:p-6">
                                 <div className="flex items-center gap-4">
                                     <div className="flex-shrink-0">
                                         {isCompleted ? (
@@ -206,25 +258,10 @@ export default function SetupWizard() {
                                         )}
                                     </div>
                                     <div className="text-sm text-blue-600 hover:underline flex-shrink-0">
-                                        {isExpanded
-                                            ? "Collapse"
-                                            : isCompleted
-                                                ? "View"
-                                                : "Complete Now"}
+                                        {isCompleted ? "View / Edit" : "Complete Now"}
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Card Content */}
-                            {isExpanded && (
-                                <div className="px-4 sm:px-6 pb-6 pt-0">
-                                    <div className="border-t pt-6">
-                                        <StepComponent
-                                            onComplete={() => handleStepComplete(step.id)}
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     );
                 })}
