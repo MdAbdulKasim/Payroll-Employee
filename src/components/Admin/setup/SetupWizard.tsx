@@ -19,8 +19,8 @@ const StatutoryComponents = dynamic(() => import("@/components/Admin/setup/statu
 const SalaryComponents = dynamic(() => import("@/components/Admin/setup/salarycomponents/Salarycomponents"), {
     ssr: false,
 });
-const AddEmployees = dynamic(() => import("@/components/Admin/setup/AddEmployee"), { ssr: false });
-const PriorPayroll = dynamic(() => import("@/components/Admin/setup/PriorPayroll"), { ssr: false });
+const AddEmployees = dynamic(() => import("@/components/Admin/setup/employee/AddEmployee"), { ssr: false });
+
 
 // Define step type
 type StepId =
@@ -30,7 +30,7 @@ type StepId =
     | "statutory-components"
     | "salary-components"
     | "add-employees"
-    | "prior-payroll";
+    // | "prior-payroll";
 
 interface Step {
     id: StepId;
@@ -69,11 +69,11 @@ const steps: Step[] = [
         title: "Add Employees",
         component: AddEmployees,
     },
-    {
-        id: "prior-payroll",
-        title: "Configure Prior Payroll",
-        component: PriorPayroll,
-    },
+    // {
+    //     id: "prior-payroll",
+    //     title: "Configure Prior Payroll",
+    //     component: PriorPayroll,
+    // },
 ];
 
 export default function SetupWizard() {
@@ -117,7 +117,7 @@ export default function SetupWizard() {
     useEffect(() => {
         if (completedSteps.length === steps.length) {
             setTimeout(() => {
-                router.push("/dashboard");
+                router.push("/admin/dashboard");
             }, 1500);
         }
     }, [completedSteps, router]);
@@ -270,7 +270,7 @@ export default function SetupWizard() {
             {/* Note Section */}
             <div className="mt-8 p-4 sm:p-6 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> You need to complete all 7 steps to access
+                    <strong>Note:</strong> You need to complete all 6 steps to access
                     your dashboard and start managing payroll.
                 </p>
             </div>
@@ -295,7 +295,7 @@ export default function SetupWizard() {
                 </div>
                 {completedSteps.length === steps.length && (
                     <p className="text-sm text-green-600 font-medium mt-2 text-center">
-                        🎉 All steps completed! Redirecting to dashboard...
+                         All steps completed! Redirecting to dashboard...
                     </p>
                 )}
             </div>
