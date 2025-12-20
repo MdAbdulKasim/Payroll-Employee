@@ -212,7 +212,7 @@ export default function EmployeesPage() {
               <label className="cursor-pointer">
                 <Button variant="outline" className="rounded-r-none">
                   <Upload className="w-4 h-4 mr-2" />
-                  Bulk Upload
+                  <a href="/admin/employee/importemployee">Bulk Upload</a>
                 </Button>
                 <input type="file" accept=".csv" className="hidden" onChange={handleBulkImport} />
               </label>

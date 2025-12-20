@@ -13,6 +13,16 @@ export interface Employee {
     joiningDate?: string;
 }
 
+export interface PayRun {
+    id: string;
+    month: string;
+    year: number;
+    status: 'draft' | 'processing' | 'completed';
+    totalAmount: number;
+    employeeCount: number;
+    createdAt: string;
+}
+
 interface OrganizationData {
     name: string;
     logo: string;
@@ -29,6 +39,10 @@ interface AppContextType {
     // Employee management
     employees: Employee[];
     addEmployee: (employee: Employee) => void;
+    addEmployees: (employees: Employee[]) => void;
+    // Payrun management
+    payruns: PayRun[];
+    addPayRun: (payrun: PayRun) => void;
     markStepComplete: (step: string) => void;
 }
 
@@ -46,6 +60,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     });
 
     const [employees, setEmployees] = useState<Employee[]>([]);
+    const [payruns, setPayruns] = useState<PayRun[]>([]);
 
     const markStepComplete = (step: string) => {
         console.log(`Step ${step} completed`);
@@ -55,12 +70,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setEmployees(prev => [...prev, employee]);
     };
 
+    const addEmployees = (newEmployees: Employee[]) => {
+        setEmployees(prev => [...prev, ...newEmployees]);
+    };
+
+    const addPayRun = (payrun: PayRun) => {
+        setPayruns(prev => [...prev, payrun]);
+    };
+
     return (
         <AppContext.Provider value={{
             organizationData,
             setOrganizationData,
             employees,
             addEmployee,
+            addEmployees,
+            payruns,
+            addPayRun,
             markStepComplete
         }}>
             {children}
