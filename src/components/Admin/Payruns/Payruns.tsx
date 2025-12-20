@@ -187,13 +187,13 @@ export default function RunPayrollPage() {
                     </Badge>
                   </td>
                   <td className="px-4 py-4 text-right">
-                    {/* <Button
+                    <Button
                       size="sm"
                       className="bg-blue-600 hover:bg-blue-700 text-white"
-                      
+                      onClick={() => router.push("/admin/payrun/view")}
                     >
-                      Create Pay Run
-                    </Button> */}
+                      View Details
+                    </Button>
                   </td>
                 </tr>
               ))}
