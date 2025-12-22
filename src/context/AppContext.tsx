@@ -31,11 +31,19 @@ interface OrganizationData {
     dateFormat: string;
     address: string;
     headOfOrganization: string;
+    headOffice?: string;
+    headOfficeCity?: string;
+    headOfficeState?: string;
+    headOfficePincode?: string;
+    primaryContactEmail?: string;
+    secondaryContactEmail?: string;
+    secondaryContactName?: string;
 }
 
 interface AppContextType {
     organizationData: OrganizationData;
     setOrganizationData: (data: OrganizationData) => void;
+    updateOrganization: (data: Partial<OrganizationData>) => void;
     // Employee management
     employees: Employee[];
     addEmployee: (employee: Employee) => void;
@@ -78,10 +86,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         setPayruns(prev => [...prev, payrun]);
     };
 
+    const updateOrganization = (data: Partial<OrganizationData>) => {
+        setOrganizationData(prev => ({ ...prev, ...data }));
+    };
+
     return (
         <AppContext.Provider value={{
             organizationData,
             setOrganizationData,
+            updateOrganization,
             employees,
             addEmployee,
             addEmployees,
