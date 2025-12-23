@@ -39,49 +39,44 @@ const sidebarItems: SidebarItem[] = [
   {
     group: 'ORGANIZATION SETTINGS',
     label: 'Departments',
-    href: '/settings/departments',
+    href: '/admin/settings/departments',
     icon: <Building2 className="h-5 w-5" />,
   },
   {
     group: 'ORGANIZATION SETTINGS',
     label: 'Designations',
-    href: '/settings/designations',
+    href: '/admin/settings/desginations',
     icon: <BadgeCheck className="h-5 w-5" />,
   },
   {
     group: 'USERS AND ROLES',
     label: 'Users',
-    href: '/settings/users',
+    href: '/admin/settings/users',
     icon: <Users className="h-5 w-5" />,
   },
   {
     group: 'USERS AND ROLES',
     label: 'Roles',
-    href: '/settings/roles',
+    href: '/admin/settings/roles',
     icon: <Shield className="h-5 w-5" />,
   },
+  
   {
-    group: 'PAYROLL SETTINGS',
-    label: 'Setup & Configuration',
-    href: '/settings/setup-configuration',
-    icon: <SettingsIcon className="h-5 w-5" />,
-  },
-  {
-    group: 'PAYROLL SETTINGS',
+    group: 'Setup & Configuration',
     label: 'Pay Schedule',
-    href: '/settings/pay-schedule',
+    href: '/admin/settings/payschedule',
     icon: <Calendar className="h-5 w-5" />,
   },
   {
-    group: 'PAYROLL SETTINGS',
+    group: 'Setup & Configuration',
     label: 'Salary Components',
-    href: '/settings/salary-components',
+    href: '/admin/settings/salary',
     icon: <DollarSign className="h-5 w-5" />,
   },
   {
-    group: 'PAYROLL SETTINGS',
+    group: 'Setup & Configuration',
     label: 'Statutory Components',
-    href: '/settings/statutory-components',
+    href: '/admin/settings/statutory',
     icon: <FileText className="h-5 w-5" />,
   },
 ];
@@ -104,8 +99,8 @@ export default function SettingsSidebar() {
   );
 
   return (
-    <aside className="w-80 bg-white border-r border-gray-200 h-full overflow-y-auto">
-      <div className="p-6 space-y-8">
+    <aside className="w-80 bg-white border-r border-gray-200 h-full sticky top-0">
+      <div className="p-6 space-y-8 max-h-screen overflow-y-auto">
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Settings</h2>
         </div>
