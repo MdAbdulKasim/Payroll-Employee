@@ -8,6 +8,12 @@ export default function PaymentInformationPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     paymentMethod: "direct-deposit",
+    accountHolderName: "",
+    bankName: "",
+    accountNumber: "",
+    reenterAccountNumber: "",
+    ifsc: "",
+    accountType: "savings",
   });
 
   /* ---------------- LOAD DRAFT ---------------- */
@@ -69,6 +75,18 @@ export default function PaymentInformationPage() {
     ) {
       alert("Employee details are incomplete");
       return;
+    }
+
+    // Validate bank account fields if direct-deposit or bank-transfer is selected
+    if (formData.paymentMethod === "bank-transfer" || formData.paymentMethod === "direct-deposit") {
+      if (!formData.accountHolderName || !formData.bankName || !formData.accountNumber || !formData.reenterAccountNumber || !formData.ifsc) {
+        alert("Please fill all bank account details");
+        return;
+      }
+      if (formData.accountNumber !== formData.reenterAccountNumber) {
+        alert("Account numbers do not match");
+        return;
+      }
     }
 
     // Create employee for main list
@@ -166,53 +184,174 @@ export default function PaymentInformationPage() {
 
               <div className="space-y-3">
                 {paymentMethods.map((method) => (
-                  <div
-                    key={method.id}
-                    className={`border rounded-lg p-4 cursor-pointer transition-all ${
-                      formData.paymentMethod === method.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() =>
-                      setFormData({ ...formData, paymentMethod: method.id })
-                    }
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="text-2xl">{method.icon}</div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-medium">{method.title}</h3>
-                          {method.id === "direct-deposit" && (
-                            <a
-                              href="#"
-                              className="text-sm text-blue-600 hover:underline"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Configure Now
-                            </a>
+                  <React.Fragment key={method.id}>
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        formData.paymentMethod === method.id
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                      onClick={() =>
+                        setFormData({ ...formData, paymentMethod: method.id })
+                      }
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="text-2xl">{method.icon}</div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-medium">{method.title}</h3>
+                            {method.id === "direct-deposit" && (
+                              <a
+                                href="#"
+                                className="text-sm text-blue-600 hover:underline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                Configure Now
+                              </a>
+                            )}
+                          </div>
+                          {method.description && (
+                            <p className="text-sm text-gray-600 mt-1">
+                              {method.description}
+                            </p>
                           )}
                         </div>
-                        {method.description && (
-                          <p className="text-sm text-gray-600 mt-1">
-                            {method.description}
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center">
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            formData.paymentMethod === method.id
-                              ? "border-blue-500"
-                              : "border-gray-300"
-                          }`}
-                        >
-                          {formData.paymentMethod === method.id && (
-                            <div className="w-3 h-3 rounded-full bg-blue-500" />
-                          )}
+                        <div className="flex items-center">
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              formData.paymentMethod === method.id
+                                ? "border-blue-500"
+                                : "border-gray-300"
+                            }`}
+                          >
+                            {formData.paymentMethod === method.id && (
+                              <div className="w-3 h-3 rounded-full bg-blue-500" />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+
+                    {/* Bank Account Fields - Show right after Direct Deposit or Bank Transfer */}
+                    {formData.paymentMethod === method.id && 
+                     (method.id === "direct-deposit" || method.id === "bank-transfer") && (
+                      <div className="space-y-4 bg-gray-50 border rounded-lg p-4 ml-12">
+                        <div>
+                          <label className="block text-sm font-medium mb-2">
+                            Account Holder Name<span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.accountHolderName}
+                            onChange={(e) =>
+                              setFormData({ ...formData, accountHolderName: e.target.value })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            placeholder="Enter account holder name"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium mb-2">
+                            Bank Name<span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={formData.bankName}
+                            onChange={(e) =>
+                              setFormData({ ...formData, bankName: e.target.value })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            placeholder="Enter bank name"
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Account Number<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.accountNumber}
+                              onChange={(e) =>
+                                setFormData({ ...formData, accountNumber: e.target.value })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              placeholder="Enter account number"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Re-enter Account Number<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.reenterAccountNumber}
+                              onChange={(e) =>
+                                setFormData({ ...formData, reenterAccountNumber: e.target.value })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              placeholder="Re-enter account number"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              IFSC<span className="text-red-500">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.ifsc}
+                              onChange={(e) =>
+                                setFormData({ ...formData, ifsc: e.target.value.toUpperCase() })
+                              }
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              placeholder="AAAA0000000"
+                              maxLength={11}
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium mb-2">
+                              Account Type<span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex items-center gap-6 mt-3">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="accountType"
+                                  value="current"
+                                  checked={formData.accountType === "current"}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, accountType: e.target.value })
+                                  }
+                                  className="w-4 h-4 text-blue-600"
+                                />
+                                <span className="text-sm">Current</span>
+                              </label>
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="accountType"
+                                  value="savings"
+                                  checked={formData.accountType === "savings"}
+                                  onChange={(e) =>
+                                    setFormData({ ...formData, accountType: e.target.value })
+                                  }
+                                  className="w-4 h-4 text-blue-600"
+                                />
+                                <span className="text-sm">Savings</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             </div>

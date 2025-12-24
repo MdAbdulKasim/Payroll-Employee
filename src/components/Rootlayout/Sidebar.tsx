@@ -1,4 +1,3 @@
-
 // components/Sidebar.tsx
 'use client';
 
@@ -17,7 +16,6 @@ import {
   ChevronDown,
   Home,
   CreditCard,
-  TrendingUp,
   User,
   Building2,
   X,
@@ -86,7 +84,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
 
   const approvalItems = [
     { label: 'Reimbursements', href: '/admin/approvals/reimbursements' },
-    { label: 'Proof of Investment', href: '/admin/approvals/investment' },
     { label: 'Salary Revision', href: '/admin/approvals/salary-revision' },
   ];
 
@@ -96,7 +93,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
       items: [
         { icon: <Home size={18} />, label: 'Dashboard', href: '/employee/dashboard' },
         { icon: <CreditCard size={18} />, label: 'Salary Details', href: '/employee/salary' },
-        { icon: <TrendingUp size={18} />, label: 'Investment', href: '/employee/investment' },
         { icon: <FileText size={18} />, label: 'Documents', href: '/employee/documents/payslips' },
         { icon: <User size={18} />, label: 'Profile', href: '/employee/profile' },
       ]
