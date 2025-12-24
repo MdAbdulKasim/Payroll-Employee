@@ -64,11 +64,11 @@ const steps: Step[] = [
         title: "Set Up Salary Components",
         component: SalaryComponents,
     },
-    {
-        id: "add-employees",
-        title: "Add Employees",
-        component: AddEmployees,
-    },
+    // {
+    //     id: "add-employees",
+    //     title: "Add Employees",
+    //     component: AddEmployees,
+    // },
     // {
     //     id: "prior-payroll",
     //     title: "Configure Prior Payroll",
@@ -270,7 +270,7 @@ export default function SetupWizard() {
             {/* Note Section */}
             <div className="mt-8 p-4 sm:p-6 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> You need to complete all 6 steps to access
+                    <strong>Note:</strong> You need to complete all 5 steps to access
                     your dashboard and start managing payroll.
                 </p>
             </div>
