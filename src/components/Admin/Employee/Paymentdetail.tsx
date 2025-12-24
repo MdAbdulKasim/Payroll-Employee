@@ -32,7 +32,7 @@ export default function PaymentInformationPage() {
     {
       id: "direct-deposit",
       title: "Direct Deposit (Automated Process)",
-      description: "Initiate payment in Zoho Payroll once the pay run is approved",
+      description: "",
       icon: "💳",
     },
     {
@@ -361,7 +361,7 @@ export default function PaymentInformationPage() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-900">
                   <strong>Note:</strong> Make sure you have configured your bank
-                  account details and enabled direct deposit in Zoho Payroll
+                  account details and enabled direct deposit in Payroll
                   settings before using this option.
                 </p>
               </div>
