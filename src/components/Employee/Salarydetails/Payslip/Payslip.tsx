@@ -5,9 +5,10 @@ import { Card } from "@/components/ui/card"
 import { Eye, FileDown, ChevronDown } from "lucide-react"
 import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
 import { useRouter } from "next/navigation"
+import jsPDF from "jspdf"
 
 export default function Payslip() {
-  const router = useRouter();
+  const router = useRouter()
   const [selectedYear, setSelectedYear] = useState("FY 2024-25")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -58,29 +59,260 @@ export default function Payslip() {
     },
   ]
 
+  /* ================= PDF DOWNLOAD ================= */
   const handleDownload = (month: string) => {
-    // Create a simple payslip content
-    const content = `
-PAYSLIP - ${month}
-==================
+    const data = payslipData.find(item => item.month === month)
+    if (!data) return
 
-Gross Pay: ${payslipData.find(item => item.month === month)?.grossPay}
-Reimbursement: ${payslipData.find(item => item.month === month)?.reimbursement}
-Deductions: ${payslipData.find(item => item.month === month)?.deductions}
-Take Home: ${payslipData.find(item => item.month === month)?.takeHome}
-    `.trim()
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    })
 
-    // Create blob and download
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `Payslip_${month.replace(' ', '_')}.txt`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const margin = 15
+    let yPos = margin
+
+    const drawText = (text: string, x: number, y: number, options: any = {}) => {
+      doc.setFontSize(options.fontSize || 10)
+      doc.setFont("helvetica", options.fontStyle || "normal")
+      doc.setTextColor(options.color || "#000000")
+      doc.text(text, x, y, options.align ? { align: options.align } : undefined)
+    }
+
+    const drawRect = (x: number, y: number, width: number, height: number, options: any = {}) => {
+      if (options.fill) {
+        doc.setFillColor(options.fill)
+        doc.rect(x, y, width, height, "F")
+      }
+      if (options.stroke) {
+        doc.setDrawColor(options.stroke)
+        doc.rect(x, y, width, height, "S")
+      }
+    }
+
+    // Company Header
+    drawText("Your Company Name", margin, yPos, { fontSize: 18, fontStyle: "bold" })
+    yPos += 6
+    drawText("www.yourcompany.com", margin, yPos, { fontSize: 9, color: "#666666" })
+    yPos += 5
+    drawText("123 Business Street, Suite 100, City, State 10001", margin, yPos, { fontSize: 8, color: "#666666" })
+    yPos += 10
+
+    // Payslip Title - Right aligned
+    const titleY = margin
+    drawRect(pageWidth - 70, titleY, 55, 10, { fill: "#1a5662" })
+    drawText("PAYROLL PAYSLIP", pageWidth - 42.5, titleY + 6.5, {
+      fontSize: 11,
+      fontStyle: "bold",
+      color: "#ffffff",
+      align: "center"
+    })
+
+    // Employee Information Header
+    drawRect(margin, yPos, pageWidth - 2 * margin, 8, { fill: "#1a5662" })
+    drawText("EMPLOYEE INFORMATION", margin + 3, yPos + 5.5, {
+      fontSize: 10,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+
+    yPos += 12
+
+    // Employee Details
+    const col1X = margin + 3
+    const col2X = pageWidth / 2 + 5
+    const lineHeight = 6
+
+    drawText("Name", col1X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(": John Doe", col1X + 22, yPos, { fontSize: 9 })
+    drawText("ID Number", col2X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(": EMP-2024-089", col2X + 22, yPos, { fontSize: 9 })
+    yPos += lineHeight
+
+    drawText("Position", col1X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(": Software Engineer", col1X + 22, yPos, { fontSize: 9 })
+    drawText("Department", col2X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(": Engineering", col2X + 22, yPos, { fontSize: 9 })
+    yPos += lineHeight
+
+    drawText("Pay Period", col1X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(`: ${month}`, col1X + 22, yPos, { fontSize: 9 })
+    drawText("PAN", col2X, yPos, { fontSize: 8, color: "#666666" })
+    drawText(": ABCDE1234F", col2X + 22, yPos, { fontSize: 9 })
+    yPos += lineHeight + 8
+
+    // Earnings and Deductions Table
+    const colWidth = (pageWidth - 2 * margin) / 4
+
+    // Table Header
+    drawRect(margin, yPos, pageWidth - 2 * margin, 8, { fill: "#1a5662" })
+    drawText("EARNINGS", margin + 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+    drawText("AMOUNT", margin + colWidth - 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff",
+      align: "right"
+    })
+    drawText("DEDUCTIONS", margin + 2 * colWidth + 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+    drawText("AMOUNT", pageWidth - margin - 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff",
+      align: "right"
+    })
+
+    yPos += 8
+
+    // Parse amounts
+    const grossPayValue = parseFloat(data.grossPay.replace(/₹|,/g, ''))
+    const reimbursementValue = parseFloat(data.reimbursement.replace(/₹|,/g, ''))
+    const deductionsValue = parseFloat(data.deductions.replace(/₹|,/g, ''))
+    const basicSalary = grossPayValue - reimbursementValue
+
+    const earnings = [
+      { label: "Basic Salary", amount: basicSalary },
+      { label: "Allowances", amount: reimbursementValue }
+    ]
+
+    const deductions = [
+      { label: "Tax (TDS)", amount: deductionsValue * 0.6 },
+      { label: "PF", amount: deductionsValue * 0.4 }
+    ]
+
+    const maxRows = Math.max(earnings.length, deductions.length)
+    
+    for (let i = 0; i < maxRows; i++) {
+      const rowHeight = 7
+      
+      // Draw borders
+      doc.setDrawColor("#e0e0e0")
+      doc.line(margin, yPos, pageWidth - margin, yPos)
+      doc.line(margin, yPos, margin, yPos + rowHeight)
+      doc.line(margin + colWidth, yPos, margin + colWidth, yPos + rowHeight)
+      doc.line(margin + 2 * colWidth, yPos, margin + 2 * colWidth, yPos + rowHeight)
+      doc.line(margin + 3 * colWidth, yPos, margin + 3 * colWidth, yPos + rowHeight)
+      doc.line(pageWidth - margin, yPos, pageWidth - margin, yPos + rowHeight)
+
+      // Earnings
+      if (i < earnings.length) {
+        drawText(earnings[i].label, margin + 2, yPos + 5, { fontSize: 9 })
+        drawText(
+          `₹${earnings[i].amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          margin + colWidth - 2,
+          yPos + 5,
+          { fontSize: 9, align: "right" }
+        )
+      }
+
+      // Deductions
+      if (i < deductions.length) {
+        drawText(deductions[i].label, margin + 2 * colWidth + 2, yPos + 5, { fontSize: 9 })
+        drawText(
+          `₹${deductions[i].amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          pageWidth - margin - 2,
+          yPos + 5,
+          { fontSize: 9, align: "right" }
+        )
+      }
+
+      yPos += rowHeight
+    }
+
+    // Total row
+    doc.line(margin, yPos, pageWidth - margin, yPos)
+    const totalRowHeight = 8
+    drawRect(margin, yPos, pageWidth - 2 * margin, totalRowHeight, { fill: "#1a5662" })
+
+    drawText("GROSS PAY", margin + 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+    drawText(
+      data.grossPay,
+      margin + colWidth - 2,
+      yPos + 5.5,
+      { fontSize: 9, fontStyle: "bold", color: "#ffffff", align: "right" }
+    )
+    drawText("TOTAL DEDUCTIONS", margin + 2 * colWidth + 2, yPos + 5.5, {
+      fontSize: 9,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+    drawText(
+      data.deductions,
+      pageWidth - margin - 2,
+      yPos + 5.5,
+      { fontSize: 9, fontStyle: "bold", color: "#ffffff", align: "right" }
+    )
+
+    // Draw borders
+    doc.line(margin, yPos + totalRowHeight, pageWidth - margin, yPos + totalRowHeight)
+    doc.line(margin, yPos, margin, yPos + totalRowHeight)
+    doc.line(margin + colWidth, yPos, margin + colWidth, yPos + totalRowHeight)
+    doc.line(margin + 2 * colWidth, yPos, margin + 2 * colWidth, yPos + totalRowHeight)
+    doc.line(margin + 3 * colWidth, yPos, margin + 3 * colWidth, yPos + totalRowHeight)
+    doc.line(pageWidth - margin, yPos, pageWidth - margin, yPos + totalRowHeight)
+
+    yPos += totalRowHeight + 10
+
+    // Net Pay Box
+    drawRect(margin, yPos, pageWidth - 2 * margin, 15, {
+      fill: "#1a5662"
+    })
+    drawText("NET PAY (TAKE HOME)", margin + 3, yPos + 9, {
+      fontSize: 10,
+      fontStyle: "bold",
+      color: "#ffffff"
+    })
+    drawText(
+      data.takeHome,
+      pageWidth - margin - 3,
+      yPos + 9,
+      { fontSize: 16, fontStyle: "bold", color: "#ffffff", align: "right" }
+    )
+
+    yPos += 20
+
+    // Footer Note
+    drawText("This is a computer-generated payslip and does not require a signature.", margin, yPos, {
+      fontSize: 8,
+      color: "#666666"
+    })
+
+    yPos += 15
+
+    // Signatures
+    const sigWidth = (pageWidth - 3 * margin) / 2
+    
+    // Employer signature
+    doc.line(margin, yPos, margin + sigWidth, yPos)
+    drawText("Employer Signature / Date", margin + sigWidth / 2, yPos + 5, {
+      fontSize: 8,
+      align: "center"
+    })
+
+    // Employee signature
+    doc.line(margin + sigWidth + margin, yPos, pageWidth - margin, yPos)
+    drawText("Employee Signature / Date", margin + sigWidth + margin + sigWidth / 2, yPos + 5, {
+      fontSize: 8,
+      align: "center"
+    })
+
+    // Save PDF
+    doc.save(`Payslip_${month.replace(/\s+/g, '_')}.pdf`)
   }
+  /* ================================================= */
 
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-3 md:p-6">
@@ -141,118 +373,43 @@ Take Home: ${payslipData.find(item => item.month === month)?.takeHome}
               <table className="w-full">
                 <thead className="bg-white border-b">
                   <tr>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Month
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Gross Pay
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Reimbursement
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Deductions
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Take Home
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Payslip
-                    </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
-                      Download
-                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Month</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Gross Pay</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Reimbursement</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Deductions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Take Home</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Payslip</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium">Download</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y">
                   {payslipData.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-3 lg:px-4 py-3 lg:py-4 text-xs lg:text-sm text-gray-900">
-                        {item.month}
-                      </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4 text-xs lg:text-sm text-gray-900">
-                        {item.grossPay}
-                      </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4 text-xs lg:text-sm text-gray-900">
-                        {item.reimbursement}
-                      </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4 text-xs lg:text-sm text-red-600">
-                        {item.deductions}
-                      </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4 text-xs lg:text-sm text-blue-600 font-semibold">
-                        {item.takeHome}
-                      </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4">
-                        <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
-                          onClick={() => router.push("/employee/salary/payslip/view")}>
-                          <Eye className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                          View
+                    <tr key={index}>
+                      <td className="px-4 py-3 text-sm">{item.month}</td>
+                      <td className="px-4 py-3 text-sm">{item.grossPay}</td>
+                      <td className="px-4 py-3 text-sm">{item.reimbursement}</td>
+                      <td className="px-4 py-3 text-sm text-red-600">{item.deductions}</td>
+                      <td className="px-4 py-3 text-sm font-semibold text-blue-600">{item.takeHome}</td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => router.push("/employee/salary/payslip/view")}
+                          className="flex items-center gap-1 text-sm"
+                        >
+                          <Eye className="h-4 w-4" /> View
                         </button>
                       </td>
-                      <td className="px-3 lg:px-4 py-3 lg:py-4">
-                        <button 
-                          className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
+                      <td className="px-4 py-3">
+                        <button
                           onClick={() => handleDownload(item.month)}
+                          className="flex items-center gap-1 text-sm"
                         >
-                          <FileDown className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                          
+                          <FileDown className="h-4 w-4" />
                         </button>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-
-            <div className="md:hidden divide-y divide-gray-200">
-              {payslipData.map((item, index) => (
-                <div key={index} className="p-3 sm:p-4">
-                  <div className="flex justify-between items-start mb-2 sm:mb-3">
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">
-                      {item.month}
-                    </h3>
-                    <span className="text-xs sm:text-sm font-bold text-blue-600">
-                      {item.takeHome}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 sm:gap-y-2 mb-3">
-                    <div>
-                      <p className="text-[10px] sm:text-xs text-gray-500">Gross Pay</p>
-                      <p className="text-[11px] sm:text-sm font-medium">{item.grossPay}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] sm:text-xs text-gray-500">Reimbursement</p>
-                      <p className="text-[11px] sm:text-sm font-medium">{item.reimbursement}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] sm:text-xs text-gray-500">Deductions</p>
-                      <p className="text-[11px] sm:text-sm font-medium text-red-600">{item.deductions}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] sm:text-xs text-gray-500">Take Home</p>
-                      <p className="text-[11px] sm:text-sm font-medium text-blue-600">{item.takeHome}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <button 
-                      className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
-                      onClick={() => router.push("/employee/salary/payslip/view")}
-                    >
-                      <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                      Payslip
-                    </button>
-                    <button 
-                      className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
-                      onClick={() => handleDownload(item.month)}
-                    >
-                      <FileDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                      Download
-                    </button>
-                  </div>
-                </div>
-              ))}
             </div>
           </Card>
         </div>
