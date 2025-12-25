@@ -33,7 +33,7 @@ export default function LoginPage() {
     localStorage.setItem("isAuthenticated", "true");
     
     // Redirect to dashboard or home page
-    router.push("/admin/auth/organisation_setup");
+    router.push("/login/otp");
   };
 
   const handleChange = (field: string, value: string) => {

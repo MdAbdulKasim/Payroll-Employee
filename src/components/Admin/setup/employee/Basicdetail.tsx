@@ -8,8 +8,9 @@ export default function BasicDetailsPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    fullName: "",
-   
+    firstName: "",
+    middleName: "",
+    lastName: "",
     employeeId: "",
     dateOfJoining: "",
     workEmail: "",
@@ -39,7 +40,7 @@ export default function BasicDetailsPage() {
   const handleSaveAndContinue = () => {
     // 🔒 Mandatory validation
     if (
-      !formData.fullName ||
+      !formData.firstName ||
       !formData.employeeId ||
       !formData.dateOfJoining ||
       !formData.workEmail ||
@@ -130,14 +131,14 @@ export default function BasicDetailsPage() {
               <div className="grid grid-cols-3 gap-4">
                 <input
                   type="text"
-                  placeholder="Full Name"
+                  placeholder="First Name"
                   className="w-full px-3 py-2 border rounded-lg"
-                  value={formData.fullName}
+                  value={formData.firstName}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
+                    setFormData({ ...formData, firstName: e.target.value })
                   }
                 />
-                {/* <input
+                <input
                   type="text"
                   placeholder="Middle Name"
                   className="w-full px-3 py-2 border rounded-lg"
@@ -154,7 +155,7 @@ export default function BasicDetailsPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, lastName: e.target.value })
                   }
-                /> */}
+                />
               </div>
             </div>
 

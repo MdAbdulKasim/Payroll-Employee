@@ -68,23 +68,6 @@ export default function PayslipTemplatesPage() {
       <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 sm:p-12">
         <PayslipTemplate variant={activeTemplate} isPreview={true} />
       </div>
-
-      <style jsx global>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .print-area,
-          .print-area * {
-            visibility: visible;
-          }
-          .print-area {
-            position: absolute;
-            left: 0;
-            top: 0;
-          }
-        }
-      `}</style>
     </div>
   )
 }
