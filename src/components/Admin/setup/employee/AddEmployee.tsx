@@ -1,29 +1,18 @@
-"use client";
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import AddEmployeeDialog from '@/components/Admin/dialogs/AddEmployeeDialog';
 
 interface AddEmployeesProps {
     onComplete?: () => void;
 }
 
 export default function AddEmployees({ onComplete }: AddEmployeesProps) {
-    const router = useRouter();
     const { employees, markStepComplete } = useApp();
-
-    const handleAddEmployee = () => {
-        // Redirect to Employees page
-        router.push('/admin/employee');
-    };
-
-    const handleBulkImport = () => {
-        // Redirect to Import Employees page
-        router.push('/admin/employee');
-    };
+    const [showAddEmployee, setShowAddEmployee] = useState(false);
 
     const handleSkip = () => {
         markStepComplete('add-employees');
@@ -31,13 +20,8 @@ export default function AddEmployees({ onComplete }: AddEmployeesProps) {
         toast.info('You can add employees later from the Employees page');
     };
 
-    const handleContinue = () => {
-        if (employees.length > 0) {
-            markStepComplete('add-employees');
-            if (onComplete) onComplete();
-        } else {
-            toast.error('Please add at least one employee to continue');
-        }
+    const handleBulkImport = () => {
+        toast.info('Bulk import feature - Upload CSV or Excel file');
     };
 
     return (
@@ -47,30 +31,24 @@ export default function AddEmployees({ onComplete }: AddEmployeesProps) {
             </p>
 
             <div className="grid md:grid-cols-2 gap-6">
-                <Card 
-                    className="border-2 border-dashed hover:border-blue-400 transition-colors cursor-pointer" 
-                    onClick={handleAddEmployee}
-                >
+                <Card className="border-2 border-dashed hover:border-blue-400 transition-colors cursor-pointer" onClick={() => setShowAddEmployee(true)}>
                     <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                             <UserPlus className="h-8 w-8 text-blue-600" />
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">Add Employee</h3>
+                        <h3 className="text-lg mb-2">Add Employee</h3>
                         <p className="text-sm text-gray-600">
                             Add employees one at a time with complete details
                         </p>
                     </CardContent>
                 </Card>
 
-                <Card 
-                    className="border-2 border-dashed hover:border-blue-400 transition-colors cursor-pointer" 
-                    onClick={handleBulkImport}
-                >
+                <Card className="border-2 border-dashed hover:border-blue-400 transition-colors cursor-pointer" onClick={handleBulkImport}>
                     <CardContent className="flex flex-col items-center justify-center p-8 text-center">
                         <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                             <Upload className="h-8 w-8 text-blue-600" />
                         </div>
-                        <h3 className="text-lg font-semibold mb-2">Bulk Import</h3>
+                        <h3 className="text-lg mb-2">Bulk Import</h3>
                         <p className="text-sm text-gray-600">
                             Import multiple employees using CSV or Excel file
                         </p>
@@ -99,12 +77,24 @@ export default function AddEmployees({ onComplete }: AddEmployeesProps) {
                 <Button
                     type="button"
                     className="bg-blue-600 hover:bg-blue-700"
-                    onClick={handleContinue}
+                    onClick={() => {
+                        if (employees.length > 0) {
+                            markStepComplete('add-employees');
+                            if (onComplete) onComplete();
+                        }
+                    }}
                     disabled={employees.length === 0}
                 >
                     Continue
                 </Button>
             </div>
+
+            {showAddEmployee && (
+                <AddEmployeeDialog
+                    open={showAddEmployee}
+                    onClose={() => setShowAddEmployee(false)}
+                />
+            )}
         </div>
     );
 }

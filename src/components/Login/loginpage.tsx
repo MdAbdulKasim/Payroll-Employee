@@ -32,7 +32,8 @@ export default function PayrollLogin() {
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("redirectTo", "/admin/setup");
-        router.push("/login/otp");
+        router.push("/admin/setup");
+       
         return;
       }
 
@@ -42,7 +43,8 @@ export default function PayrollLogin() {
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("userRole", "employee");
         sessionStorage.setItem("redirectTo", "/employee/dashboard");
-        router.push("/login/otp");
+        router.push("/employee/dashboard");
+    
         return;
       }
 
@@ -116,7 +118,7 @@ export default function PayrollLogin() {
               disabled={isLoading}
               className="w-full h-11 mt-2 rounded-md bg-blue-600 text-white text-sm font-medium flex items-center justify-center gap-2 hover:bg-blue-700 transition disabled:opacity-50"
             >
-              {isLoading ? "Sending..." : "Send OTP"}
+              {isLoading ? "Sending..." : "Login"}
               <ArrowRight className="w-4 h-4" />
             </button>
 
