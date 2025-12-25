@@ -179,12 +179,28 @@ export default function EmployeesPage() {
     reader.readAsText(file);
   };
 
-  /* ---------------- ACTIONS ---------------- */
+  /* ---------------- ACTIONS (UPDATED WITH NAVIGATION) ---------------- */
 
-  const handleView = (emp: Employee) => alert(`Viewing ${emp.name}`);
-  const handleEdit = (emp: Employee) => alert(`Editing ${emp.name}`);
+  // 🔹 Click on row to view employee details
+  const handleRowClick = (emp: Employee) => {
+    router.push(`/admin/employee/view?id=${emp.id}`);
+  };
 
-  const handleDelete = (id: string) => {
+  // 🔹 View button action
+  const handleView = (e: React.MouseEvent, emp: Employee) => {
+    e.stopPropagation(); // Prevent row click
+    router.push(`/admin/employee/view?id=${emp.id}`);
+  };
+
+  // 🔹 Edit button action
+  const handleEdit = (e: React.MouseEvent, emp: Employee) => {
+    e.stopPropagation(); // Prevent row click
+    router.push(`/admin/employee/edit/basic?id=${emp.id}`);
+  };
+
+  // 🔹 Delete button action
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation(); // Prevent row click
     if (!confirm("Delete employee?")) return;
 
     const updated = employees.filter((e) => e.id !== id);
@@ -289,7 +305,11 @@ export default function EmployeesPage() {
 
             <TableBody>
               {filteredEmployees.map((emp) => (
-                <TableRow key={emp.id}>
+                <TableRow 
+                  key={emp.id}
+                  onClick={() => handleRowClick(emp)}
+                  className="cursor-pointer"
+                >
                   <TableCell>{emp.name}</TableCell>
                   <TableCell>{emp.email}</TableCell>
                   <TableCell>{emp.department}</TableCell>
@@ -308,13 +328,25 @@ export default function EmployeesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="inline-flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={() => handleView(emp)}>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={(e) => handleView(e, emp)}
+                      >
                         <Eye className="w-4 h-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleEdit(emp)}>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={(e) => handleEdit(e, emp)}
+                      >
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button size="icon" variant="ghost" onClick={() => handleDelete(emp.id)}>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={(e) => handleDelete(e, emp.id)}
+                      >
                         <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>
                     </div>
