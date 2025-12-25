@@ -1,30 +1,59 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { Card } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"
 
 export default function AnnualEarningsPage() {
+  const [selectedYear, setSelectedYear] = useState("2024-25")
+
   const chartData = [
-    { month: "Jul", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
-    { month: "Aug", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
-    { month: "Sep", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
-    { month: "Oct", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
-    { month: "Nov", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
-    { month: "Dec", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Jul", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Aug", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Sep", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Oct", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Nov", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
+    { month: "Dec", year: "2024-25", Basic: 50000, HRA: 25000, "Fixed Allowance": 35000 },
   ]
 
   const monthlyDetails = [
-    { month: "December", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
-    { month: "November", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
-    { month: "October", basic: 44387, hra: 24194, fixedAllowance: 33871, epf: 1800, profTax: 200, takeHome: 106452 },
-    { month: "September", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
-    { month: "August", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
-    { month: "July", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
+    { month: "December", year: "2024-25", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
+    { month: "November", year: "2024-25", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
+    { month: "October", year: "2024-25", basic: 44387, hra: 24194, fixedAllowance: 33871, epf: 1800, profTax: 200, takeHome: 106452 },
+    { month: "September", year: "2024-25", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
+    { month: "August", year: "2024-25", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
+    { month: "July", year: "2024-25", basic: 50000, hra: 25000, fixedAllowance: 35000, epf: 1800, profTax: 200, takeHome: 108000 },
   ]
 
-  const totals = monthlyDetails.reduce(
+  // ✅ FY FILTER (SAME METHOD AS PAYSLIP)
+  const filteredChartData = useMemo(
+    () => chartData.filter(item => item.year === selectedYear),
+    [selectedYear]
+  )
+
+  const filteredMonthlyDetails = useMemo(
+    () => monthlyDetails.filter(item => item.year === selectedYear),
+    [selectedYear]
+  )
+
+  const totals = filteredMonthlyDetails.reduce(
     (acc, item) => ({
       basic: acc.basic + item.basic,
       hra: acc.hra + item.hra,
@@ -55,7 +84,10 @@ export default function AnnualEarningsPage() {
             <h2 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900">
               Annual Earnings
             </h2>
-            <Select defaultValue="2024-25">
+            <Select
+              value={selectedYear}
+              onValueChange={setSelectedYear}
+            >
               <SelectTrigger className="w-[140px] text-xs sm:text-sm">
                 <SelectValue placeholder="Select year" />
               </SelectTrigger>
@@ -72,12 +104,12 @@ export default function AnnualEarningsPage() {
               Monthly Earnings Breakdown
             </h3>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
+              <BarChart data={filteredChartData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Legend wrapperStyle={{ fontSize: '12px' }} />
+                <Legend wrapperStyle={{ fontSize: "12px" }} />
                 <Bar dataKey="Basic" stackId="a" fill="#4F46E5" />
                 <Bar dataKey="HRA" stackId="a" fill="#06B6D4" />
                 <Bar dataKey="Fixed Allowance" stackId="a" fill="#10B981" />
@@ -86,129 +118,31 @@ export default function AnnualEarningsPage() {
           </Card>
 
           <Card className="overflow-hidden">
-            <div className="p-4 sm:p-5 md:p-6">
-              <h3 className="text-sm sm:text-base font-semibold mb-4">
-                Monthly Details
-              </h3>
-            </div>
-
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-y">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700">
-                      Month
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      Basic
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      HRA
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      Fixed Allowance
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      EPF
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      Prof. Tax
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700">
-                      Take Home
-                    </th>
-                  </tr>
-                </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {monthlyDetails.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 text-xs text-gray-900">
-                        {item.month}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right text-gray-900">
-                        ₹{item.basic.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right text-gray-900">
-                        ₹{item.hra.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right text-gray-900">
-                        ₹{item.fixedAllowance.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right text-red-600">
-                        ₹{item.epf.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right text-red-600">
-                        ₹{item.profTax.toLocaleString()}
-                      </td>
-                      <td className="px-4 py-3 text-xs text-right font-semibold text-gray-900">
-                        ₹{item.takeHome.toLocaleString()}
-                      </td>
+                  {filteredMonthlyDetails.map((item, index) => (
+                    <tr key={index}>
+                      <td className="px-4 py-3 text-xs">{item.month}</td>
+                      <td className="px-4 py-3 text-xs text-right">₹{item.basic.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-xs text-right">₹{item.hra.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-xs text-right">₹{item.fixedAllowance.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-xs text-right text-red-600">₹{item.epf.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-xs text-right text-red-600">₹{item.profTax.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-xs text-right font-semibold">₹{item.takeHome.toLocaleString()}</td>
                     </tr>
                   ))}
-                  <tr className="bg-blue-50 font-bold border-t-2">
+                  <tr className="bg-blue-50 font-bold">
                     <td className="px-4 py-3 text-xs">Total</td>
-                    <td className="px-4 py-3 text-xs text-right">
-                      ₹{totals.basic.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-right">
-                      ₹{totals.hra.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-right">
-                      ₹{totals.fixedAllowance.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-right text-red-600">
-                      ₹{totals.epf.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-right text-red-600">
-                      ₹{totals.profTax.toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 text-xs text-right">
-                      ₹{totals.takeHome.toLocaleString()}
-                    </td>
+                    <td className="px-4 py-3 text-xs text-right">₹{totals.basic.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-right">₹{totals.hra.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-right">₹{totals.fixedAllowance.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-right text-red-600">₹{totals.epf.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-right text-red-600">₹{totals.profTax.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-xs text-right">₹{totals.takeHome.toLocaleString()}</td>
                   </tr>
                 </tbody>
               </table>
-            </div>
-
-            <div className="md:hidden divide-y divide-gray-200">
-              {monthlyDetails.map((item, index) => (
-                <div key={index} className="p-4">
-                  <div className="font-semibold text-sm mb-3">{item.month}</div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">Basic</span>
-                      <span>₹{item.basic.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">HRA</span>
-                      <span>₹{item.hra.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">Fixed Allowance</span>
-                      <span>₹{item.fixedAllowance.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">EPF</span>
-                      <span className="text-red-600">₹{item.epf.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-600">Prof. Tax</span>
-                      <span className="text-red-600">₹{item.profTax.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-xs font-semibold pt-2 border-t">
-                      <span>Take Home</span>
-                      <span>₹{item.takeHome.toLocaleString()}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              <div className="p-4 bg-blue-50 font-bold">
-                <div className="font-semibold text-sm mb-3">Total</div>
-                <div className="flex justify-between text-xs">
-                  <span>Take Home</span>
-                  <span>₹{totals.takeHome.toLocaleString()}</span>
-                </div>
-              </div>
             </div>
           </Card>
         </div>

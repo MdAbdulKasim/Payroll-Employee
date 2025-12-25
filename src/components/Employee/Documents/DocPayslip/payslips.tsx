@@ -26,11 +26,36 @@ const PayslipsPage: React.FC = () => {
     return `₹${amount.toLocaleString('en-IN')}`;
   };
 
+  /* ================= DOWNLOAD FUNCTION ================= */
+  const handleDownload = (payslip: Payslip) => {
+    const content = `
+      Payslip for ${payslip.month} ${payslip.year}
+
+      ----------------------------------
+      Take Home Salary : ${formatCurrency(payslip.takeHome)}
+      Status           : Available
+      ----------------------------------
+
+      This is a system generated payslip.
+    `;
+
+    const blob = new Blob([content], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `Payslip_${payslip.month}_${payslip.year}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+  /* ===================================================== */
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-2">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-      
 
         {/* Title and Year Selector */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
@@ -87,12 +112,19 @@ const PayslipsPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                      onClick={()=> router.push("/employee/documents/payslips/view")}>
+                      <button
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={() =>
+                          router.push('/employee/documents/payslips/view')
+                        }
+                      >
                         <Eye className="w-4 h-4" />
                         View
                       </button>
-                      <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                      <button
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                        onClick={() => handleDownload(payslip)}
+                      >
                         <Download className="w-4 h-4" />
                         Download
                       </button>
@@ -130,11 +162,19 @@ const PayslipsPage: React.FC = () => {
                 </span>
               </div>
               <div className="flex gap-2">
-                <button className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() =>
+                    router.push('/employee/documents/payslips/view')
+                  }
+                >
                   <Eye className="w-4 h-4" />
                   View
                 </button>
-                <button className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                <button
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() => handleDownload(payslip)}
+                >
                   <Download className="w-4 h-4" />
                   Download
                 </button>
@@ -142,6 +182,7 @@ const PayslipsPage: React.FC = () => {
             </div>
           ))}
         </div>
+
       </div>
     </div>
   );

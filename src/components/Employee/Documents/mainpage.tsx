@@ -26,8 +26,7 @@ const DocumentsLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
         {/* Single Rounded Tab */}
         <div className="flex gap-2 mb-8">
-          <Link
-            href="/documents/payslips"
+          <button
             className={`flex items-center gap-2 px-5 py-2 font-medium text-sm transition-all rounded-full ${
               isPayslipsActive
                 ? "bg-blue-600 text-white shadow-sm"
@@ -36,7 +35,7 @@ const DocumentsLayout: React.FC<{ children: React.ReactNode }> = ({ children }) 
           >
             <FileText className="w-4 h-4" />
             Payslips
-          </Link>
+          </button>
         </div>
 
         {/* Content */}

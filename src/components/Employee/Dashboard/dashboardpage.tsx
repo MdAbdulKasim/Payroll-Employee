@@ -1,5 +1,5 @@
 "use client"
-
+ 
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ArrowUpRight, ArrowDownRight, FileText, Shield } from "lucide-react"
@@ -17,7 +17,8 @@ import {
   Legend,
 } from "recharts"
 import { useState } from "react"
-
+import { useRouter } from "next/navigation"
+ 
 const barChartData = [
   { month: "Jul", takeHome: 108000, deductions: 2000, grossPay: 110000 },
   { month: "Aug", takeHome: 108000, deductions: 2000, grossPay: 110000 },
@@ -26,22 +27,23 @@ const barChartData = [
   { month: "Nov", takeHome: 108000, deductions: 2000, grossPay: 110000 },
   { month: "Dec", takeHome: 108000, deductions: 2000, grossPay: 110000 },
 ]
-
+ 
 const donutChartData = [
   { name: "Take Home", value: 108000, color: "#3b82f6" },
   { name: "Deductions", value: 2000, color: "#ef4444" },
   { name: "Gross Pay", value: 110000, color: "#10b981" },
 ]
-
+ 
 const chartConfig = {
   takeHome: { label: "Take Home", color: "#3b82f6" },
   deductions: { label: "Deductions", color: "#ef4444" },
   grossPay: { label: "Gross Pay", color: "#10b981" },
 }
-
+ 
 export default function Dashboard() {
   const [hoveredBar, setHoveredBar] = useState<string | null>(null)
-
+  const router = useRouter();
+ 
   return (
     <div className="min-h-screen bg-gray-50 p-2 ">
       <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
@@ -51,12 +53,13 @@ export default function Dashboard() {
             <h1 className="text-xl font-bold text-gray-900 sm:text-2xl">Dashboard</h1>
             <p className="text-xs text-gray-500 sm:text-sm">Welcome back! Here&apos;s your salary overview.</p>
           </div>
-          <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 sm:w-auto">
+          <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 sm:w-auto"
+          onClick={()=> router.push("/employee/salary/payslip")}>
             <FileText className="mr-2 h-4 w-4" />
             View Payslip
           </Button>
         </div>
-
+ 
         {/* Top Stats Cards */}
         <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
           {/* Take Home Card */}
@@ -77,7 +80,7 @@ export default function Dashboard() {
               </div>
             </div>
           </Card>
-
+ 
           {/* Total Deductions Card */}
           <Card className="bg-white p-4 sm:p-5">
             <div className="space-y-2">
@@ -97,7 +100,7 @@ export default function Dashboard() {
               </div>
             </div>
           </Card>
-
+ 
           {/* Gross Pay Card */}
           <Card className="bg-white p-4 sm:p-5">
             <div className="space-y-2">
@@ -114,7 +117,7 @@ export default function Dashboard() {
             </div>
           </Card>
         </div>
-
+ 
         {/* Charts Section */}
         <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
           {/* Bar Chart */}
@@ -173,7 +176,7 @@ export default function Dashboard() {
               </ResponsiveContainer>
             </ChartContainer>
           </Card>
-
+ 
           {/* Donut Chart */}
           <Card className="bg-white p-4 sm:p-5">
             <h3 className="mb-4 text-base font-semibold text-gray-900 sm:text-lg">Current Month Distribution</h3>
@@ -228,7 +231,7 @@ export default function Dashboard() {
             </ChartContainer>
           </Card>
         </div>
-
+ 
         {/* Bottom Section */}
         <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
           {/* Tax Summary */}
@@ -257,7 +260,7 @@ export default function Dashboard() {
               </div>
             </div>
           </Card>
-
+ 
           {/* EPF Summary */}
           <Card className="bg-white p-4 sm:p-6">
             <div className="mb-4 flex items-start gap-3">
@@ -291,3 +294,5 @@ export default function Dashboard() {
     </div>
   )
 }
+ 
+ 
