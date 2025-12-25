@@ -38,16 +38,19 @@ interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   mode?: 'admin' | 'employee';
+  disabled?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [approvalsOpen, setApprovalsOpen] = useState(false);
 
+
+
   // Get stored mode from localStorage (set during login)
-  const storedMode = typeof window !== 'undefined' 
-    ? localStorage.getItem('user_role') 
+  const storedMode = typeof window !== 'undefined'
+    ? localStorage.getItem('user_role')
     : null;
 
   // Resolve mode: use prop, pathname check, or stored mode
@@ -71,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
   const adminSections: MenuSection[] = [
     {
       items: [
-        { icon: <LayoutDashboard size={18} />, label: 'Dashboard', href: '/admin/setup' },
+        { icon: <LayoutDashboard size={18} />, label: 'Dashboard', href: '/admin/dashboard' },
         { icon: <Users size={18} />, label: 'Employees', href: '/admin/employee' },
         { icon: <CalendarCheck size={18} />, label: 'Pay Runs', href: '/admin/payrun' },
         { icon: <Banknote size={18} />, label: 'Loans', href: '/admin/loans' },
@@ -118,7 +121,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
           'transform transition-all duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
           'w-64',
-          'flex flex-col'
+          'flex flex-col',
+          disabled && 'opacity-50 pointer-events-none'
         )}
       >
         {/* Sidebar Header */}
@@ -161,8 +165,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode }) => {
                   const linkClasses = cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
                     isActive
-                      ? 'bg-blue-50 text-blue-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-100'
+                      ? 'bg-blue-50 border-l-4 border-blue-700 text-blue-700 font-medium'
+                      : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
                   );
 
                   if (item.isAction) {
