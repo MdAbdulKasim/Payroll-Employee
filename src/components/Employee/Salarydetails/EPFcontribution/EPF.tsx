@@ -1,26 +1,66 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { Card } from "@/components/ui/card"
 import SalaryTabs from "@/components/Employee/Salarydetails/Tabs"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import {
-  Gift,
-  Wallet,
-  Users,
-} from "lucide-react"
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts"
+import { Gift, Wallet, Users } from "lucide-react"
 
 export default function EPFContributionPage() {
-  const chartData = [
-    { month: "Apr", yourContribution: 1800, employerContribution: 1800 },
-    { month: "May", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Jun", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Jul", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Aug", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Sep", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Oct", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Nov", yourContribution: 1800, employerContribution: 1800 },
-    { month: "Dec", yourContribution: 1800, employerContribution: 1800 },
-  ]
+  const [selectedFY, setSelectedFY] = useState("2024-25")
+
+  const fyData: Record<string, any> = {
+    "2024-25": {
+      monthly: [
+        { month: "Apr", yourContribution: 1800, employerContribution: 1800 },
+        { month: "May", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Jun", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Jul", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Aug", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Sep", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Oct", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Nov", yourContribution: 1800, employerContribution: 1800 },
+        { month: "Dec", yourContribution: 1800, employerContribution: 1800 },
+      ],
+    },
+    "2023-24": {
+      monthly: [
+        { month: "Apr", yourContribution: 1600, employerContribution: 1600 },
+        { month: "May", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Jun", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Jul", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Aug", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Sep", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Oct", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Nov", yourContribution: 1600, employerContribution: 1600 },
+        { month: "Dec", yourContribution: 1600, employerContribution: 1600 },
+      ],
+    },
+  }
+
+  const chartData = fyData[selectedFY].monthly
+
+  const totals = useMemo(() => {
+    const your = chartData.reduce((sum: number, m: any) => sum + m.yourContribution, 0)
+    const employer = chartData.reduce(
+      (sum: number, m: any) => sum + m.employerContribution,
+      0
+    )
+    return {
+      your,
+      employer,
+      total: your + employer,
+    }
+  }, [chartData])
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
@@ -35,7 +75,7 @@ export default function EPFContributionPage() {
           </p>
         </div>
 
-        {/* Tabs (UNCHANGED) */}
+        {/* Tabs */}
         <SalaryTabs />
 
         {/* EPF Title + FY */}
@@ -44,8 +84,13 @@ export default function EPFContributionPage() {
             EPF Contribution Summary
           </h2>
 
-          <select className="rounded-md border bg-white px-3 py-1.5 text-sm">
-            <option>FY 2024-25</option>
+          <select
+            value={selectedFY}
+            onChange={(e) => setSelectedFY(e.target.value)}
+            className="rounded-md border bg-white px-3 py-1.5 text-sm"
+          >
+            <option value="2024-25">FY 2024-25</option>
+            <option value="2023-24">FY 2023-24</option>
           </select>
         </div>
 
@@ -56,10 +101,10 @@ export default function EPFContributionPage() {
               <div>
                 <p className="text-xs text-gray-600">Total Contribution</p>
                 <p className="mt-1 text-xl font-bold text-blue-700">
-                  ₹32,400
+                  ₹{totals.total.toLocaleString()}
                 </p>
                 <span className="mt-1 inline-block rounded bg-blue-100 px-2 py-0.5 text-[10px] text-blue-700">
-                  FY 2024-25
+                  FY {selectedFY}
                 </span>
               </div>
               <Gift className="h-8 w-8 text-blue-600" />
@@ -71,11 +116,9 @@ export default function EPFContributionPage() {
               <div>
                 <p className="text-xs text-gray-600">Your Contribution</p>
                 <p className="mt-1 text-xl font-bold">
-                  ₹16,200
+                  ₹{totals.your.toLocaleString()}
                 </p>
-                <p className="text-xs text-green-600">
-                  ↗ 50% of total
-                </p>
+                <p className="text-xs text-green-600">↗ 50% of total</p>
               </div>
               <Wallet className="h-8 w-8 text-green-600" />
             </div>
@@ -84,22 +127,18 @@ export default function EPFContributionPage() {
           <Card className="p-4 sm:p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-gray-600">
-                  Employer Contribution
-                </p>
+                <p className="text-xs text-gray-600">Employer Contribution</p>
                 <p className="mt-1 text-xl font-bold">
-                  ₹16,200
+                  ₹{totals.employer.toLocaleString()}
                 </p>
-                <p className="text-xs text-blue-600">
-                  50% of total
-                </p>
+                <p className="text-xs text-blue-600">50% of total</p>
               </div>
               <Users className="h-8 w-8 text-blue-500" />
             </div>
           </Card>
         </div>
 
-        {/* Monthly EPF Graph (Now with Recharts) */}
+        {/* Monthly EPF Graph */}
         <Card className="mt-5 p-4 sm:p-5">
           <h3 className="mb-4 text-sm sm:text-base font-semibold">
             Monthly EPF Contributions
@@ -107,34 +146,12 @@ export default function EPFContributionPage() {
 
           <div className="w-full h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis
-                  dataKey="month"
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "white",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
-                  formatter={(value) => `₹${value}`}
-                />
-                <Legend
-                  wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }}
-                  iconType="square"
-                />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} tickLine={false} />
+                <YAxis tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
+                <Tooltip formatter={(value) => `₹${value}`} />
+                <Legend />
                 <Bar
                   dataKey="yourContribution"
                   fill="#3b82f6"
@@ -152,7 +169,7 @@ export default function EPFContributionPage() {
           </div>
         </Card>
 
-        {/* Monthly Breakdown Table */}
+        {/* Monthly Breakdown */}
         <Card className="mt-5 p-4 sm:p-5">
           <h3 className="mb-4 text-sm sm:text-base font-semibold">
             Monthly Breakdown
@@ -168,35 +185,24 @@ export default function EPFContributionPage() {
                   <th className="text-right">Total</th>
                 </tr>
               </thead>
-
               <tbody>
-                {[
-                  "December 2024",
-                  "November 2024",
-                  "October 2024",
-                  "September 2024",
-                  "August 2024",
-                  "July 2024",
-                  "June 2024",
-                  "May 2024",
-                  "April 2024",
-                ].map((month) => (
-                  <tr key={month} className="border-b text-xs">
-                    <td className="py-2">{month}</td>
-                    <td>₹1,800</td>
-                    <td>₹1,800</td>
+                {chartData.map((m: any) => (
+                  <tr key={m.month} className="border-b text-xs">
+                    <td className="py-2">{m.month}</td>
+                    <td>₹{m.yourContribution}</td>
+                    <td>₹{m.employerContribution}</td>
                     <td className="text-right font-semibold text-blue-600">
-                      ₹3,600
+                      ₹{m.yourContribution + m.employerContribution}
                     </td>
                   </tr>
                 ))}
 
                 <tr className="font-semibold">
                   <td className="py-2">Total</td>
-                  <td>₹16,200</td>
-                  <td>₹16,200</td>
+                  <td>₹{totals.your}</td>
+                  <td>₹{totals.employer}</td>
                   <td className="text-right text-blue-700">
-                    ₹32,400
+                    ₹{totals.total}
                   </td>
                 </tr>
               </tbody>

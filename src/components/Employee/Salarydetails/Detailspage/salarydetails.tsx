@@ -37,6 +37,261 @@ export default function SalaryDetailsPage() {
 
   const COLORS = ["#3b82f6", "#f97316", "#22c55e"]
 
+  // Download salary structure as HTML/PDF
+  const handleDownloadSalaryStructure = () => {
+    const currentDate = new Date().toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    })
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Structure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #1e40af;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .info-card {
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+        }
+        .info-card.monthly {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        .info-card.yearly {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        .info-card label {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .info-card .amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        .breakdown-section {
+            margin-top: 30px;
+        }
+        .breakdown-section h2 {
+            color: #1e40af;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        thead {
+            background: #f8fafc;
+        }
+        th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #e2e8f0;
+            font-size: 14px;
+        }
+        th:last-child {
+            text-align: right;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #334155;
+        }
+        td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .type-earnings {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .type-reimbursement {
+            background: #fed7aa;
+            color: #c2410c;
+        }
+        .type-benefits {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .total-row {
+            background: #eff6ff;
+            font-weight: bold;
+        }
+        .total-row td {
+            padding: 15px 12px;
+            color: #1e40af;
+            font-size: 16px;
+            border: none;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+        }
+        .note {
+            margin-top: 30px;
+            padding: 15px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            font-size: 13px;
+            color: #92400e;
+        }
+        @media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Salary Structure Document</h1>
+            <p>Generated on ${currentDate}</p>
+        </div>
+
+        <div class="info-section">
+            <div class="info-card monthly">
+                <label>Monthly CTC</label>
+                <div class="amount">₹125,000</div>
+            </div>
+            <div class="info-card yearly">
+                <label>Yearly CTC</label>
+                <div class="amount">₹15,00,000</div>
+            </div>
+        </div>
+
+        <div class="breakdown-section">
+            <h2>Detailed Salary Breakdown</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Type</th>
+                        <th>Monthly Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${salaryBreakdown.map(item => `
+                        <tr>
+                            <td>${item.category}</td>
+                            <td>
+                                <span class="type-badge type-${item.type.toLowerCase()}">
+                                    ${item.type}
+                                </span>
+                            </td>
+                            <td>₹${item.amount.toLocaleString('en-IN')}</td>
+                        </tr>
+                    `).join('')}
+                    <tr class="total-row">
+                        <td colspan="2">Total Monthly CTC</td>
+                        <td>₹1,18,600</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="note">
+            <strong>Note:</strong> This document contains your official salary structure. 
+            Please keep it confidential and secure. For any queries, contact HR department.
+        </div>
+
+        <div class="footer">
+            <p>This is a system-generated document.</p>
+            <p>© ${new Date().getFullYear()} Your Company Name. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `
+
+    // Create a Blob from the HTML content
+    const blob = new Blob([htmlContent], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    
+    // Create a temporary link and trigger download
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Salary_Structure_${new Date().getTime()}.html`
+    document.body.appendChild(link)
+    link.click()
+    
+    // Cleanup
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-3 md:p-6">
       <div className="mx-auto max-w-7xl">
@@ -71,7 +326,10 @@ export default function SalaryDetailsPage() {
           </div>
 
           <div className="flex justify-end">
-            <Button className="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 h-7 sm:h-9 md:h-10">
+            <Button 
+              onClick={handleDownloadSalaryStructure}
+              className="flex items-center gap-1.5 sm:gap-2 bg-blue-600 hover:bg-blue-700 text-[10px] sm:text-xs md:text-sm px-2 sm:px-3 md:px-4 h-7 sm:h-9 md:h-10"
+            >
               <Download className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
               <span className="hidden min-[350px]:inline">Download Salary Structure</span>
               <span className="min-[350px]:hidden">Download</span>

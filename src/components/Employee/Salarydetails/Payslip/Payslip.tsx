@@ -58,6 +58,30 @@ export default function Payslip() {
     },
   ]
 
+  const handleDownload = (month: string) => {
+    // Create a simple payslip content
+    const content = `
+PAYSLIP - ${month}
+==================
+
+Gross Pay: ${payslipData.find(item => item.month === month)?.grossPay}
+Reimbursement: ${payslipData.find(item => item.month === month)?.reimbursement}
+Deductions: ${payslipData.find(item => item.month === month)?.deductions}
+Take Home: ${payslipData.find(item => item.month === month)?.takeHome}
+    `.trim()
+
+    // Create blob and download
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Payslip_${month.replace(' ', '_')}.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 p-2 sm:p-3 md:p-6">
       <div className="mx-auto max-w-7xl">
@@ -115,28 +139,28 @@ export default function Payslip() {
           <Card className="overflow-hidden">
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-white border-b">
                   <tr>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Month
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Gross Pay
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Reimbursement
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Deductions
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Take Home
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
                       Payslip
                     </th>
-                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-700">
-                      Tax Worksheet
+                    <th className="px-3 lg:px-4 py-2.5 lg:py-3 text-left text-xs font-medium text-gray-900">
+                      Download
                     </th>
                   </tr>
                 </thead>
@@ -160,15 +184,18 @@ export default function Payslip() {
                       </td>
                       <td className="px-3 lg:px-4 py-3 lg:py-4">
                         <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
-                          onClick={() => router.push("/salary/payslip/view")}>
+                          onClick={() => router.push("/employee/salary/payslip/view")}>
                           <Eye className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
                           View
                         </button>
                       </td>
                       <td className="px-3 lg:px-4 py-3 lg:py-4">
-                        <button className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600">
+                        <button 
+                          className="flex items-center gap-1.5 text-xs lg:text-sm text-gray-700 hover:text-blue-600"
+                          onClick={() => handleDownload(item.month)}
+                        >
                           <FileDown className="h-3.5 w-3.5 lg:h-4 lg:w-4" />
-                          View
+                          
                         </button>
                       </td>
                     </tr>
@@ -209,14 +236,19 @@ export default function Payslip() {
                   </div>
 
                   <div className="flex gap-2">
-                    <button className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                    <button 
+                      className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                      onClick={() => router.push("/employee/salary/payslip/view")}
                     >
                       <Eye className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       Payslip
-                    </button >
-                    <button className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded">
+                    </button>
+                    <button 
+                      className="flex-1 flex items-center justify-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs bg-gray-100 hover:bg-gray-200 rounded"
+                      onClick={() => handleDownload(item.month)}
+                    >
                       <FileDown className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                      Tax Sheet
+                      Download
                     </button>
                   </div>
                 </div>
