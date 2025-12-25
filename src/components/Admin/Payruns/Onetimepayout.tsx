@@ -19,9 +19,11 @@ export default function OneTimePayoutPage() {
 
   const [component, setComponent] = useState<string>("")
   const [paymentDate, setPaymentDate] = useState<string>("")
+  const [employeeName, setEmployeeName] = useState<string>("")
+  const [amount, setAmount] = useState<string>("")
 
   const handleSubmit = () => {
-    if (!component || !paymentDate) return
+    if (!component || !paymentDate || !employeeName || !amount) return
     // You can store this in state / API later
     router.push("/admin/payrun")
   }
@@ -43,6 +45,32 @@ export default function OneTimePayoutPage() {
 
         {/* Content */}
         <div className="px-6 py-5 space-y-5">
+          {/* Employee Name */}
+          <div className="space-y-2">
+            <Label>
+              Employee Name <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="text"
+              placeholder="Enter employee name"
+              value={employeeName}
+              onChange={(e) => setEmployeeName(e.target.value)}
+            />
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-2">
+            <Label>
+              Amount <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+
           {/* Select Component */}
           <div className="space-y-2">
             <Label>
@@ -80,7 +108,7 @@ export default function OneTimePayoutPage() {
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSubmit}
-            disabled={!component || !paymentDate}
+            disabled={!component || !paymentDate || !employeeName || !amount}
           >
             Save and Continue
           </Button>
