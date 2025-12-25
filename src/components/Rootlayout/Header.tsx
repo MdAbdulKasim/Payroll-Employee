@@ -28,15 +28,15 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, []);
 
   // Determine current role based on pathname or stored role
-  const storedRole = typeof window !== 'undefined' 
-    ? localStorage.getItem('user_role') 
+  const storedRole = typeof window !== 'undefined'
+    ? localStorage.getItem('user_role')
     : null;
 
-  const currentRole = pathname?.startsWith('/admin') 
-    ? 'admin' 
-    : pathname?.startsWith('/employee') 
-    ? 'employee' 
-    : storedRole || 'employee';
+  const currentRole = pathname?.startsWith('/admin')
+    ? 'admin'
+    : pathname?.startsWith('/employee')
+      ? 'employee'
+      : storedRole || 'employee';
 
   // Get user info with fallbacks
   const userName = userData?.name || 'User';
@@ -86,14 +86,14 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             <Menu size={24} className="text-gray-700" />
           </button>
 
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <div className="bg-blue-600 p-2 rounded-xl shadow-md">
               <Building2 size={24} className="text-white" />
             </div>
             <span className="text-xl font-bold text-gray-800 hidden sm:block">
-              PAYROLL
+             
             </span>
-          </div>
+          </div> */}
         </div>
 
         {/* Right: User Info + Notifications */}
