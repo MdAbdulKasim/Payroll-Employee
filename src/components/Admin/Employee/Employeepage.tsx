@@ -6,8 +6,6 @@ import {
   Download,
   Upload,
   Filter,
-  Eye,
-  Edit,
   Trash2,
   Plus,
   ChevronDown,
@@ -48,7 +46,7 @@ const TableRow = ({ children, ...props }: React.HTMLAttributes<HTMLTableRowEleme
 );
 
 const TableHead = ({ children, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th className="h-12 px-4 text-left text-xs font-medium text-gray-700" {...props}>
+  <th className="h-12 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" {...props}>
     {children}
   </th>
 );
@@ -186,18 +184,6 @@ export default function EmployeesPage() {
     router.push(`/admin/employee/view?id=${emp.id}`);
   };
 
-  // 🔹 View button action
-  const handleView = (e: React.MouseEvent, emp: Employee) => {
-    e.stopPropagation(); // Prevent row click
-    router.push(`/admin/employee/view?id=${emp.id}`);
-  };
-
-  // 🔹 Edit button action
-  const handleEdit = (e: React.MouseEvent, emp: Employee) => {
-    e.stopPropagation(); // Prevent row click
-    router.push(`/admin/employee/edit/basic?id=${emp.id}`);
-  };
-
   // 🔹 Delete button action
   const handleDelete = (e: React.MouseEvent, id: string) => {
     e.stopPropagation(); // Prevent row click
@@ -299,7 +285,7 @@ export default function EmployeesPage() {
                 <TableHead>Designation</TableHead>
                 <TableHead>Joining Date</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -326,30 +312,15 @@ export default function EmployeesPage() {
                       {emp.status}
                     </span>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <div className="inline-flex gap-1">
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        onClick={(e) => handleView(e, emp)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        onClick={(e) => handleEdit(e, emp)}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        onClick={(e) => handleDelete(e, emp.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-600" />
-                      </Button>
-                    </div>
+                  <TableCell>
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      onClick={(e) => handleDelete(e, emp.id)}
+                      className="hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
