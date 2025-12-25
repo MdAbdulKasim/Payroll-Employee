@@ -9,10 +9,12 @@ import { Label } from "@/components/ui/label"
 
 export default function OffCyclePayrunPage() {
   const router = useRouter()
+  const [employeeName, setEmployeeName] = useState("")
+  const [amount, setAmount] = useState("")
   const [paymentDate, setPaymentDate] = useState("")
 
   const handleSubmit = () => {
-    if (!paymentDate) return
+    if (!employeeName || !amount || !paymentDate) return
     // future API / state logic goes here
     router.push("/admin/payrun")
   }
@@ -37,6 +39,33 @@ export default function OffCyclePayrunPage() {
 
         {/* Body */}
         <div className="px-6 py-6 space-y-5">
+          {/* Employee Name */}
+          <div className="space-y-2">
+            <Label>
+              Employee Name <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="text"
+              placeholder="Enter employee name"
+              value={employeeName}
+              onChange={(e) => setEmployeeName(e.target.value)}
+            />
+          </div>
+
+          {/* Amount */}
+          <div className="space-y-2">
+            <Label>
+              Amount <span className="text-red-500">*</span>
+            </Label>
+            <Input
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+
+          {/* Payment Date */}
           <div className="space-y-2">
             <Label>
               When would you like to pay?{" "}
@@ -57,7 +86,7 @@ export default function OffCyclePayrunPage() {
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSubmit}
-            disabled={!paymentDate}
+            disabled={!employeeName || !amount || !paymentDate}
           >
             Save and Continue
           </Button>
