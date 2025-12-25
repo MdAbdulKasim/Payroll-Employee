@@ -1,10 +1,19 @@
+import { Suspense } from 'react';
 import EditPaymentInformation from '@/components/Admin/Employee/EditPayment';
 import Layout from '@/components/Rootlayout/Layout';
 
-export default function EditPaymentPage() {
-  return(
+function EditPaymentContent() {
+  return (
     <Layout>
-        <EditPaymentInformation />
+      <EditPaymentInformation />
     </Layout>
+  );
+}
+
+export default function EditPaymentPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditPaymentContent />
+    </Suspense>
   );
 }

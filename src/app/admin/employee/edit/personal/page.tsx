@@ -1,10 +1,19 @@
+import { Suspense } from 'react';
 import EditPersonalDetails from '@/components/Admin/Employee/EditPersonal';
 import Layout from '@/components/Rootlayout/Layout';
 
-export default function EditPersonalPage() {
-  return(
+function EditPersonalContent() {
+  return (
     <Layout>
-        <EditPersonalDetails />
+      <EditPersonalDetails />
     </Layout>
+  );
+}
+
+export default function EditPersonalPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditPersonalContent />
+    </Suspense>
   );
 }

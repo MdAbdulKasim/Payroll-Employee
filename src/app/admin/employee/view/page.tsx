@@ -1,15 +1,24 @@
 'use client';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import EmployeeView from '@/components/Admin/Employee/EmployeeView';
 import Layout from '@/components/Rootlayout/Layout';
 
-export default function ViewEmployeePage() {
+function ViewEmployeeContent() {
   const searchParams = useSearchParams();
   const employeeId = searchParams.get('id') || '';
-  
-  return(
+
+  return (
     <Layout>
-   <EmployeeView employeeId={employeeId} />;
-   </Layout>
-);
+      <EmployeeView employeeId={employeeId} />
+    </Layout>
+  );
+}
+
+export default function ViewEmployeePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ViewEmployeeContent />
+    </Suspense>
+  );
 }
