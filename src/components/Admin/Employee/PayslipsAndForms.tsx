@@ -90,11 +90,9 @@ export default function PayslipsAndForms({
     });
 
     const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 15;
     let yPos = margin;
 
-    // Helper function to format currency - use INR symbol
     const formatCurrency = (amount: number): string => {
       return `INR ${amount.toLocaleString("en-IN", {
         minimumFractionDigits: 2,
@@ -102,7 +100,6 @@ export default function PayslipsAndForms({
       })}`;
     };
 
-    // Helper function to draw text
     const drawText = (text: string, x: number, y: number, options: any = {}) => {
       pdf.setFontSize(options.fontSize || 10);
       pdf.setFont("helvetica", options.fontStyle || "normal");
@@ -110,7 +107,6 @@ export default function PayslipsAndForms({
       pdf.text(text, x, y, options.align ? { align: options.align } : undefined);
     };
 
-    // Helper function to draw rectangle
     const drawRect = (x: number, y: number, width: number, height: number, options: any = {}) => {
       if (options.fill) {
         pdf.setFillColor(options.fill);
@@ -122,7 +118,6 @@ export default function PayslipsAndForms({
       }
     };
 
-    // Header - Company Name and Address
     drawText("abc", margin, yPos, { fontSize: 20, fontStyle: "bold" });
     yPos += 5;
     pdf.setFontSize(8);
@@ -132,7 +127,6 @@ export default function PayslipsAndForms({
       yPos += 3.5;
     });
 
-    // Payslip Month - Right aligned
     const monthTextY = margin;
     drawText("Payslip For the Month", pageWidth - margin, monthTextY, {
       fontSize: 9,
@@ -147,7 +141,6 @@ export default function PayslipsAndForms({
 
     yPos += 5;
 
-    // Employee Summary Box
     drawRect(margin, yPos, pageWidth - 2 * margin, 50, {
       stroke: "#e0e0e0",
     });
@@ -161,7 +154,6 @@ export default function PayslipsAndForms({
 
     yPos += 12;
 
-    // Employee details in two columns
     const col1X = margin + 3;
     const col2X = pageWidth / 2 + 5;
     const lineHeight = 6;
@@ -213,7 +205,6 @@ export default function PayslipsAndForms({
 
     yPos += 5;
 
-    // Net Pay Box (Green)
     const netPayBoxHeight = 20;
     drawRect(margin, yPos, pageWidth - 2 * margin, netPayBoxHeight, {
       fill: "#e8f5e9",
@@ -233,11 +224,9 @@ export default function PayslipsAndForms({
 
     yPos += netPayBoxHeight + 8;
 
-    // Earnings and Deductions Table
     const tableStartY = yPos;
     const colWidth = (pageWidth - 2 * margin) / 4;
 
-    // Table Header
     drawRect(margin, yPos, pageWidth - 2 * margin, 8, {
       fill: "#f5f5f5",
     });
@@ -260,7 +249,6 @@ export default function PayslipsAndForms({
       align: "right",
     });
 
-    // Draw vertical lines for table
     pdf.setDrawColor("#e0e0e0");
     pdf.line(margin, tableStartY, margin, yPos + 8);
     pdf.line(margin + colWidth, tableStartY, margin + colWidth, yPos + 8);
@@ -271,7 +259,6 @@ export default function PayslipsAndForms({
 
     yPos += 8;
 
-    // Earnings rows
     const earningsEntries = Object.entries(payslip.earnings).filter(
       ([_, value]) => value && value > 0
     );
@@ -294,7 +281,6 @@ export default function PayslipsAndForms({
         { fontSize: 9, align: "right" }
       );
 
-      // Draw row lines
       pdf.line(margin, yPos, margin, yPos + rowHeight);
       pdf.line(margin + colWidth, yPos, margin + colWidth, yPos + rowHeight);
       pdf.line(margin + 2 * colWidth, yPos, margin + 2 * colWidth, yPos + rowHeight);
@@ -305,7 +291,6 @@ export default function PayslipsAndForms({
       yPos += rowHeight;
     });
 
-    // Total row
     const totalRowHeight = 8;
     drawRect(margin, yPos, pageWidth - 2 * margin, totalRowHeight, {
       fill: "#f9f9f9",
@@ -332,7 +317,6 @@ export default function PayslipsAndForms({
       { fontSize: 9, fontStyle: "bold", align: "right" }
     );
 
-    // Draw final table borders
     pdf.line(margin, yPos, margin, yPos + totalRowHeight);
     pdf.line(margin + colWidth, yPos, margin + colWidth, yPos + totalRowHeight);
     pdf.line(margin + 2 * colWidth, yPos, margin + 2 * colWidth, yPos + totalRowHeight);
@@ -342,7 +326,6 @@ export default function PayslipsAndForms({
 
     yPos += totalRowHeight + 8;
 
-    // Total Net Payable Box
     drawRect(margin, yPos, pageWidth - 2 * margin, 15, {
       fill: "#fafafa",
       stroke: "#e0e0e0",
@@ -364,7 +347,6 @@ export default function PayslipsAndForms({
 
     yPos += 20;
 
-    // Amount in Words
     const amountInWords = numberToWords(payslip.netPay);
     drawText(`Amount In Words: `, pageWidth / 2 - 40, yPos, {
       fontSize: 9,
@@ -377,7 +359,6 @@ export default function PayslipsAndForms({
 
     yPos += 10;
 
-    // Footer
     pdf.setDrawColor("#e0e0e0");
     pdf.line(margin, yPos, pageWidth - margin, yPos);
     yPos += 5;
@@ -417,39 +398,44 @@ export default function PayslipsAndForms({
   };
 
   const handleClosePreview = () => {
-    if (previewPdf) {
-      URL.revokeObjectURL(previewPdf);
-    }
+    const urlToRevoke = previewPdf;
     setPreviewPdf(null);
     setCurrentPayslip(null);
+    
+    if (urlToRevoke) {
+      setTimeout(() => {
+        URL.revokeObjectURL(urlToRevoke);
+      }, 100);
+    }
   };
 
   const years = ["2025-26", "2024-25", "2023-24", "2022-23"];
 
   return (
-    <div className="space-y-6">
-      {/* PDF Preview Modal */}
+    <div className="space-y-4 sm:space-y-6">
+      {/* PDF Preview Modal - Fully Responsive */}
       {previewPdf && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl h-[90vh] flex flex-col">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h2 className="text-xl font-semibold">
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center">
+          <div className="bg-white w-full h-[95vh] sm:h-[90vh] sm:max-w-5xl sm:rounded-lg shadow-xl flex flex-col sm:mx-4">
+            {/* Header */}
+            <div className="px-3 sm:px-6 py-3 sm:py-4 border-b flex items-center justify-between gap-2 flex-shrink-0">
+              <h3 className="text-sm sm:text-lg font-semibold truncate flex-1">
                 Payslip - {currentPayslip?.month} {currentPayslip?.year}
-              </h2>
-              <div className="flex items-center gap-2">
+              </h3>
+              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                 <button
                   onClick={handleDownloadPdf}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap"
                 >
-                  <Download className="w-4 h-4" />
-                  Download PDF
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Download PDF</span>
+                  <span className="sm:hidden">Download</span>
                 </button>
                 <button
                   onClick={handleClosePreview}
-                  className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
@@ -468,17 +454,17 @@ export default function PayslipsAndForms({
 
       {/* Payslips Section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
             Payslips
           </h3>
           <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">Financial Year:</span>
+            <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
+            <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">Financial Year:</span>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {years.map((year) => (
                 <option key={year} value={year}>
@@ -489,59 +475,103 @@ export default function PayslipsAndForms({
           </div>
         </div>
 
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Payment Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Month
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                  Payslips
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {MOCK_PAYSLIPS.map((payslip) => (
-                <tr key={payslip.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {payslip.paymentDate}
-                  </td>
-                  <td className="px-6 py-4 text-sm">
+        {/* Mobile Card View */}
+        <div className="block md:hidden space-y-3">
+          {MOCK_PAYSLIPS.map((payslip) => (
+            <div key={payslip.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white">
+              <div className="space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs text-gray-600 mb-1">Month</p>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-900">
+                      <span className="text-sm font-medium text-gray-900">
                         {payslip.month} {payslip.year}
                       </span>
-                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-medium rounded">
                         {payslip.status}
                       </span>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm">
-                    <button
-                      onClick={() => handleViewPayslip(payslip)}
-                      disabled={isDownloading}
-                      className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isDownloading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                          Loading...
-                        </>
-                      ) : (
-                        <>
-                          View
-                        </>
-                      )}
-                    </button>
-                  </td>
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Payment Date</p>
+                  <p className="text-sm text-gray-900">{payslip.paymentDate}</p>
+                </div>
+
+                <button
+                  onClick={() => handleViewPayslip(payslip)}
+                  disabled={isDownloading}
+                  className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  {isDownloading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    'View Payslip'
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block border rounded-lg overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Payment Date
+                  </th>
+                  <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Month
+                  </th>
+                  <th className="px-4 lg:px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                    Payslips
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {MOCK_PAYSLIPS.map((payslip) => (
+                  <tr key={payslip.id} className="hover:bg-gray-50">
+                    <td className="px-4 lg:px-6 py-4 text-sm text-gray-900">
+                      {payslip.paymentDate}
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-900">
+                          {payslip.month} {payslip.year}
+                        </span>
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                          {payslip.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 lg:px-6 py-4 text-sm">
+                      <button
+                        onClick={() => handleViewPayslip(payslip)}
+                        disabled={isDownloading}
+                        className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isDownloading ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                            Loading...
+                          </>
+                        ) : (
+                          'View'
+                        )}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

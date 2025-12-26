@@ -167,53 +167,57 @@ export default function SalaryRevision() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold">
-                Salary Revision for {employeeName}
-              </h2>
-              <div className="flex gap-8 mt-2 text-sm">
-                <div>
-                  <span className="text-gray-600">Previous CTC</span>
-                  <p className="font-semibold">₹{previousCtc.toLocaleString()}</p>
-                </div>
-                <div>
-                  <span className="text-gray-600">Previous Monthly Salary</span>
-                  <p className="font-semibold">
-                    ₹{previousMonthlySalary.toLocaleString()}
-                  </p>
+          <div className="mb-4 sm:mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <h2 className="text-xl sm:text-2xl font-bold break-words pr-2">
+                  Salary Revision for {employeeName}
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-8 mt-2 text-sm">
+                  <div>
+                    <span className="text-gray-600">Previous CTC</span>
+                    <p className="font-semibold">₹{previousCtc.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Previous Monthly Salary</span>
+                    <p className="font-semibold">
+                      ₹{previousMonthlySalary.toLocaleString()}
+                    </p>
+                  </div>
                 </div>
               </div>
+              <button
+                onClick={handleCancel}
+                className="hidden sm:block text-gray-500 hover:text-gray-700 flex-shrink-0"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
-            <button
-              onClick={handleCancel}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X className="w-6 h-6" />
-            </button>
           </div>
 
           {/* Revision Type */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <label className="block text-sm font-medium mb-3">
               Select the Salary Revision type<span className="text-red-500">*</span>
             </label>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="revisionType"
-                  checked={revisionType === "percentage"}
-                  onChange={() => handleRevisionTypeChange("percentage")}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm">Revise CTC by percentage</span>
+              <label className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="revisionType"
+                    checked={revisionType === "percentage"}
+                    onChange={() => handleRevisionTypeChange("percentage")}
+                    className="w-4 h-4 flex-shrink-0"
+                  />
+                  <span className="text-sm">Revise CTC by percentage</span>
+                </div>
                 {revisionType === "percentage" && (
-                  <div className="flex items-center gap-2 ml-4">
+                  <div className="flex items-center gap-2 ml-7 sm:ml-0">
                     <input
                       type="number"
                       value={revisionPercentage}
@@ -232,7 +236,7 @@ export default function SalaryRevision() {
                   name="revisionType"
                   checked={revisionType === "new-amount"}
                   onChange={() => handleRevisionTypeChange("new-amount")}
-                  className="w-4 h-4"
+                  className="w-4 h-4 flex-shrink-0"
                 />
                 <span className="text-sm">Enter the new CTC amount below</span>
               </label>
@@ -240,163 +244,294 @@ export default function SalaryRevision() {
           </div>
 
           {/* Revised Annual CTC */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <label className="block text-sm font-medium mb-2">
               Revised Annual CTC<span className="text-red-500">*</span>
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-gray-600">₹</span>
               <input
                 type="number"
                 value={revisedAnnualCtc}
                 onChange={(e) => setRevisedAnnualCtc(e.target.value)}
                 disabled={revisionType === "percentage" && !!revisionPercentage}
-                className="w-40 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="flex-1 min-w-[120px] max-w-[200px] px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
                 placeholder="100000"
               />
               <span className="text-sm text-gray-600">per year</span>
             </div>
           </div>
 
-          {/* Salary Components Table */}
-          <div className="border rounded-lg overflow-hidden mb-6">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                    Salary Components
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                    Calculation Type
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">
-                    Monthly Amount
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">
-                    Annual Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                <tr className="bg-gray-50">
-                  <td colSpan={4} className="px-4 py-2 font-semibold text-sm">
-                    Earnings
-                  </td>
-                </tr>
+          {/* Salary Components - Mobile Cards */}
+          <div className="block lg:hidden space-y-3 mb-4 sm:mb-6">
+            <div className="bg-gray-50 p-3 rounded-lg font-semibold text-sm">
+              Earnings
+            </div>
 
-                <tr>
-                  <td className="px-4 py-3 text-sm">Basic</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={formData.basicPercentage}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            basicPercentage: Number(e.target.value),
-                          })
-                        }
-                        className="w-16 px-2 py-1 border rounded text-sm"
-                      />
-                      <span className="text-sm text-gray-600">% of CTC</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    {basicMonthly.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    {basicAnnual.toLocaleString()}
-                  </td>
-                </tr>
+            {/* Basic */}
+            <div className="border rounded-lg p-3">
+              <div className="font-medium text-sm mb-2">Basic</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={formData.basicPercentage}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        basicPercentage: Number(e.target.value),
+                      })
+                    }
+                    className="w-16 px-2 py-1 border rounded text-sm"
+                  />
+                  <span className="text-sm text-gray-600">% of CTC</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Monthly:</span>
+                  <span className="font-medium">{basicMonthly.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Annual:</span>
+                  <span className="font-medium">{basicAnnual.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
 
-                <tr>
-                  <td className="px-4 py-3 text-sm">House Rent Allowance</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={formData.hraPercentage}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            hraPercentage: Number(e.target.value),
-                          })
-                        }
-                        className="w-16 px-2 py-1 border rounded text-sm"
-                      />
-                      <span className="text-sm text-gray-600">% of Basic</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    {hraMonthly.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    {hraAnnual.toLocaleString()}
-                  </td>
-                </tr>
+            {/* HRA */}
+            <div className="border rounded-lg p-3">
+              <div className="font-medium text-sm mb-2">House Rent Allowance</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={formData.hraPercentage}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        hraPercentage: Number(e.target.value),
+                      })
+                    }
+                    className="w-16 px-2 py-1 border rounded text-sm"
+                  />
+                  <span className="text-sm text-gray-600">% of Basic</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Monthly:</span>
+                  <span className="font-medium">{hraMonthly.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Annual:</span>
+                  <span className="font-medium">{hraAnnual.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
 
-                <tr>
-                  <td className="px-4 py-3 text-sm">Conveyance Allowance</td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">Fixed amount</span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <input
-                      type="number"
-                      value={formData.conveyanceAllowance || ""}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          conveyanceAllowance: Number(e.target.value),
-                        })
-                      }
-                      className="w-24 px-2 py-1 border rounded text-sm text-right"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
+            {/* Conveyance */}
+            <div className="border rounded-lg p-3">
+              <div className="font-medium text-sm mb-2">Conveyance Allowance</div>
+              <div className="space-y-2">
+                <div className="text-sm text-gray-600 mb-1">Fixed amount</div>
+                <input
+                  type="number"
+                  value={formData.conveyanceAllowance || ""}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      conveyanceAllowance: Number(e.target.value),
+                    })
+                  }
+                  className="w-full px-3 py-2 border rounded text-sm"
+                  placeholder="Monthly amount"
+                />
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Annual:</span>
+                  <span className="font-medium">
                     {(formData.conveyanceAllowance * 12).toLocaleString()}
-                  </td>
-                </tr>
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                <tr>
-                  <td className="px-4 py-3">
-                    <div className="text-sm">Fixed Allowance</div>
-                    <p className="text-xs text-gray-500">
-                      Monthly CTC - Sum of all other components
-                    </p>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-gray-600">Fixed amount</span>
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
+            {/* Fixed Allowance */}
+            <div className="border rounded-lg p-3">
+              <div className="font-medium text-sm mb-1">Fixed Allowance</div>
+              <p className="text-xs text-gray-500 mb-2">
+                Monthly CTC - Sum of all other components
+              </p>
+              <div className="space-y-2">
+                <div className="text-sm text-gray-600">Fixed amount</div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Monthly:</span>
+                  <span className="font-medium">
                     {fixedAllowanceMonthly.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Annual:</span>
+                  <span className="font-medium">
                     {(fixedAllowanceMonthly * 12).toLocaleString()}
-                  </td>
-                </tr>
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                <tr className="bg-gray-50 font-semibold">
-                  <td className="px-4 py-3 text-sm">Cost to Company</td>
-                  <td className="px-4 py-3"></td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    ₹{totalMonthlyCtc.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm">
-                    ₹{currentAnnualCtc.toLocaleString()}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            {/* Total */}
+            <div className="bg-gray-50 rounded-lg p-3 font-semibold">
+              <div className="text-sm mb-2">Cost to Company</div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Monthly:</span>
+                  <span>₹{totalMonthlyCtc.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Annual:</span>
+                  <span>₹{currentAnnualCtc.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Salary Components Table - Desktop */}
+          <div className="hidden lg:block border rounded-lg overflow-hidden mb-4 sm:mb-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      Salary Components
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">
+                      Calculation Type
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">
+                      Monthly Amount
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">
+                      Annual Amount
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  <tr className="bg-gray-50">
+                    <td colSpan={4} className="px-4 py-2 font-semibold text-sm">
+                      Earnings
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="px-4 py-3 text-sm">Basic</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={formData.basicPercentage}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              basicPercentage: Number(e.target.value),
+                            })
+                          }
+                          className="w-16 px-2 py-1 border rounded text-sm"
+                        />
+                        <span className="text-sm text-gray-600">% of CTC</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {basicMonthly.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {basicAnnual.toLocaleString()}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="px-4 py-3 text-sm">House Rent Allowance</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          value={formData.hraPercentage}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              hraPercentage: Number(e.target.value),
+                            })
+                          }
+                          className="w-16 px-2 py-1 border rounded text-sm"
+                        />
+                        <span className="text-sm text-gray-600">% of Basic</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {hraMonthly.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {hraAnnual.toLocaleString()}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="px-4 py-3 text-sm">Conveyance Allowance</td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-gray-600">Fixed amount</span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <input
+                        type="number"
+                        value={formData.conveyanceAllowance || ""}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            conveyanceAllowance: Number(e.target.value),
+                          })
+                        }
+                        className="w-24 px-2 py-1 border rounded text-sm text-right"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {(formData.conveyanceAllowance * 12).toLocaleString()}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="px-4 py-3">
+                      <div className="text-sm">Fixed Allowance</div>
+                      <p className="text-xs text-gray-500">
+                        Monthly CTC - Sum of all other components
+                      </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-gray-600">Fixed amount</span>
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {fixedAllowanceMonthly.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      {(fixedAllowanceMonthly * 12).toLocaleString()}
+                    </td>
+                  </tr>
+
+                  <tr className="bg-gray-50 font-semibold">
+                    <td className="px-4 py-3 text-sm">Cost to Company</td>
+                    <td className="px-4 py-3"></td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      ₹{totalMonthlyCtc.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right text-sm">
+                      ₹{currentAnnualCtc.toLocaleString()}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Payout Preferences */}
-          <div className="border-t pt-6 mb-6">
+          <div className="border-t pt-4 sm:pt-6 mb-4 sm:mb-6">
             <h3 className="font-semibold mb-4">
               Payout Preferences<span className="text-red-500">*</span>
             </h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Revised Salary effective from
@@ -430,15 +565,15 @@ export default function SalaryRevision() {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-start gap-2 pt-6 border-t">
+          <div className="flex flex-col-reverse sm:flex-row justify-start gap-2 pt-4 sm:pt-6 border-t">
+            <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
+              Cancel
+            </Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
               onClick={handleSubmit}
             >
               Submit
-            </Button>
-            <Button variant="outline" onClick={handleCancel}>
-              Cancel
             </Button>
           </div>
         </div>

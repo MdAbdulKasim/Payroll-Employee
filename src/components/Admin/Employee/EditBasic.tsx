@@ -4,8 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
-// Save as: src/components/Admin/Employee/EditBasic.tsx
-
 export default function EditBasicDetails() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -82,9 +80,9 @@ export default function EditBasicDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
           {/* Back Button */}
           <button
             onClick={handleCancel}
@@ -94,21 +92,21 @@ export default function EditBasicDetails() {
             <span className="text-sm font-medium">Back to Employee Details</span>
           </button>
 
-          <h2 className="text-2xl font-bold mb-6">
-            {formData.firstName}'s basic information
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
+            {formData.firstName || "Employee"}'s basic information
           </h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Employee Name */}
             <div>
               <label className="block text-sm font-medium mb-2">
                 Employee Name<span className="text-red-500">*</span>
               </label>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <input
                   type="text"
                   placeholder="First Name"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.firstName}
                   onChange={(e) =>
                     setFormData({ ...formData, firstName: e.target.value })
@@ -117,7 +115,7 @@ export default function EditBasicDetails() {
                 <input
                   type="text"
                   placeholder="Middle Name"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.middleName}
                   onChange={(e) =>
                     setFormData({ ...formData, middleName: e.target.value })
@@ -126,7 +124,7 @@ export default function EditBasicDetails() {
                 <input
                   type="text"
                   placeholder="Last Name"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.lastName}
                   onChange={(e) =>
                     setFormData({ ...formData, lastName: e.target.value })
@@ -136,14 +134,14 @@ export default function EditBasicDetails() {
             </div>
 
             {/* Employee ID and DOJ */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Employee ID<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.employeeId}
                   onChange={(e) =>
                     setFormData({ ...formData, employeeId: e.target.value })
@@ -151,12 +149,12 @@ export default function EditBasicDetails() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Date of Joining<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.dateOfJoining}
                   onChange={(e) =>
                     setFormData({ ...formData, dateOfJoining: e.target.value })
@@ -166,14 +164,14 @@ export default function EditBasicDetails() {
             </div>
 
             {/* Work Email & Mobile */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Work Email<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="email"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.workEmail}
                   onChange={(e) =>
                     setFormData({ ...formData, workEmail: e.target.value })
@@ -181,12 +179,12 @@ export default function EditBasicDetails() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Mobile Number
                 </label>
                 <input
                   type="tel"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.mobileNumber}
                   onChange={(e) =>
                     setFormData({ ...formData, mobileNumber: e.target.value })
@@ -197,16 +195,16 @@ export default function EditBasicDetails() {
 
             {/* Director Checkbox */}
             <div>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-start gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.isDirector}
                   onChange={(e) =>
                     setFormData({ ...formData, isDirector: e.target.checked })
                   }
-                  className="w-4 h-4 text-blue-600 rounded"
+                  className="w-4 h-4 mt-0.5 text-blue-600 rounded flex-shrink-0"
                 />
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm">
                   Employee is a Director/person with substantial interest in the
                   company.
                 </span>
@@ -214,13 +212,13 @@ export default function EditBasicDetails() {
             </div>
 
             {/* Gender & Location */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Gender<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.gender}
                   onChange={(e) =>
                     setFormData({ ...formData, gender: e.target.value })
@@ -233,11 +231,11 @@ export default function EditBasicDetails() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Work Location<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.workLocation}
                   onChange={(e) =>
                     setFormData({ ...formData, workLocation: e.target.value })
@@ -254,13 +252,13 @@ export default function EditBasicDetails() {
             </div>
 
             {/* Designation & Department */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Designation<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.designation}
                   onChange={(e) =>
                     setFormData({ ...formData, designation: e.target.value })
@@ -276,11 +274,11 @@ export default function EditBasicDetails() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Department<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={formData.department}
                   onChange={(e) =>
                     setFormData({ ...formData, department: e.target.value })
@@ -299,7 +297,7 @@ export default function EditBasicDetails() {
 
             {/* Portal Access */}
             <div>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-start gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={formData.enablePortalAccess}
@@ -309,36 +307,45 @@ export default function EditBasicDetails() {
                       enablePortalAccess: e.target.checked,
                     })
                   }
-                  className="w-4 h-4 text-blue-600 rounded"
+                  className="w-4 h-4 mt-0.5 text-blue-600 rounded flex-shrink-0"
                 />
-                <span className="text-sm font-medium">Enable Portal Access</span>
+                <div>
+                  <span className="text-xs sm:text-sm font-medium block">Enable Portal Access</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    The employee will be able to view payslips, submit their IT
+                    declaration and create reimbursement claims through the employee
+                    portal.
+                  </p>
+                </div>
               </label>
-              <p className="text-xs text-gray-600 ml-6">
-                The employee will be able to view payslips, submit their IT
-                declaration and create reimbursement claims through the employee
-                portal.
-              </p>
             </div>
 
             {/* Statutory Components */}
             <div className="border-t pt-4">
-              <h3 className="font-semibold mb-3">Statutory Components</h3>
-              <p className="text-sm text-gray-600 mb-3">
+              <h3 className="text-sm sm:text-base font-semibold mb-3">Statutory Components</h3>
+              <p className="text-xs sm:text-sm text-gray-600 mb-3">
                 Enable the necessary benefits and tax applicable for this employee.
               </p>
               <label className="flex items-center gap-2">
-                <input type="checkbox" defaultChecked className="w-4 h-4" />
-                <span className="text-sm">Professional Tax</span>
+                <input type="checkbox" defaultChecked className="w-4 h-4 flex-shrink-0" />
+                <span className="text-xs sm:text-sm">Professional Tax</span>
               </label>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-2 mt-6 pt-6 border-t">
-            <Button variant="outline" onClick={handleCancel}>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-6 pt-6 border-t">
+            <Button 
+              variant="outline" 
+              onClick={handleCancel}
+              className="w-full sm:w-auto"
+            >
               Cancel
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleSave}>
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto" 
+              onClick={handleSave}
+            >
               Save
             </Button>
           </div>

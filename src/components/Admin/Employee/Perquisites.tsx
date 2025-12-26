@@ -90,26 +90,95 @@ export default function Perquisites() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 md:p-6">
           {/* Header with Back Button */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <button
               onClick={handleCancel}
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4 transition-colors"
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-3 sm:mb-4 transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="text-sm font-medium">Back to Employee Details</span>
             </button>
-            <h2 className="text-2xl font-bold">Perquisites</h2>
-            <p className="text-gray-600 text-sm mt-1">
+            <h2 className="text-xl sm:text-2xl font-bold">Perquisites</h2>
+            <p className="text-gray-600 text-xs sm:text-sm mt-1">
               Benefits received by this employee in addition to salary
             </p>
           </div>
 
-          {/* Table */}
-          <div className="overflow-x-auto border rounded-lg">
+          {/* Mobile Card View */}
+          <div className="block lg:hidden space-y-3">
+            {perquisites.map((item, index) => (
+              <div key={index} className="border rounded-lg p-3 bg-white hover:bg-gray-50">
+                <div className="font-medium text-sm mb-3 break-words">{item.name}</div>
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">
+                      Value as per Rules
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={item.valueAsPerRules || ""}
+                      onChange={(e) =>
+                        handleValueChange(index, "valueAsPerRules", Number(e.target.value))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">
+                      Amount Recovered
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={item.amountRecovered || ""}
+                      onChange={(e) =>
+                        handleValueChange(index, "amountRecovered", Number(e.target.value))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-600 block mb-1">
+                      Chargeable to Tax
+                    </label>
+                    <input
+                      type="number"
+                      className="w-full px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={item.chargeableToTax || ""}
+                      onChange={(e) =>
+                        handleValueChange(index, "chargeableToTax", Number(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Mobile Total Card */}
+            <div className="border rounded-lg p-3 bg-gray-50 font-semibold">
+              <div className="text-sm mb-3">Total Amount</div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Value as per Rules:</span>
+                  <span>{calculateTotal("valueAsPerRules")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Amount Recovered:</span>
+                  <span>{calculateTotal("amountRecovered")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Chargeable to Tax:</span>
+                  <span>{calculateTotal("chargeableToTax")}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto border rounded-lg">
             <table className="w-full">
               <thead className="bg-gray-50 border-b">
                 <tr>
@@ -182,11 +251,11 @@ export default function Perquisites() {
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-2 mt-6 pt-6 border-t">
-            <Button variant="outline" onClick={handleCancel}>
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+            <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
               Cancel
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700" onClick={handleSave}>
+            <Button className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto" onClick={handleSave}>
               Save
             </Button>
           </div>

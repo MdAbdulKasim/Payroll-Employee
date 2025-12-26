@@ -9,6 +9,8 @@ import {
   Trash2,
   Plus,
   ChevronDown,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -22,9 +24,11 @@ import {
 /* ---------------- TABLE COMPONENTS ---------------- */
 
 const Table = ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-  <table className="w-full caption-bottom text-sm" {...props}>
-    {children}
-  </table>
+  <div className="overflow-x-auto">
+    <table className="w-full caption-bottom text-sm" {...props}>
+      {children}
+    </table>
+  </div>
 );
 
 const TableHeader = ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
@@ -46,7 +50,7 @@ const TableRow = ({ children, ...props }: React.HTMLAttributes<HTMLTableRowEleme
 );
 
 const TableHead = ({ children, ...props }: React.ThHTMLAttributes<HTMLTableCellElement>) => (
-  <th className="h-12 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider" {...props}>
+  <th className="h-12 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider whitespace-nowrap" {...props}>
     {children}
   </th>
 );
@@ -73,6 +77,7 @@ interface Employee {
 
 export default function EmployeesPage() {
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Default employee (kept as-is)
   const defaultEmployees: Employee[] = [
@@ -200,16 +205,17 @@ export default function EmployeesPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-[1600px] mx-auto">
         {/* HEADER */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold">Employees</h1>
-            <p className="text-sm text-gray-600">Manage your organization's employees</p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Employees</h1>
+            <p className="text-xs sm:text-sm text-gray-600">Manage your organization's employees</p>
           </div>
 
-          <div className="flex gap-2">
+          {/* Desktop Actions */}
+          <div className="hidden lg:flex gap-2">
             <ButtonGroup>
               <label className="cursor-pointer">
                 <Button variant="outline" className="rounded-r-none">
@@ -261,10 +267,74 @@ export default function EmployeesPage() {
               New Employee
             </Button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex gap-2">
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 flex-1"
+              onClick={() => router.push("/admin/employee/basic")}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Employee
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+          </div>
         </div>
 
+        {/* Mobile Actions Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-white border rounded-lg p-4 mb-4 space-y-2">
+            <label className="cursor-pointer block">
+              <Button variant="outline" className="w-full justify-start">
+                <Upload className="w-4 h-4 mr-2" />
+                Bulk Upload
+              </Button>
+              <input type="file" accept=".csv" className="hidden" onChange={handleBulkImport} />
+            </label>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-start">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export
+                  <ChevronDown className="w-4 h-4 ml-auto" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-full">
+                <DropdownMenuItem onClick={exportToCSV}>Export CSV</DropdownMenuItem>
+                <DropdownMenuItem onClick={exportToPDF}>Export PDF</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full justify-start">
+                  <Filter className="w-4 h-4 mr-2" />
+                  Filter
+                  <ChevronDown className="w-4 h-4 ml-auto" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-full">
+                <DropdownMenuItem onClick={() => setFilterDepartment("all")}>
+                  All Departments
+                </DropdownMenuItem>
+                {departments.map((dept) => (
+                  <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept)}>
+                    {dept}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
+
         {/* SEARCH */}
-        <div className="relative max-w-md mb-4">
+        <div className="relative w-full md:max-w-md mb-4">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             className="w-full pl-9 pr-4 py-2 border rounded-lg"
@@ -280,10 +350,10 @@ export default function EmployeesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Designation</TableHead>
-                <TableHead>Joining Date</TableHead>
+                <TableHead className="hidden sm:table-cell">Email</TableHead>
+                <TableHead className="hidden md:table-cell">Department</TableHead>
+                <TableHead className="hidden lg:table-cell">Designation</TableHead>
+                <TableHead className="hidden xl:table-cell">Joining Date</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Action</TableHead>
               </TableRow>
@@ -296,14 +366,20 @@ export default function EmployeesPage() {
                   onClick={() => handleRowClick(emp)}
                   className="cursor-pointer"
                 >
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell>{emp.email}</TableCell>
-                  <TableCell>{emp.department}</TableCell>
-                  <TableCell>{emp.designation}</TableCell>
-                  <TableCell>{emp.joiningDate}</TableCell>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium">{emp.name}</div>
+                      <div className="sm:hidden text-xs text-gray-500">{emp.email}</div>
+                      <div className="md:hidden text-xs text-gray-500">{emp.department}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">{emp.email}</TableCell>
+                  <TableCell className="hidden md:table-cell">{emp.department}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{emp.designation}</TableCell>
+                  <TableCell className="hidden xl:table-cell">{emp.joiningDate}</TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs ${
+                      className={`px-2 py-1 rounded-full text-xs whitespace-nowrap ${
                         emp.status === "active"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
