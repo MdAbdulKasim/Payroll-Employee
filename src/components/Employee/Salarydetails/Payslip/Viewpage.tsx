@@ -330,36 +330,37 @@ export default function PayslipTemplatesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4 lg:p-8">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+      <div className="max-w-7xl mx-auto mb-4 sm:mb-6 lg:mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
             Choose from a wide variety of templates
           </h1>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               onClick={() => window.history.back()}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white border border-gray-300 rounded-lg text-xs sm:text-sm hover:bg-gray-50 transition-colors flex-1 sm:flex-none justify-center"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Back
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Back</span>
             </button>
 
             <button
               onClick={generatePayslipPDF}
               disabled={isDownloading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg text-xs sm:text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none justify-center"
             >
               {isDownloading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Generating...
+                  <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span className="hidden xs:inline">Generating...</span>
+                  <span className="xs:hidden">Wait...</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Download
                 </>
               )}
@@ -369,7 +370,7 @@ export default function PayslipTemplatesPage() {
       </div>
 
       {/* Full Preview (Single Template Only) */}
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8 sm:p-12 print-area" ref={printAreaRef}>
+      <div className="max-w-4xl mx-auto bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 lg:p-12 print-area" ref={printAreaRef}>
         <CorporateTealTemplate />
       </div>
 
@@ -402,34 +403,34 @@ function CorporateTealTemplate() {
   return (
     <div className="bg-white">
       {/* Header */}
-      <div className="flex justify-between items-start mb-6">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full border-4 border-[#1a5662] flex items-center justify-center">
-            <Building2 className="w-8 h-8 text-[#1a5662]" />
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-4 sm:gap-0 mb-4 sm:mb-6">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-3 sm:border-4 border-[#1a5662] flex items-center justify-center flex-shrink-0">
+            <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-[#1a5662]" />
           </div>
           <div>
-            <p className="text-xs text-gray-500 uppercase">Online Information</p>
-            <h2 className="text-sm font-semibold">www.example.com</h2>
+            <p className="text-[10px] sm:text-xs text-gray-500 uppercase">Online Information</p>
+            <h2 className="text-xs sm:text-sm font-semibold">www.example.com</h2>
           </div>
         </div>
-        <div className="text-right">
-          <div className="bg-[#1a5662] text-white px-8 py-2 text-xl font-bold">
+        <div className="text-left sm:text-right w-full sm:w-auto">
+          <div className="bg-[#1a5662] text-white px-4 sm:px-8 py-1.5 sm:py-2 text-base sm:text-xl font-bold inline-block">
             PAYROLL PAYSLIP
           </div>
           <div className="mt-2">
-            <h1 className="text-lg font-bold">Zendev</h1>
-            <p className="text-xs text-gray-600">123 Business Street, Suite 100</p>
-            <p className="text-xs text-gray-600">New York, NY 10001</p>
+            <h1 className="text-base sm:text-lg font-bold">Zendev</h1>
+            <p className="text-[10px] sm:text-xs text-gray-600">123 Business Street, Suite 100</p>
+            <p className="text-[10px] sm:text-xs text-gray-600">New York, NY 10001</p>
           </div>
         </div>
       </div>
 
       {/* Employee Information */}
-      <div className="bg-[#1a5662] text-white px-4 py-1.5 text-xs font-bold mb-2">
+      <div className="bg-[#1a5662] text-white px-3 sm:px-4 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold mb-2">
         EMPLOYEE INFORMATION
       </div>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
         <Info label="Name" value="Jane Doe" />
         <Info label="ID Number" value="EMP-2024-089" />
         <Info label="Pay Period" value="01/01/2025 - 01/15/2025" />
@@ -439,14 +440,14 @@ function CorporateTealTemplate() {
       </div>
 
       {/* Earnings & Deductions */}
-      <div className="border border-gray-300 mb-6">
-        <table className="w-full text-sm">
+      <div className="border border-gray-300 mb-4 sm:mb-6 overflow-x-auto">
+        <table className="w-full text-xs sm:text-sm min-w-[500px]">
           <thead>
             <tr className="bg-[#1a5662] text-white">
-              <th className="px-4 py-2 text-left text-xs">EARNINGS</th>
-              <th className="px-4 py-2 text-right text-xs">AMOUNT</th>
-              <th className="px-4 py-2 text-left text-xs border-l">DEDUCTIONS</th>
-              <th className="px-4 py-2 text-right text-xs">AMOUNT</th>
+              <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-left text-[10px] sm:text-xs">EARNINGS</th>
+              <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-[10px] sm:text-xs">AMOUNT</th>
+              <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-left text-[10px] sm:text-xs border-l">DEDUCTIONS</th>
+              <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-[10px] sm:text-xs">AMOUNT</th>
             </tr>
           </thead>
           <tbody>
@@ -455,23 +456,23 @@ function CorporateTealTemplate() {
             <Row left="Allowance" leftAmt="1,200.00" right="Insurance" rightAmt="200.00" />
 
             <tr className="bg-[#1a5662] text-white font-bold">
-              <td className="px-4 py-2">GROSS PAY</td>
-              <td className="px-4 py-2 text-right">$6,500.00</td>
-              <td className="px-4 py-2 border-l">TOTAL DEDUCTIONS</td>
-              <td className="px-4 py-2 text-right">$1,220.00</td>
+              <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">GROSS PAY</td>
+              <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-xs sm:text-sm">$6,500.00</td>
+              <td className="px-2 sm:px-4 py-1.5 sm:py-2 border-l text-xs sm:text-sm">TOTAL DEDUCTIONS</td>
+              <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-xs sm:text-sm">$1,220.00</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       {/* Net Pay */}
-      <div className="bg-[#1a5662] text-white p-4 flex justify-between items-center mb-6">
-        <span className="font-bold text-sm">NET PAY</span>
-        <span className="text-2xl font-bold">$5,280.00</span>
+      <div className="bg-[#1a5662] text-white p-3 sm:p-4 flex justify-between items-center mb-4 sm:mb-6">
+        <span className="font-bold text-xs sm:text-sm">NET PAY</span>
+        <span className="text-xl sm:text-2xl font-bold">$5,280.00</span>
       </div>
 
       {/* Signatures */}
-      <div className="grid grid-cols-2 gap-8 pt-8 border-t">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t">
         <Signature label="Employer Signature / Date" />
         <Signature label="Employee Signature / Date" />
       </div>
@@ -486,8 +487,8 @@ function CorporateTealTemplate() {
 function Info({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className="font-semibold">{value}</p>
+      <p className="text-[10px] sm:text-xs text-gray-500">{label}</p>
+      <p className="font-semibold text-xs sm:text-sm break-words">{value}</p>
     </div>
   )
 }
@@ -505,10 +506,10 @@ function Row({
 }) {
   return (
     <tr className="border-b">
-      <td className="px-4 py-2">{left}</td>
-      <td className="px-4 py-2 text-right">{leftAmt}</td>
-      <td className="px-4 py-2 border-l">{right}</td>
-      <td className="px-4 py-2 text-right">{rightAmt}</td>
+      <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">{left}</td>
+      <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-xs sm:text-sm">{leftAmt}</td>
+      <td className="px-2 sm:px-4 py-1.5 sm:py-2 border-l text-xs sm:text-sm">{right}</td>
+      <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-right text-xs sm:text-sm">{rightAmt}</td>
     </tr>
   )
 }
@@ -516,8 +517,8 @@ function Row({
 function Signature({ label }: { label: string }) {
   return (
     <div>
-      <div className="border-b border-gray-400 mb-2 h-12"></div>
-      <p className="text-xs text-center font-semibold">{label}</p>
+      <div className="border-b border-gray-400 mb-2 h-8 sm:h-12"></div>
+      <p className="text-[10px] sm:text-xs text-center font-semibold">{label}</p>
     </div>
   )
 }

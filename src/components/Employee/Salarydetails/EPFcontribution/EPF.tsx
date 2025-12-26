@@ -13,10 +13,16 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts"
-import { Gift, Wallet, Users } from "lucide-react"
+import { Gift, Wallet, Users, ChevronDown } from "lucide-react"
 
 export default function EPFContributionPage() {
   const [selectedFY, setSelectedFY] = useState("2024-25")
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  const fyOptions = [
+    { value: "2024-25", label: "FY 2024-25" },
+    { value: "2023-24", label: "FY 2023-24" },
+  ]
 
   const fyData: Record<string, any> = {
     "2024-25": {
@@ -62,6 +68,8 @@ export default function EPFContributionPage() {
     }
   }, [chartData])
 
+  const selectedLabel = fyOptions.find((opt) => opt.value === selectedFY)?.label || ""
+
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="mx-auto max-w-7xl">
@@ -79,19 +87,43 @@ export default function EPFContributionPage() {
         <SalaryTabs />
 
         {/* EPF Title + FY */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base sm:text-lg font-semibold">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h2 className="text-lg md:text-xl font-semibold">
             EPF Contribution Summary
           </h2>
 
-          <select
-            value={selectedFY}
-            onChange={(e) => setSelectedFY(e.target.value)}
-            className="rounded-md border bg-white px-3 py-1.5 text-sm"
-          >
-            <option value="2024-25">FY 2024-25</option>
-            <option value="2023-24">FY 2023-24</option>
-          </select>
+          <div className="relative w-full sm:w-auto">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex w-full sm:w-36 md:w-40 items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+            >
+              <span>{selectedLabel}</span>
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            </button>
+
+            {isDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setIsDropdownOpen(false)}
+                />
+                <div className="absolute right-0 z-20 mt-1 w-full sm:w-36 md:w-40 rounded-md border border-gray-200 bg-white shadow-lg">
+                  {fyOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setSelectedFY(option.value)
+                        setIsDropdownOpen(false)
+                      }}
+                      className="block w-full px-3 py-2 text-left text-sm hover:bg-gray-50"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -175,7 +207,8 @@ export default function EPFContributionPage() {
             Monthly Breakdown
           </h3>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b text-left text-xs text-gray-500">
@@ -207,6 +240,50 @@ export default function EPFContributionPage() {
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="sm:hidden space-y-3">
+            {chartData.map((m: any) => (
+              <div key={m.month} className="border rounded-lg p-3 bg-white">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-semibold text-sm">{m.month}</span>
+                  <span className="font-bold text-blue-600">
+                    ₹{m.yourContribution + m.employerContribution}
+                  </span>
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Your Contribution</span>
+                    <span className="font-medium">₹{m.yourContribution}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Employer Contribution</span>
+                    <span className="font-medium">₹{m.employerContribution}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Mobile Total Card */}
+            <div className="border-2 border-blue-200 rounded-lg p-3 bg-blue-50">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-bold text-sm">Total</span>
+                <span className="font-bold text-blue-700 text-base">
+                  ₹{totals.total}
+                </span>
+              </div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Your Total</span>
+                  <span className="font-semibold">₹{totals.your}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-700">Employer Total</span>
+                  <span className="font-semibold">₹{totals.employer}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
       </div>
