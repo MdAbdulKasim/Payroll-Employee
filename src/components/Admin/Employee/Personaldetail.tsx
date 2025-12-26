@@ -20,8 +20,6 @@ export default function PersonalDetailsPage() {
     pinCode: "",
   });
 
-  /* ---------------- LOAD DRAFT ---------------- */
-
   useEffect(() => {
     const savedData = localStorage.getItem("employeeFormData");
     if (savedData) {
@@ -29,8 +27,6 @@ export default function PersonalDetailsPage() {
       setFormData(allData.personalDetails || formData);
     }
   }, []);
-
-  /* ---------------- HELPERS ---------------- */
 
   const calculateAge = (dateOfBirth: string) => {
     if (!dateOfBirth) return "";
@@ -52,10 +48,7 @@ export default function PersonalDetailsPage() {
     });
   };
 
-  /* ---------------- SAVE & CONTINUE ---------------- */
-
   const handleSaveAndContinue = () => {
-    // 🔒 REQUIRED FIELD VALIDATION (ONLY ADDITION)
     if (!formData.dateOfBirth || !formData.fatherName) {
       alert("Please fill all mandatory fields");
       return;
@@ -75,8 +68,6 @@ export default function PersonalDetailsPage() {
     router.push("/admin/employee/payment");
   };
 
-  /* ---------------- NAVIGATION ---------------- */
-
   const handleBack = () => {
     router.push("/admin/employee/salary");
   };
@@ -93,28 +84,26 @@ export default function PersonalDetailsPage() {
     { number: 4, title: "Payment Information", active: false },
   ];
 
-  /* ---------------- UI ---------------- */
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="text-2xl font-bold">sdfghn's Profile</h2>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold">Employee's Profile</h2>
             <button onClick={handleCancel} className="text-gray-500 hover:text-gray-700">
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
 
           {/* Progress Steps */}
-          <div className="px-6 py-4 border-b bg-gray-50">
-            <div className="flex items-center justify-between">
+          <div className="px-3 sm:px-6 py-3 sm:py-4 border-b bg-gray-50 overflow-x-auto">
+            <div className="flex items-center justify-between min-w-max sm:min-w-0">
               {steps.map((step, index) => (
                 <React.Fragment key={step.number}>
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
                         step.completed
                           ? "bg-green-500 text-white"
                           : step.active
@@ -124,11 +113,13 @@ export default function PersonalDetailsPage() {
                     >
                       {step.completed ? "✓" : step.number}
                     </div>
-                    <span className="text-xs mt-1 text-gray-600">{step.title}</span>
+                    <span className="text-[10px] sm:text-xs mt-1 text-gray-600 whitespace-nowrap">
+                      {step.title}
+                    </span>
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`flex-1 h-0.5 mx-2 ${
+                      className={`flex-1 h-0.5 mx-1 sm:mx-2 min-w-[20px] ${
                         step.completed ? "bg-green-500" : "bg-gray-200"
                       }`}
                     />
@@ -139,9 +130,9 @@ export default function PersonalDetailsPage() {
           </div>
 
           {/* Form Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Date of Birth and Age */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Date of Birth<span className="text-red-500">*</span>
@@ -149,7 +140,7 @@ export default function PersonalDetailsPage() {
                 <input
                   type="date"
                   placeholder="dd/MM/yyyy"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.dateOfBirth}
                   onChange={(e) => handleDateOfBirthChange(e.target.value)}
                 />
@@ -158,7 +149,7 @@ export default function PersonalDetailsPage() {
                 <label className="block text-sm font-medium mb-2">Age</label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border rounded-lg bg-gray-50"
+                  className="w-full px-3 py-2 border rounded-lg bg-gray-50 text-sm sm:text-base"
                   value={formData.age}
                   readOnly
                 />
@@ -166,14 +157,14 @@ export default function PersonalDetailsPage() {
             </div>
 
             {/* Father's Name and PAN */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Father's Name<span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.fatherName}
                   onChange={(e) => setFormData({ ...formData, fatherName: e.target.value })}
                 />
@@ -184,7 +175,7 @@ export default function PersonalDetailsPage() {
                   type="text"
                   placeholder="AAAAA0000A"
                   maxLength={10}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase text-sm sm:text-base"
                   value={formData.pan}
                   onChange={(e) =>
                     setFormData({ ...formData, pan: e.target.value.toUpperCase() })
@@ -194,13 +185,13 @@ export default function PersonalDetailsPage() {
             </div>
 
             {/* Differently Abled Type and Personal Email */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">
                   Differently Abled Type
                 </label>
                 <select
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.differentlyAbledType}
                   onChange={(e) =>
                     setFormData({ ...formData, differentlyAbledType: e.target.value })
@@ -220,7 +211,7 @@ export default function PersonalDetailsPage() {
                 <input
                   type="email"
                   placeholder="abc@xyz.com"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.personalEmail}
                   onChange={(e) =>
                     setFormData({ ...formData, personalEmail: e.target.value })
@@ -236,7 +227,7 @@ export default function PersonalDetailsPage() {
                 <input
                   type="text"
                   placeholder="Address Line 1"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.addressLine1}
                   onChange={(e) =>
                     setFormData({ ...formData, addressLine1: e.target.value })
@@ -245,24 +236,24 @@ export default function PersonalDetailsPage() {
                 <input
                   type="text"
                   placeholder="Address Line 2"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   value={formData.addressLine2}
                   onChange={(e) =>
                     setFormData({ ...formData, addressLine2: e.target.value })
                   }
                 />
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <input
                     type="text"
                     placeholder="City"
-                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     value={formData.city}
                     onChange={(e) =>
                       setFormData({ ...formData, city: e.target.value })
                     }
                   />
                   <select
-                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     value={formData.state}
                     onChange={(e) =>
                       setFormData({ ...formData, state: e.target.value })
@@ -284,7 +275,7 @@ export default function PersonalDetailsPage() {
                     type="text"
                     placeholder="PIN Code"
                     maxLength={6}
-                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                     value={formData.pinCode}
                     onChange={(e) =>
                       setFormData({ ...formData, pinCode: e.target.value })
@@ -296,17 +287,17 @@ export default function PersonalDetailsPage() {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between p-6 border-t bg-gray-50">
-            <p className="text-sm text-gray-500">* indicates mandatory fields</p>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleBack}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-6 border-t bg-gray-50">
+            <p className="text-xs sm:text-sm text-gray-500">* indicates mandatory fields</p>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button variant="outline" onClick={handleBack} className="flex-1 sm:flex-none text-sm">
                 Back
               </Button>
-              <Button variant="outline" onClick={handleCancel}>
+              <Button variant="outline" onClick={handleCancel} className="flex-1 sm:flex-none text-sm">
                 Cancel
               </Button>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none text-sm"
                 onClick={handleSaveAndContinue}
               >
                 Save and Continue

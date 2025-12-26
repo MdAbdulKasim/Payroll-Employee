@@ -16,8 +16,6 @@ export default function PaymentInformationPage() {
     accountType: "savings",
   });
 
-  /* ---------------- LOAD DRAFT ---------------- */
-
   useEffect(() => {
     const savedData = localStorage.getItem("employeeFormData");
     if (savedData) {
@@ -25,8 +23,6 @@ export default function PaymentInformationPage() {
       setFormData(allData.paymentInfo || formData);
     }
   }, []);
-
-  /* ---------------- PAYMENT METHODS ---------------- */
 
   const paymentMethods = [
     {
@@ -55,8 +51,6 @@ export default function PaymentInformationPage() {
     },
   ];
 
-  /* ---------------- SAVE & CONTINUE (FINAL STEP) ---------------- */
-
   const handleSaveAndContinue = () => {
     const draft = localStorage.getItem("employeeFormData");
 
@@ -67,7 +61,6 @@ export default function PaymentInformationPage() {
 
     const allData = JSON.parse(draft);
 
-    // 🔒 FINAL VALIDATION
     if (
       !allData.basicDetails ||
       !allData.salaryDetails ||
@@ -77,7 +70,6 @@ export default function PaymentInformationPage() {
       return;
     }
 
-    // Validate bank account fields if direct-deposit or bank-transfer is selected
     if (formData.paymentMethod === "bank-transfer" || formData.paymentMethod === "direct-deposit") {
       if (!formData.accountHolderName || !formData.bankName || !formData.accountNumber || !formData.reenterAccountNumber || !formData.ifsc) {
         alert("Please fill all bank account details");
@@ -89,7 +81,6 @@ export default function PaymentInformationPage() {
       }
     }
 
-    // Create employee for main list
     const newEmployee = {
       id: Date.now().toString(),
       name: `${allData.basicDetails.firstName} ${allData.basicDetails.lastName || ""}`,
@@ -100,22 +91,15 @@ export default function PaymentInformationPage() {
       status: "active",
     };
 
-    // Save to employees list
     const existingEmployees = localStorage.getItem("employees");
     const employees = existingEmployees ? JSON.parse(existingEmployees) : [];
 
     employees.push(newEmployee);
-
     localStorage.setItem("employees", JSON.stringify(employees));
-
-    // Clear draft
     localStorage.removeItem("employeeFormData");
 
-    // Redirect to employees page
     router.push("/admin/employee");
   };
-
-  /* ---------------- NAVIGATION ---------------- */
 
   const handleBack = () => {
     router.push("/admin/employee/personal");
@@ -133,28 +117,26 @@ export default function PaymentInformationPage() {
     { number: 4, title: "Payment Information", active: true },
   ];
 
-  /* ---------------- UI ---------------- */
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b">
-            <h2 className="text-2xl font-bold">sdfghn's Profile</h2>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold">Employee's Profile</h2>
             <button onClick={handleSkip} className="text-gray-500 hover:text-gray-700">
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
 
           {/* Progress Steps */}
-          <div className="px-6 py-4 border-b bg-gray-50">
-            <div className="flex items-center justify-between">
+          <div className="px-3 sm:px-6 py-3 sm:py-4 border-b bg-gray-50 overflow-x-auto">
+            <div className="flex items-center justify-between min-w-max sm:min-w-0">
               {steps.map((step, index) => (
                 <React.Fragment key={step.number}>
                   <div className="flex flex-col items-center">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
                         step.completed
                           ? "bg-green-500 text-white"
                           : step.active
@@ -164,10 +146,12 @@ export default function PaymentInformationPage() {
                     >
                       {step.completed ? "✓" : step.number}
                     </div>
-                    <span className="text-xs mt-1 text-gray-600">{step.title}</span>
+                    <span className="text-[10px] sm:text-xs mt-1 text-gray-600 whitespace-nowrap">
+                      {step.title}
+                    </span>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className="flex-1 h-0.5 mx-2 bg-green-500" />
+                    <div className="flex-1 h-0.5 mx-1 sm:mx-2 bg-green-500 min-w-[20px]" />
                   )}
                 </React.Fragment>
               ))}
@@ -175,7 +159,7 @@ export default function PaymentInformationPage() {
           </div>
 
           {/* Form Content */}
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             <div>
               <label className="block text-sm font-medium mb-4">
                 How would you like to pay this employee?
@@ -186,7 +170,7 @@ export default function PaymentInformationPage() {
                 {paymentMethods.map((method) => (
                   <React.Fragment key={method.id}>
                     <div
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
                         formData.paymentMethod === method.id
                           ? "border-blue-500 bg-blue-50"
                           : "border-gray-200 hover:border-gray-300"
@@ -195,15 +179,15 @@ export default function PaymentInformationPage() {
                         setFormData({ ...formData, paymentMethod: method.id })
                       }
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="text-2xl">{method.icon}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h3 className="font-medium">{method.title}</h3>
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <div className="text-xl sm:text-2xl">{method.icon}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h3 className="font-medium text-sm sm:text-base">{method.title}</h3>
                             {method.id === "direct-deposit" && (
                               <a
                                 href="#"
-                                className="text-sm text-blue-600 hover:underline"
+                                className="text-xs sm:text-sm text-blue-600 hover:underline"
                                 onClick={(e) => e.stopPropagation()}
                               >
                                 Configure Now
@@ -211,31 +195,31 @@ export default function PaymentInformationPage() {
                             )}
                           </div>
                           {method.description && (
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-xs sm:text-sm text-gray-600 mt-1">
                               {method.description}
                             </p>
                           )}
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex items-center flex-shrink-0">
                           <div
-                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center ${
                               formData.paymentMethod === method.id
                                 ? "border-blue-500"
                                 : "border-gray-300"
                             }`}
                           >
                             {formData.paymentMethod === method.id && (
-                              <div className="w-3 h-3 rounded-full bg-blue-500" />
+                              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-blue-500" />
                             )}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Bank Account Fields - Show right after Direct Deposit or Bank Transfer */}
+                    {/* Bank Account Fields */}
                     {formData.paymentMethod === method.id && 
                      (method.id === "direct-deposit" || method.id === "bank-transfer") && (
-                      <div className="space-y-4 bg-gray-50 border rounded-lg p-4 ml-12">
+                      <div className="space-y-4 bg-gray-50 border rounded-lg p-3 sm:p-4 ml-0 sm:ml-12">
                         <div>
                           <label className="block text-sm font-medium mb-2">
                             Account Holder Name<span className="text-red-500">*</span>
@@ -246,7 +230,7 @@ export default function PaymentInformationPage() {
                             onChange={(e) =>
                               setFormData({ ...formData, accountHolderName: e.target.value })
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
                             placeholder="Enter account holder name"
                           />
                         </div>
@@ -261,12 +245,12 @@ export default function PaymentInformationPage() {
                             onChange={(e) =>
                               setFormData({ ...formData, bankName: e.target.value })
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
                             placeholder="Enter bank name"
                           />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium mb-2">
                               Account Number<span className="text-red-500">*</span>
@@ -277,7 +261,7 @@ export default function PaymentInformationPage() {
                               onChange={(e) =>
                                 setFormData({ ...formData, accountNumber: e.target.value })
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
                               placeholder="Enter account number"
                             />
                           </div>
@@ -292,13 +276,13 @@ export default function PaymentInformationPage() {
                               onChange={(e) =>
                                 setFormData({ ...formData, reenterAccountNumber: e.target.value })
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
                               placeholder="Re-enter account number"
                             />
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium mb-2">
                               IFSC<span className="text-red-500">*</span>
@@ -309,7 +293,7 @@ export default function PaymentInformationPage() {
                               onChange={(e) =>
                                 setFormData({ ...formData, ifsc: e.target.value.toUpperCase() })
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm sm:text-base"
                               placeholder="AAAA0000000"
                               maxLength={11}
                             />
@@ -319,7 +303,7 @@ export default function PaymentInformationPage() {
                             <label className="block text-sm font-medium mb-2">
                               Account Type<span className="text-red-500">*</span>
                             </label>
-                            <div className="flex items-center gap-6 mt-3">
+                            <div className="flex items-center gap-4 sm:gap-6 mt-3">
                               <label className="flex items-center gap-2 cursor-pointer">
                                 <input
                                   type="radio"
@@ -358,8 +342,8 @@ export default function PaymentInformationPage() {
 
             {/* Notes */}
             {formData.paymentMethod === "direct-deposit" && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-900">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-blue-900">
                   <strong>Note:</strong> Make sure you have configured your bank
                   account details and enabled direct deposit in Payroll
                   settings before using this option.
@@ -368,8 +352,8 @@ export default function PaymentInformationPage() {
             )}
 
             {formData.paymentMethod === "bank-transfer" && (
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-900">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4">
+                <p className="text-xs sm:text-sm text-amber-900">
                   <strong>Note:</strong> You'll need to manually process the
                   payment through your bank after downloading the bank advice
                   file.
@@ -379,17 +363,17 @@ export default function PaymentInformationPage() {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between p-6 border-t bg-gray-50">
-            <p className="text-sm text-gray-500">* indicates mandatory fields</p>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={handleBack}>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-6 border-t bg-gray-50">
+            <p className="text-xs sm:text-sm text-gray-500">* indicates mandatory fields</p>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button variant="outline" onClick={handleBack} className="flex-1 sm:flex-none text-sm">
                 Back
               </Button>
-              <Button variant="outline" onClick={handleSkip}>
+              <Button variant="outline" onClick={handleSkip} className="flex-1 sm:flex-none text-sm">
                 Skip
               </Button>
               <Button
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 flex-1 sm:flex-none text-sm"
                 onClick={handleSaveAndContinue}
               >
                 Save and Continue
