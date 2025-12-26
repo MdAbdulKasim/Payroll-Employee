@@ -14,7 +14,7 @@ interface WorkWeekConfig {
   payDay: string;
   specificPayDay?: string;
   firstPayrollMonth?: string;
-  firstPayrollDate?: string;
+  firstPayrollYear?: string;
 }
 
 const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -26,6 +26,21 @@ const fullDays = [
   "Thursday",
   "Friday",
   "Saturday",
+];
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export default function SetupConfiguration({
@@ -44,9 +59,12 @@ export default function SetupConfiguration({
   const [organizationWorkingDays, setOrganizationWorkingDays] = useState("");
   const [payDay, setPayDay] = useState("specific-day");
   const [specificPayDay, setSpecificPayDay] = useState("1");
-  const [firstPayrollMonth, setFirstPayrollMonth] = useState("June-2025");
-  const [firstPayrollDate, setFirstPayrollDate] = useState("");
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 5, 1)); // June 2025
+  const [firstPayrollMonth, setFirstPayrollMonth] = useState("June");
+  const [firstPayrollYear, setFirstPayrollYear] = useState("2025");
+
+  // Generate year options (current year and next 5 years)
+  const currentYear = new Date().getFullYear();
+  const yearOptions = Array.from({ length: 10 }, (_, i) => currentYear + i);
 
   // Load saved configuration from localStorage on mount
   useEffect(() => {
@@ -59,8 +77,8 @@ export default function SetupConfiguration({
         setOrganizationWorkingDays(config.organizationWorkingDays || "");
         setPayDay(config.payDay || "specific-day");
         setSpecificPayDay(config.specificPayDay || "1");
-        setFirstPayrollMonth(config.firstPayrollMonth || "June-2025");
-        setFirstPayrollDate(config.firstPayrollDate || "");
+        setFirstPayrollMonth(config.firstPayrollMonth || "June");
+        setFirstPayrollYear(config.firstPayrollYear || "2025");
       } catch (error) {
         console.error("Error loading work week configuration:", error);
       }
@@ -71,72 +89,6 @@ export default function SetupConfiguration({
     setWorkWeek((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
-  };
-
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    return { daysInMonth, startingDayOfWeek, year, month };
-  };
-
-  const renderCalendar = () => {
-    const { daysInMonth, startingDayOfWeek, year, month } =
-      getDaysInMonth(currentMonth);
-    const days = [];
-
-    // Add empty cells for days before the month starts
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(
-        <div key={`empty-${i}`} className="text-center py-2 text-gray-400">
-          {new Date(year, month, -(startingDayOfWeek - i - 1)).getDate()}
-        </div>
-      );
-    }
-
-    // Add days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dateStr = `${day}`;
-      const isSelected = firstPayrollDate === dateStr;
-      days.push(
-        <button
-          key={day}
-          type="button"
-          onClick={() => setFirstPayrollDate(dateStr)}
-          className={`text-center py-2 rounded hover:bg-blue-50 transition-colors ${
-            isSelected
-              ? "bg-blue-600 text-white hover:bg-blue-700"
-              : "text-gray-700"
-          }`}
-        >
-          {day}
-        </button>
-      );
-    }
-
-    // Add remaining days from next month
-    const totalCells = days.length;
-    const remainingCells = 42 - totalCells; // 6 rows * 7 days
-    for (let i = 1; i <= remainingCells && i <= 12; i++) {
-      days.push(
-        <div key={`next-${i}`} className="text-center py-2 text-gray-400">
-          {i}
-        </div>
-      );
-    }
-
-    return days;
-  };
-
-  const formatMonthYear = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      month: "long",
-      year: "numeric",
-    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -156,8 +108,8 @@ export default function SetupConfiguration({
       return;
     }
 
-    if (!firstPayrollDate) {
-      toast.error("Please select a pay date for your first payroll");
+    if (!firstPayrollMonth || !firstPayrollYear) {
+      toast.error("Please select a month and year for your first payroll");
       return;
     }
 
@@ -170,7 +122,7 @@ export default function SetupConfiguration({
       payDay,
       specificPayDay: payDay === "specific-day" ? specificPayDay : undefined,
       firstPayrollMonth,
-      firstPayrollDate,
+      firstPayrollYear,
     };
 
     localStorage.setItem("workWeekConfig", JSON.stringify(config));
@@ -352,77 +304,44 @@ export default function SetupConfiguration({
         </p>
       </div>
 
-      {/* Start Your First Payroll From */}
+      {/* Start Your First Payroll From - Month and Year Picker */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-900">
           Start your first payroll from<span className="text-red-500">*</span>
         </label>
-        <select
-          value={firstPayrollMonth}
-          onChange={(e) => {
-            setFirstPayrollMonth(e.target.value);
-            const [monthStr, year] = e.target.value.split("-");
-            const monthIndex = new Date(
-              `${monthStr} 1, ${year}`
-            ).getMonth();
-            setCurrentMonth(new Date(parseInt(year), monthIndex, 1));
-          }}
-          className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-        >
-          <option value="June-2025">June-2025</option>
-          <option value="July-2025">July-2025</option>
-          <option value="August-2025">August-2025</option>
-          <option value="September-2025">September-2025</option>
-          <option value="October-2025">October-2025</option>
-          <option value="November-2025">November-2025</option>
-          <option value="December-2025">December-2025</option>
-        </select>
-      </div>
-
-      {/* Select Pay Date with Calendar */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-900">
-            Select a pay date for your first payroll
-            <span className="text-red-500">*</span>
-          </label>
-          <p className="text-sm text-gray-600">
-            Pay Period: {firstPayrollMonth}
-          </p>
-          <select
-            value={firstPayrollDate}
-            onChange={(e) => setFirstPayrollDate(e.target.value)}
-            className="w-full px-3 py-2 border border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-          >
-            <option value="">Select a pay date</option>
-            {Array.from(
-              { length: getDaysInMonth(currentMonth).daysInMonth },
-              (_, i) => i + 1
-            ).map((day) => (
-              <option key={day} value={day.toString()}>
-                Day {day}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Calendar */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
-          <div className="text-center font-medium text-gray-900 mb-4">
-            {formatMonthYear(currentMonth)}
+        <div className="flex gap-4 items-center">
+          <div className="flex-1">
+            <label className="block text-xs text-gray-600 mb-1">Month</label>
+            <select
+              value={firstPayrollMonth}
+              onChange={(e) => setFirstPayrollMonth(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              {months.map((month) => (
+                <option key={month} value={month}>
+                  {month}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="grid grid-cols-7 gap-1">
-            {daysOfWeek.map((day) => (
-              <div
-                key={day}
-                className="text-center text-xs font-medium text-gray-500 py-2"
-              >
-                {day}
-              </div>
-            ))}
-            {renderCalendar()}
+          <div className="flex-1">
+            <label className="block text-xs text-gray-600 mb-1">Year</label>
+            <select
+              value={firstPayrollYear}
+              onChange={(e) => setFirstPayrollYear(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              {yearOptions.map((year) => (
+                <option key={year} value={year.toString()}>
+                  {year}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
+        <p className="text-sm text-gray-600">
+          Selected: {firstPayrollMonth} {firstPayrollYear}
+        </p>
       </div>
 
       {/* Action Buttons */}

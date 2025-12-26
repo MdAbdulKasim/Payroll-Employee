@@ -15,8 +15,6 @@ export default function StatutoryBonusComponent({
   const [formData, setFormData] = useState({
     paymentFrequency: "Monthly",
     monthlyPercentage: "",
-    state: "Tamil Nadu",
-    hasMinimumWage: false,
   });
 
   useEffect(() => {
@@ -67,10 +65,6 @@ export default function StatutoryBonusComponent({
 
   const handleCancel = () => {
     setShowForm(false);
-  };
-
-  const handleAddMinimumWage = () => {
-    toast.info("Add minimum wage functionality");
   };
 
   if (!showForm && !isEnabled) {
@@ -216,37 +210,6 @@ export default function StatutoryBonusComponent({
               change the bonus percentage only at the beginning of the next fiscal year.
             </li>
           </ul>
-        </div>
-
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-900">
-            Minumum Wage in Each State
-          </h4>
-          <p className="text-sm text-gray-600">
-            Statutory Bonus is a percentage of either the minimum wage or Basic + DA
-            (whichever is higher).
-          </p>
-
-          <div className="border border-gray-200 rounded-lg p-6">
-            <h5 className="text-base font-semibold text-gray-900 mb-4">
-              {formData.state}
-            </h5>
-
-            <div className="flex flex-col items-center justify-center py-8 space-y-4">
-              <div className="text-orange-500 text-4xl">⚠</div>
-              <p className="text-sm text-gray-600">
-                Minimum wage details are not added for
-              </p>
-              <p className="text-sm font-medium text-gray-900">{formData.state}</p>
-              <button
-                type="button"
-                onClick={handleAddMinimumWage}
-                className="text-sm text-blue-600 hover:underline flex items-center gap-1"
-              >
-                + Add Minimum Wage
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 

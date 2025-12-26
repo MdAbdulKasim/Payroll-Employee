@@ -5,73 +5,120 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Download, Eye } from "lucide-react"
 
-export default function PayrollHistoryDetailPage() {
-  const router = useRouter()
+import { useApp } from "@/context/AppContext"
+import { useState } from "react"
 
-  // 🔹 Static completed payroll data
-  const payrollHistory = {
-    period: "April 2025",
-    paymentDate: "30/05/2025",
-    processedDate: "28/05/2025",
-    employees: 12,
-    type: "Regular Payroll",
-    status: "Completed",
-    totalGrossPay: "₹8,45,000",
-    totalDeductions: "₹1,12,000",
-    totalNetPay: "₹7,33,000",
+export default function PayrollHistoryPage() {
+  const router = useRouter()
+  const { payruns, employees } = useApp()
+  const [selectedPayrunId, setSelectedPayrunId] = useState<string | null>(null)
+
+  const paidPayruns = payruns.filter(p => p.status === 'paid')
+
+  const selectedPayrun = payruns.find(p => p.id === selectedPayrunId)
+
+  if (!selectedPayrunId) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="container mx-auto px-6 py-4 flex items-center gap-3">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/admin/payrun")}>
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Payruns
+          </Button>
+          <h1 className="text-xl font-semibold">Payroll History</h1>
+        </div>
+
+        <div className="container mx-auto px-6 py-6">
+          <div className="bg-white border rounded-xl overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-4 py-3 text-left">Pay Period</th>
+                  <th className="px-4 py-3 text-left">Type</th>
+                  <th className="px-4 py-3 text-left">Payment Date</th>
+                  <th className="px-4 py-3 text-left">Employees</th>
+                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paidPayruns.map((run) => (
+                  <tr key={run.id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-4">{run.month} {run.year}</td>
+                    <td className="px-4 py-4 capitalize">{run.type}</td>
+                    <td className="px-4 py-4">{run.paymentDate || "N/A"}</td>
+                    <td className="px-4 py-4">{run.employeeCount}</td>
+                    <td className="px-4 py-4">
+                      <Badge className="bg-green-100 text-green-700">Paid</Badge>
+                    </td>
+                    <td className="px-4 py-4 text-right">
+                      <Button size="sm" variant="outline" onClick={() => setSelectedPayrunId(run.id)}>
+                        <Eye className="h-3 w-3 mr-1" />
+                        View Details
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+                {paidPayruns.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-10 text-center text-gray-500">
+                      No payroll history found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  // 🔹 Employee payroll details
-  const employeePayrolls = [
-    {
-      id: 1,
-      name: "Rajesh Kumar",
-      employeeId: "EMP001",
-      grossPay: "₹75,000",
-      deductions: "₹10,500",
-      netPay: "₹64,500",
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      employeeId: "EMP002",
-      grossPay: "₹68,000",
-      deductions: "₹9,200",
-      netPay: "₹58,800",
-    },
-    {
-      id: 3,
-      name: "Amit Patel",
-      employeeId: "EMP003",
-      grossPay: "₹82,000",
-      deductions: "₹11,800",
-      netPay: "₹70,200",
-    },
-    {
-      id: 4,
-      name: "Sneha Reddy",
-      employeeId: "EMP004",
-      grossPay: "₹71,000",
-      deductions: "₹9,800",
-      netPay: "₹61,200",
-    },
-    {
-      id: 5,
-      name: "Vikram Singh",
-      employeeId: "EMP005",
-      grossPay: "₹79,000",
-      deductions: "₹10,900",
-      netPay: "₹68,100",
-    },
-  ]
+  // Detail View
+  const payrollHistory = {
+    period: `${selectedPayrun?.month} ${selectedPayrun?.year}`,
+    paymentDate: selectedPayrun?.paymentDate || "N/A",
+    processedDate: selectedPayrun?.createdAt ? new Date(selectedPayrun.createdAt).toLocaleDateString() : "N/A",
+    employees: selectedPayrun?.employeeCount || 0,
+    type: selectedPayrun?.type === 'regular' ? "Regular Payroll" : selectedPayrun?.type === 'onetime' ? "One Time Payout" : "Off Cycle Payroll",
+    status: "Paid",
+    totalGrossPay: `₹${selectedPayrun?.totalAmount?.toLocaleString()}`,
+    totalDeductions: "₹0",
+    totalNetPay: `₹${selectedPayrun?.totalAmount?.toLocaleString()}`,
+  }
+
+  const payrunEmployeeIds = selectedPayrun?.employeeIds || []
+  const payrunEmployees = employees.filter(emp => payrunEmployeeIds.includes(emp.id))
+
+  const employeePayrolls = payrunEmployees.map(emp => ({
+    id: emp.id,
+    name: emp.name,
+    employeeId: emp.id,
+    department: emp.department || "N/A",
+    grossPay: `₹${((selectedPayrun?.totalAmount || 0) / (selectedPayrun?.employeeCount || 1)).toLocaleString()}`,
+    deductions: "₹0",
+    netPay: `₹${((selectedPayrun?.totalAmount || 0) / (selectedPayrun?.employeeCount || 1)).toLocaleString()}`,
+  }))
+
+  const handleDownloadPayslip = (employee: any) => {
+    import("jspdf").then(({ jsPDF }) => {
+      const doc = new jsPDF()
+      doc.text("PAYSLIP", 105, 20, { align: "center" })
+      doc.text(`Employee Name: ${employee.name}`, 20, 40)
+      doc.text(`Employee ID: ${employee.id}`, 20, 50)
+      doc.text(`Month: ${selectedPayrun?.month} ${selectedPayrun?.year}`, 20, 60)
+      doc.text(`Net Pay: ${employee.netPay}`, 20, 80)
+      doc.save(`Payslip_${employee.name}_${selectedPayrun?.month}.pdf`)
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="container mx-auto px-6 py-4 flex items-center gap-3">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
+        <Button variant="ghost" size="sm" onClick={() => setSelectedPayrunId(null)}>
           <ArrowLeft className="h-4 w-4 mr-1" />
-          Back
+          Back to History
         </Button>
         <h1 className="text-xl font-semibold">Payroll History Details</h1>
       </div>
@@ -204,9 +251,9 @@ export default function PayrollHistoryDetailPage() {
                       {employee.netPay}
                     </td>
                     <td className="px-4 py-4 text-right">
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-3 w-3 mr-1" />
-                        View
+                      <Button size="sm" variant="outline" onClick={() => handleDownloadPayslip(employee)}>
+                        <Download className="h-3 w-3 mr-1" />
+                        Download
                       </Button>
                     </td>
                   </tr>

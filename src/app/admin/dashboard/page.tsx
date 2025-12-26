@@ -9,11 +9,11 @@ export const metadata: Metadata = {
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+  
      <Layout>
       <DashboardContent />
       </Layout>
       
-    </div>
+    
   );
 }

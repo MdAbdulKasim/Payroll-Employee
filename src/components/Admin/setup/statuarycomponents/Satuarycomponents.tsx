@@ -11,13 +11,13 @@ interface StatutoryComponentsProps {
   onComplete?: () => void;
 }
 
-type TabId = "epf" | "esi" | "professional-tax" | "labour-welfare" | "statutory-bonus";
+type TabId = "epf" | "esi" | "statutory-bonus";
 
 const tabs = [
   { id: "epf" as TabId, label: "EPF" },
   { id: "esi" as TabId, label: "ESI" },
-  { id: "professional-tax" as TabId, label: "Professional Tax" },
-  { id: "labour-welfare" as TabId, label: "Labour Welfare Fund" },
+  // { id: "professional-tax" as TabId, label: "Professional Tax" },
+  // { id: "labour-welfare" as TabId, label: "Labour Welfare Fund" },
   { id: "statutory-bonus" as TabId, label: "Statutory Bonus" },
 ];
 
@@ -30,10 +30,10 @@ export default function StatutoryComponents({ onComplete }: StatutoryComponentsP
         return <EPFComponent onComplete={onComplete} />;
       case "esi":
         return <ESIComponent onComplete={onComplete} />;
-      case "professional-tax":
-        return <ProfessionalTaxComponent onComplete={onComplete} />;
-      case "labour-welfare":
-        return <LabourWelfareFundComponent onComplete={onComplete} />;
+      // case "professional-tax":
+      //   return <ProfessionalTaxComponent onComplete={onComplete} />;
+      // case "labour-welfare":
+      //   return <LabourWelfareFundComponent onComplete={onComplete} />;
       case "statutory-bonus":
         return <StatutoryBonusComponent onComplete={onComplete} />;
       default:

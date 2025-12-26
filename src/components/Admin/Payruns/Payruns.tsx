@@ -15,43 +15,18 @@ import {
 
 type PayrollType = "all" | "regular" | "onetime" | "offcycle"
 
+import { useApp } from "@/context/AppContext"
+
 export default function RunPayrollPage() {
   const router = useRouter()
+  const { payruns } = useApp()
   const [activeFilter, setActiveFilter] = useState<PayrollType>("all")
 
-  // ✅ Mock table data (replace with API later)
-  const payrollData = [
-    {
-      id: 1,
-      period: "May 2025",
-      date: "30/06/2025",
-      employees: 0,
-      status: "Yet to Process",
-      type: "regular",
-    },
-    {
-      id: 2,
-      period: "Bonus – May 2025",
-      date: "15/06/2025",
-      employees: 12,
-      status: "Yet to Process",
-      type: "onetime",
-    },
-    {
-      id: 3,
-      period: "Off Cycle – June 2025",
-      date: "10/06/2025",
-      employees: 3,
-      status: "Yet to Process",
-      type: "offcycle",
-    },
-  ]
-
-  const filteredData =
-    activeFilter === "all"
-      ? payrollData
-      : payrollData.filter((item) => item.type === activeFilter)
-
+  const filteredData = payruns.filter((item) => {
+    const matchesFilter = activeFilter === "all" || item.type === activeFilter
+    const isPending = item.status !== "paid"
+    return matchesFilter && isPending
+  })
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -75,6 +50,12 @@ export default function RunPayrollPage() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="[--radius:1rem] w-48">
+              <DropdownMenuItem
+                onClick={() => router.push("/admin/payrun/regular")}
+              >
+                Regular Payrun
+              </DropdownMenuItem>
+
               <DropdownMenuItem
                 onClick={() => router.push("/admin/payrun/onetime")}
               >
@@ -112,11 +93,10 @@ export default function RunPayrollPage() {
         <Button
           variant="outline"
           onClick={() => setActiveFilter("all")}
-          className={`rounded-full ${
-            activeFilter === "all"
-              ? "border-blue-600 text-blue-600 bg-blue-50"
-              : ""
-          }`}
+          className={`rounded-full ${activeFilter === "all"
+            ? "border-blue-600 text-blue-600 bg-blue-50"
+            : ""
+            }`}
         >
           All Pending
           <Badge className="ml-2 bg-blue-600 text-white rounded-full h-5 w-5 p-0 flex items-center justify-center">
@@ -127,11 +107,10 @@ export default function RunPayrollPage() {
         <Button
           variant="outline"
           onClick={() => setActiveFilter("regular")}
-          className={`rounded-full ${
-            activeFilter === "regular"
-              ? "border-blue-600 text-blue-600 bg-blue-50"
-              : ""
-          }`}
+          className={`rounded-full ${activeFilter === "regular"
+            ? "border-blue-600 text-blue-600 bg-blue-50"
+            : ""
+            }`}
         >
           Regular Payroll
         </Button>
@@ -139,11 +118,10 @@ export default function RunPayrollPage() {
         <Button
           variant="outline"
           onClick={() => setActiveFilter("onetime")}
-          className={`rounded-full ${
-            activeFilter === "onetime"
-              ? "border-blue-600 text-blue-600 bg-blue-50"
-              : ""
-          }`}
+          className={`rounded-full ${activeFilter === "onetime"
+            ? "border-blue-600 text-blue-600 bg-blue-50"
+            : ""
+            }`}
         >
           One Time Payout
         </Button>
@@ -151,11 +129,10 @@ export default function RunPayrollPage() {
         <Button
           variant="outline"
           onClick={() => setActiveFilter("offcycle")}
-          className={`rounded-full ${
-            activeFilter === "offcycle"
-              ? "border-blue-600 text-blue-600 bg-blue-50"
-              : ""
-          }`}
+          className={`rounded-full ${activeFilter === "offcycle"
+            ? "border-blue-600 text-blue-600 bg-blue-50"
+            : ""
+            }`}
         >
           Off Cycle Payroll
         </Button>
@@ -168,6 +145,7 @@ export default function RunPayrollPage() {
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="px-4 py-3 text-left">Pay Period</th>
+                <th className="px-4 py-3 text-left">Type</th>
                 <th className="px-4 py-3 text-left">Payment Date</th>
                 <th className="px-4 py-3 text-left">Employees</th>
                 <th className="px-4 py-3 text-left">Status</th>
@@ -178,21 +156,30 @@ export default function RunPayrollPage() {
             <tbody>
               {filteredData.map((row) => (
                 <tr key={row.id} className="border-b">
-                  <td className="px-4 py-4">{row.period}</td>
-                  <td className="px-4 py-4">{row.date}</td>
-                  <td className="px-4 py-4">{row.employees}</td>
+                  <td className="px-4 py-4">{row.month} {row.year}</td>
                   <td className="px-4 py-4">
-                    <Badge className="bg-yellow-100 text-yellow-700">
-                      {row.status}
+                    <Badge variant="outline" className="capitalize">
+                      {row.type}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-4">{row.paymentDate || "N/A"}</td>
+                  <td className="px-4 py-4">{row.employeeCount}</td>
+                  <td className="px-4 py-4">
+                    <Badge className={
+                      row.status === 'paid'
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }>
+                      {row.status === 'paid' ? 'Paid' : 'Draft'}
                     </Badge>
                   </td>
                   <td className="px-4 py-4 text-right">
                     <Button
                       size="sm"
                       className="bg-blue-600 hover:bg-blue-700 text-white"
-                      onClick={() => router.push("/admin/payrun/submit")}
+                      onClick={() => router.push(`/admin/payrun/${row.status === 'paid' ? 'view' : 'record'}?id=${row.id}&type=${row.type}`)}
                     >
-                      View Details
+                      {row.status === 'paid' ? 'View Details' : 'Continue'}
                     </Button>
                   </td>
                 </tr>
@@ -201,7 +188,7 @@ export default function RunPayrollPage() {
               {filteredData.length === 0 && (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-4 py-6 text-center text-gray-500"
                   >
                     No payroll records found
@@ -213,14 +200,7 @@ export default function RunPayrollPage() {
         </div>
 
         {/* Info */}
-        <div className="mt-4 flex gap-2 bg-blue-50 p-3 rounded-md">
-          <InfoIcon className="h-4 w-4 text-blue-600 mt-0.5" />
-          <p className="text-sm">
-            There are no{" "}
-            <span className="text-blue-600 font-medium">employees</span>{" "}
-            with completed profiles.
-          </p>
-        </div>
+
       </div>
     </div>
   )
