@@ -118,8 +118,20 @@ export default function AnnualEarningsPage() {
           </Card>
 
           <Card className="overflow-hidden">
+            {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700">Month</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">Basic</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">HRA</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">Fixed Allowance</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">EPF</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">Prof. Tax</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700">Take Home</th>
+                  </tr>
+                </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredMonthlyDetails.map((item, index) => (
                     <tr key={index}>
@@ -143,6 +155,78 @@ export default function AnnualEarningsPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-gray-200">
+              {filteredMonthlyDetails.map((item, index) => (
+                <div key={index} className="p-4">
+                  <div className="flex justify-between items-center mb-3">
+                    <h4 className="font-semibold text-sm text-gray-900">{item.month}</h4>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-500">Take Home</div>
+                      <div className="font-bold text-sm text-gray-900">₹{item.takeHome.toLocaleString()}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">Basic</span>
+                      <span className="font-medium">₹{item.basic.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">HRA</span>
+                      <span className="font-medium">₹{item.hra.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">Fixed Allowance</span>
+                      <span className="font-medium">₹{item.fixedAllowance.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">EPF</span>
+                      <span className="font-medium text-red-600">-₹{item.epf.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-600">Prof. Tax</span>
+                      <span className="font-medium text-red-600">-₹{item.profTax.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {/* Mobile Total */}
+              <div className="p-4 bg-blue-50">
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-bold text-sm text-gray-900">Total</h4>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-600">Total Take Home</div>
+                    <div className="font-bold text-base text-gray-900">₹{totals.takeHome.toLocaleString()}</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-700">Total Basic</span>
+                    <span className="font-semibold">₹{totals.basic.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-700">Total HRA</span>
+                    <span className="font-semibold">₹{totals.hra.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-700">Total Fixed Allowance</span>
+                    <span className="font-semibold">₹{totals.fixedAllowance.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-700">Total EPF</span>
+                    <span className="font-semibold text-red-600">-₹{totals.epf.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-gray-700">Total Prof. Tax</span>
+                    <span className="font-semibold text-red-600">-₹{totals.profTax.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
         </div>

@@ -369,6 +369,7 @@ export default function Payslip() {
           </div>
 
           <Card className="overflow-hidden">
+            {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-white border-b">
@@ -410,6 +411,56 @@ export default function Payslip() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile/Tablet Card View */}
+            <div className="md:hidden divide-y">
+              {payslipData.map((item, index) => (
+                <div key={index} className="p-3 sm:p-4">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-semibold text-sm sm:text-base">{item.month}</h3>
+                      <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Pay Period</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-sm sm:text-base text-blue-600">{item.takeHome}</p>
+                      <p className="text-xs text-gray-500">Take Home</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3">
+                    <div>
+                      <p className="text-xs text-gray-500">Gross Pay</p>
+                      <p className="text-sm font-medium">{item.grossPay}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Reimbursement</p>
+                      <p className="text-sm font-medium">{item.reimbursement}</p>
+                    </div>
+                    <div className="col-span-2">
+                      <p className="text-xs text-gray-500">Deductions</p>
+                      <p className="text-sm font-medium text-red-600">{item.deductions}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-2 pt-2 border-t">
+                    <button
+                      onClick={() => router.push("/employee/salary/payslip/view")}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                    >
+                      <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      onClick={() => handleDownload(item.month)}
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-colors"
+                    >
+                      <FileDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                      <span>Download</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
         </div>
