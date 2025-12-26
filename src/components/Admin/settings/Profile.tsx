@@ -180,22 +180,22 @@ export default function SettingsProfile() {
   };
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      <div className="p-8 space-y-8 max-w-5xl">
+    <div className="flex-1 min-w-0 overflow-y-auto">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 lg:space-y-8 max-w-5xl mx-auto lg:mx-0">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Organization Profile</h1>
-          <p className="text-gray-600">Manage your organization&apos;s basic information</p>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Organization Profile</h1>
+          <p className="text-sm sm:text-base text-gray-600">Manage your organization&apos;s basic information</p>
         </div>
 
         {/* Organization Logo Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Organization Logo</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg lg:text-xl">Organization Logo</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center gap-8">
-              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 lg:gap-8">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 flex-shrink-0">
                 {logoPreview ? (
                   <img
                     src={logoPreview}
@@ -203,14 +203,15 @@ export default function SettingsProfile() {
                     className="w-full h-full object-contain p-2"
                   />
                 ) : (
-                  <Building2 className="h-10 w-10 text-gray-400" />
+                  <Building2 className="h-8 w-8 sm:h-10 sm:w-10 text-gray-400" />
                 )}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0 w-full sm:w-auto">
                 <Button
                   onClick={handleChangeLogo}
                   variant="outline"
-                  className="mb-4"
+                  className="mb-3 sm:mb-4 w-full sm:w-auto"
+                  size="sm"
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Change Logo
@@ -223,7 +224,7 @@ export default function SettingsProfile() {
                   className="hidden"
                   aria-label="Upload logo"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-[11px] sm:text-xs text-gray-500 leading-relaxed">
                   This logo will be displayed on documents such as Payclips and TDS Worksheet. Preferred image size: 240 × 240 pixels at 72/300 DPI. Maximum size: 2MB. Accepted formats: PNG, JPG, and JPEG.
                 </p>
               </div>
@@ -233,14 +234,14 @@ export default function SettingsProfile() {
 
         {/* Organization Details Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Organization Details</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg lg:text-xl">Organization Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
             {/* Organization Name and Business Location */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="organizationName" className="text-sm font-medium">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="organizationName" className="text-xs sm:text-sm font-medium">
                   Organization Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -249,22 +250,22 @@ export default function SettingsProfile() {
                   value={formData.organizationName}
                   onChange={handleInputChange}
                   placeholder="Enter organization name"
-                  className="w-full"
+                  className="w-full text-sm"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-[10px] sm:text-xs text-gray-500">
                   This is your registered business name which will appear in all forms and payslips.
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="businessLocation" className="text-sm font-medium">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="businessLocation" className="text-xs sm:text-sm font-medium">
                   Business Location <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.businessLocation}
                   onValueChange={(value) => handleSelectChange('businessLocation', value)}
                 >
-                  <SelectTrigger id="businessLocation">
+                  <SelectTrigger id="businessLocation" className="text-sm">
                     <SelectValue placeholder="Select location" />
                   </SelectTrigger>
                   <SelectContent>
@@ -279,16 +280,16 @@ export default function SettingsProfile() {
             </div>
 
             {/* Industry and Date Format */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="industry" className="text-sm font-medium">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="industry" className="text-xs sm:text-sm font-medium">
                   Industry <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.industry}
                   onValueChange={(value) => handleSelectChange('industry', value)}
                 >
-                  <SelectTrigger id="industry">
+                  <SelectTrigger id="industry" className="text-sm">
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
                   <SelectContent>
@@ -302,15 +303,15 @@ export default function SettingsProfile() {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="dateFormat" className="text-sm font-medium">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="dateFormat" className="text-xs sm:text-sm font-medium">
                   Date Format <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.dateFormat}
                   onValueChange={(value) => handleSelectChange('dateFormat', value)}
                 >
-                  <SelectTrigger id="dateFormat">
+                  <SelectTrigger id="dateFormat" className="text-sm">
                     <SelectValue placeholder="Select date format" />
                   </SelectTrigger>
                   <SelectContent>
@@ -323,8 +324,8 @@ export default function SettingsProfile() {
             </div>
 
             {/* Organization Address */}
-            <div className="space-y-2">
-              <Label htmlFor="organizationAddress" className="text-sm font-medium">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="organizationAddress" className="text-xs sm:text-sm font-medium">
                 Organization Address <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -333,9 +334,9 @@ export default function SettingsProfile() {
                 value={formData.organizationAddress}
                 onChange={handleInputChange}
                 placeholder="Enter organization address"
-                className="w-full"
+                className="w-full text-sm"
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-[10px] sm:text-xs text-gray-500">
                 This will be considered as the address of your primary work location.
               </p>
             </div>
@@ -344,17 +345,17 @@ export default function SettingsProfile() {
 
         {/* Head Office Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Head Office</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg lg:text-xl">Head Office</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-900">{formData.headOffice}</p>
-              <p className="text-sm text-gray-600">
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-6">
+            <div className="space-y-1 sm:space-y-2">
+              <p className="text-xs sm:text-sm font-medium text-gray-900">{formData.headOffice}</p>
+              <p className="text-xs sm:text-sm text-gray-600">
                 {formData.headOfficeCity}, {formData.headOfficeState}, {formData.headOfficePincode}
               </p>
             </div>
-            <Button variant="link" className="text-blue-600 p-0 h-auto">
+            <Button variant="link" className="text-blue-600 p-0 h-auto text-xs sm:text-sm">
               Change
             </Button>
           </CardContent>
@@ -362,26 +363,26 @@ export default function SettingsProfile() {
 
         {/* Contact Information Section */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-xl">Contact Information</CardTitle>
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg lg:text-xl">Contact Information</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900">Primary Contact Email</Label>
-              <p className="text-sm text-gray-700">{formData.primaryContactEmail}</p>
+          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
+            <div className="space-y-1 sm:space-y-2">
+              <Label className="text-xs sm:text-sm font-medium text-gray-900">Primary Contact Email</Label>
+              <p className="text-xs sm:text-sm text-gray-700 break-all">{formData.primaryContactEmail}</p>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-gray-900">Email address of</Label>
-              <div className="flex gap-2">
-                <div className="px-3 py-2 bg-orange-50 text-orange-700 rounded text-sm font-medium">
+            <div className="space-y-2 sm:space-y-2">
+              <Label className="text-xs sm:text-sm font-medium text-gray-900">Email address of</Label>
+              <div className="flex flex-wrap gap-2">
+                <div className="px-2 sm:px-3 py-1.5 sm:py-2 bg-orange-50 text-orange-700 rounded text-xs sm:text-sm font-medium">
                   {formData.secondaryContactName}
                 </div>
-                <p className="text-sm text-gray-700 flex items-center">
+                <p className="text-xs sm:text-sm text-gray-700 flex items-center break-all">
                   {formData.secondaryContactEmail}
                 </p>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-[10px] sm:text-xs text-gray-500 leading-relaxed">
                 You can configure the email addresses that would be used in the sender address field for emails sent via Zoho Payroll.
               </p>
             </div>
@@ -389,16 +390,17 @@ export default function SettingsProfile() {
         </Card>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-4 pt-6 border-t">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t">
           <Button
             variant="outline"
             onClick={handleCancel}
             disabled={isLoading}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
           <Button
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             onClick={handleSave}
             disabled={isLoading}
           >

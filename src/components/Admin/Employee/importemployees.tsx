@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,21 +21,36 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
 
     const downloadTemplate = (format: 'csv' | 'excel') => {
         const headers = [
-            'First Name',
-            'Last Name',
-            'Email',
-            'Phone',
-            'Department',
+            'Employee Name',
+            'Employee ID',
+            'Work Email',
+            'Mobile Number',
+            'Gender',
+            'Work Location',
             'Designation',
+            'Department',
             'Date of Joining',
-            'Salary',
-            'Employee ID'
+            'Annual CTC',
+            'Date of Birth',
+            'Father\'s Name',
+            'PAN',
+            'Differently Abled Type',
+            'Personal Email Address',
+            'Residential Address',
+            'City',
+            'State',
+            'PIN Code',
+            'Account Holder Name',
+            'Bank Name',
+            'Account Number',
+            'IFSC',
+            'Account Type'
         ];
 
         const sampleData = [
-            ['John', 'Doe', 'john.doe@company.com', '9876543210', 'Engineering', 'Senior Developer', '2024-01-15', '75000', 'EMP001'],
-            ['Jane', 'Smith', 'jane.smith@company.com', '9876543211', 'Marketing', 'Marketing Manager', '2024-02-20', '65000', 'EMP002'],
-            ['Mike', 'Johnson', 'mike.johnson@company.com', '9876543212', 'Sales', 'Sales Executive', '2024-03-10', '55000', 'EMP003']
+            ['John Doe', 'EMP001', 'john.doe@company.com', '9876543210', 'Male', 'Mumbai', 'Senior Developer', 'Engineering', '01/15/2024', '900000', '05/20/1990', 'Robert Doe', 'ABCDE1234F', 'None', 'john.personal@gmail.com', '123 Main St, Apt 4B', 'Mumbai', 'Maharashtra', '400001', 'John Doe', 'HDFC Bank', '12345678901234', 'HDFC0001234', 'Savings'],
+            ['Jane Smith', 'EMP002', 'jane.smith@company.com', '9876543211', 'Female', 'Bangalore', 'Marketing Manager', 'Marketing', '02/20/2024', '800000', '08/15/1988', 'Michael Smith', 'BCDEF2345G', 'None', 'jane.personal@gmail.com', '456 Park Ave, Floor 2', 'Bangalore', 'Karnataka', '560001', 'Jane Smith', 'ICICI Bank', '23456789012345', 'ICIC0002345', 'Current'],
+            ['Mike Johnson', 'EMP003', 'mike.johnson@company.com', '9876543212', 'Male', 'Delhi', 'Sales Executive', 'Sales', '03/10/2024', '700000', '12/10/1992', 'David Johnson', 'CDEFG3456H', 'None', 'mike.personal@gmail.com', '789 Lake Road', 'Delhi', 'Delhi', '110001', 'Mike Johnson', 'SBI', '34567890123456', 'SBIN0003456', 'Savings']
         ];
 
         if (format === 'csv') {
@@ -81,7 +95,7 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
 
         // Validate file type
         const validTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-        if (!validTypes.includes(file.type)) {
+        if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
             toast.error('Please upload a CSV or Excel file');
             return;
         }
@@ -98,8 +112,63 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
                 const lines = text.split('\n');
                 const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
 
+                // Validate headers match expected format
+                const expectedHeaders = [
+                    'Employee Name',
+                    'Employee ID',
+                    'Work Email',
+                    'Mobile Number',
+                    'Gender',
+                    'Work Location',
+                    'Designation',
+                    'Department',
+                    'Date of Joining',
+                    'Annual CTC',
+                    'Date of Birth',
+                    'Father\'s Name',
+                    'PAN',
+                    'Differently Abled Type',
+                    'Personal Email Address',
+                    'Residential Address',
+                    'City',
+                    'State',
+                    'PIN Code',
+                    'Account Holder Name',
+                    'Bank Name',
+                    'Account Number',
+                    'IFSC',
+                    'Account Type'
+                ];
+
+                const hasValidHeaders = expectedHeaders.every(header => 
+                    headers.some(h => h.toLowerCase() === header.toLowerCase())
+                );
+
+                if (!hasValidHeaders) {
+                    toast.error('Invalid file format. Please use the provided template.');
+                    return;
+                }
+
                 const data = lines.slice(1).filter(line => line.trim()).map(line => {
-                    const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+                    // Handle CSV parsing with quoted values
+                    const values: string[] = [];
+                    let currentValue = '';
+                    let insideQuotes = false;
+                    
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        
+                        if (char === '"') {
+                            insideQuotes = !insideQuotes;
+                        } else if (char === ',' && !insideQuotes) {
+                            values.push(currentValue.trim());
+                            currentValue = '';
+                        } else {
+                            currentValue += char;
+                        }
+                    }
+                    values.push(currentValue.trim());
+
                     const row: any = {};
                     headers.forEach((header, index) => {
                         row[header] = values[index] || '';
@@ -130,16 +199,30 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
 
             const importedEmployees = previewData.map((row, index) => ({
                 id: `EMP_${Date.now()}_${index}`,
-                name: `${row['First Name'] || ''} ${row['Last Name'] || ''}`.trim(),
-                firstName: row['First Name'] || '',
-                lastName: row['Last Name'] || '',
-                email: row['Email'] || '',
-                phone: row['Phone'] || '',
-                department: row['Department'] || '',
-                designation: row['Designation'] || '',
-                dateOfJoining: row['Date of Joining'] || '',
-                salary: row['Salary'] || '',
+                name: row['Employee Name'] || '',
                 employeeId: row['Employee ID'] || '',
+                email: row['Work Email'] || '',
+                phone: row['Mobile Number'] || '',
+                gender: row['Gender'] || '',
+                workLocation: row['Work Location'] || '',
+                designation: row['Designation'] || '',
+                department: row['Department'] || '',
+                dateOfJoining: row['Date of Joining'] || '',
+                annualCTC: row['Annual CTC'] || '',
+                dateOfBirth: row['Date of Birth'] || '',
+                fatherName: row['Father\'s Name'] || row['Father\'s Name'] || '',
+                pan: row['PAN'] || '',
+                differentlyAbledType: row['Differently Abled Type'] || '',
+                personalEmail: row['Personal Email Address'] || '',
+                residentialAddress: row['Residential Address'] || '',
+                city: row['City'] || '',
+                state: row['State'] || '',
+                pinCode: row['PIN Code'] || '',
+                accountHolderName: row['Account Holder Name'] || '',
+                bankName: row['Bank Name'] || '',
+                accountNumber: row['Account Number'] || '',
+                ifsc: row['IFSC'] || '',
+                accountType: row['Account Type'] || '',
                 status: 'Active'
             }));
 
@@ -259,22 +342,22 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
                                 <thead>
                                     <tr className="border-b bg-gray-50">
                                         <th className="px-4 py-2 text-left">Name</th>
+                                        <th className="px-4 py-2 text-left">Employee ID</th>
                                         <th className="px-4 py-2 text-left">Email</th>
                                         <th className="px-4 py-2 text-left">Department</th>
                                         <th className="px-4 py-2 text-left">Designation</th>
-                                        <th className="px-4 py-2 text-left">Salary</th>
+                                        <th className="px-4 py-2 text-left">CTC</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {previewData.map((row, index) => (
                                         <tr key={index} className="border-b hover:bg-gray-50">
-                                            <td className="px-4 py-2">
-                                                {row['First Name']} {row['Last Name']}
-                                            </td>
-                                            <td className="px-4 py-2">{row['Email']}</td>
+                                            <td className="px-4 py-2">{row['Employee Name']}</td>
+                                            <td className="px-4 py-2">{row['Employee ID']}</td>
+                                            <td className="px-4 py-2">{row['Work Email']}</td>
                                             <td className="px-4 py-2">{row['Department']}</td>
                                             <td className="px-4 py-2">{row['Designation']}</td>
-                                            <td className="px-4 py-2">{row['Salary']}</td>
+                                            <td className="px-4 py-2">{row['Annual CTC']}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -293,38 +376,103 @@ export default function ImportEmployees({ onComplete }: ImportEmployeesProps) {
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <ul className="space-y-2">
-                        <li className="flex gap-2 text-sm">
-                            <span className="text-red-600 font-bold">*</span>
-                            <span><strong>First Name</strong> - Employee's first name</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span className="text-red-600 font-bold">*</span>
-                            <span><strong>Last Name</strong> - Employee's last name</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span className="text-red-600 font-bold">*</span>
-                            <span><strong>Email</strong> - Valid email address</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Phone</strong> - Contact number</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Department</strong> - Department name</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Designation</strong> - Job title</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Date of Joining</strong> - YYYY-MM-DD format</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Salary</strong> - Annual salary amount</span>
-                        </li>
-                        <li className="flex gap-2 text-sm">
-                            <span><strong>Employee ID</strong> - Unique employee identifier</span>
-                        </li>
-                    </ul>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 className="font-semibold mb-2 text-sm">Personal Information</h4>
+                            <ul className="space-y-2">
+                                <li className="flex gap-2 text-sm">
+                                    <span className="text-red-600 font-bold">*</span>
+                                    <span><strong>Employee Name</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span className="text-red-600 font-bold">*</span>
+                                    <span><strong>Employee ID</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span className="text-red-600 font-bold">*</span>
+                                    <span><strong>Work Email</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Mobile Number</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Gender</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Date of Birth</strong> (mm/dd/yyyy)</span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Father's Name</strong></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-2 text-sm">Work Information</h4>
+                            <ul className="space-y-2">
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Work Location</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Designation</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Department</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Date of Joining</strong> (mm/dd/yyyy)</span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Annual CTC</strong></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-2 text-sm">Bank Details</h4>
+                            <ul className="space-y-2">
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Account Holder Name</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Bank Name</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Account Number</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>IFSC</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Account Type</strong> (Current/Savings)</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-semibold mb-2 text-sm">Other Details</h4>
+                            <ul className="space-y-2">
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>PAN</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Differently Abled Type</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Personal Email Address</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>Residential Address</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>City</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>State</strong></span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span><strong>PIN Code</strong></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
 
