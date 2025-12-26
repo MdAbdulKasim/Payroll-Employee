@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useApp, Employee as ContextEmployee } from "@/context/AppContext";
+
 /* ---------------- TABLE COMPONENTS ---------------- */
 
 const Table = ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
@@ -63,13 +65,8 @@ const TableCell = ({ children, ...props }: React.TdHTMLAttributes<HTMLTableCellE
 
 /* ---------------- TYPES ---------------- */
 
-interface Employee {
-  id: string;
-  name: string;
-  email: string;
-  department: string;
+interface Employee extends ContextEmployee {
   designation: string;
-  joiningDate: string;
   status: "active" | "inactive";
 }
 
@@ -109,10 +106,10 @@ export default function EmployeesPage() {
 
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
-      emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      emp.designation.toLowerCase().includes(searchQuery.toLowerCase());
+      (emp.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (emp.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (emp.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (emp.designation?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
     const matchesFilter =
       filterDepartment === "all" || emp.department === filterDepartment;
@@ -120,7 +117,7 @@ export default function EmployeesPage() {
     return matchesSearch && matchesFilter;
   });
 
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
+  const departments = (Array.from(new Set(employees.map((e) => e.department))) as string[]).filter(Boolean);
 
   /* ---------------- EXPORT ---------------- */
 
@@ -251,7 +248,7 @@ export default function EmployeesPage() {
                     All Departments
                   </DropdownMenuItem>
                   {departments.map((dept) => (
-                    <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept)}>
+                    <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept || "all")}>
                       {dept}
                     </DropdownMenuItem>
                   ))}
@@ -324,7 +321,7 @@ export default function EmployeesPage() {
                   All Departments
                 </DropdownMenuItem>
                 {departments.map((dept) => (
-                  <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept)}>
+                  <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept || "all")}>
                     {dept}
                   </DropdownMenuItem>
                 ))}
@@ -361,7 +358,7 @@ export default function EmployeesPage() {
 
             <TableBody>
               {filteredEmployees.map((emp) => (
-                <TableRow 
+                <TableRow
                   key={emp.id}
                   onClick={() => handleRowClick(emp)}
                   className="cursor-pointer"
@@ -379,19 +376,18 @@ export default function EmployeesPage() {
                   <TableCell className="hidden xl:table-cell">{emp.joiningDate}</TableCell>
                   <TableCell>
                     <span
-                      className={`px-2 py-1 rounded-full text-xs whitespace-nowrap ${
-                        emp.status === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className={`px-2 py-1 rounded-full text-xs whitespace-nowrap ${emp.status === "active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                        }`}
                     >
                       {emp.status}
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       onClick={(e) => handleDelete(e, emp.id)}
                       className="hover:bg-red-50 hover:text-red-600"
                     >

@@ -14,18 +14,45 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+import { useApp } from "@/context/AppContext"
+
 export default function OneTimePayoutPage() {
   const router = useRouter()
+  const { addPayRun, employees } = useApp()
 
   const [component, setComponent] = useState<string>("")
   const [paymentDate, setPaymentDate] = useState<string>("")
-  const [employeeName, setEmployeeName] = useState<string>("")
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("")
   const [amount, setAmount] = useState<string>("")
+  const [remarks, setRemarks] = useState<string>("")
+  const [isTaxable, setIsTaxable] = useState<boolean>(true)
 
   const handleSubmit = () => {
-    if (!component || !paymentDate || !employeeName || !amount) return
-    // You can store this in state / API later
-    router.push("/admin/payrun")
+    if (!component || !paymentDate || !selectedEmployeeId || !amount) return
+
+    const id = Math.random().toString(36).substr(2, 9)
+    const now = new Date()
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const employee = employees.find(e => e.id === selectedEmployeeId)
+
+    addPayRun({
+      id: id,
+      month: monthNames[now.getMonth()],
+      year: now.getFullYear(),
+      status: 'draft',
+      type: 'onetime',
+      totalAmount: parseFloat(amount),
+      employeeCount: 1,
+      createdAt: now.toISOString(),
+      paymentDate: paymentDate,
+      description: `${component.charAt(0).toUpperCase() + component.slice(1)} for ${employee?.name || "Employee"}`,
+      remarks: remarks,
+      isTaxable: isTaxable,
+      reasonType: component.charAt(0).toUpperCase() + component.slice(1) as any,
+      employeeIds: [selectedEmployeeId]
+    })
+
+    router.push(`/admin/payrun/record?id=${id}&type=onetime`)
   }
 
   return (
@@ -45,17 +72,20 @@ export default function OneTimePayoutPage() {
 
         {/* Content */}
         <div className="px-6 py-5 space-y-5">
-          {/* Employee Name */}
           <div className="space-y-2">
             <Label>
               Employee Name <span className="text-red-500">*</span>
             </Label>
-            <Input
-              type="text"
-              placeholder="Enter employee name"
-              value={employeeName}
-              onChange={(e) => setEmployeeName(e.target.value)}
-            />
+            <Select onValueChange={setSelectedEmployeeId} value={selectedEmployeeId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Employee" />
+              </SelectTrigger>
+              <SelectContent>
+                {employees.map(emp => (
+                  <SelectItem key={emp.id} value={emp.id}>{emp.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Amount */}
@@ -101,6 +131,31 @@ export default function OneTimePayoutPage() {
               onChange={(e) => setPaymentDate(e.target.value)}
             />
           </div>
+
+          {/* Remarks */}
+          <div className="space-y-2">
+            <Label>Remarks</Label>
+            <Input
+              type="text"
+              placeholder="Add any remarks"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
+            />
+          </div>
+
+          {/* Taxable Toggle */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isTaxable"
+              checked={isTaxable}
+              onChange={(e) => setIsTaxable(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-blue-600"
+            />
+            <Label htmlFor="isTaxable" className="cursor-pointer">
+              Is this payout taxable?
+            </Label>
+          </div>
         </div>
 
         {/* Footer */}
@@ -108,7 +163,7 @@ export default function OneTimePayoutPage() {
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSubmit}
-            disabled={!component || !paymentDate || !employeeName || !amount}
+            disabled={!component || !paymentDate || !selectedEmployeeId || !amount}
           >
             Save and Continue
           </Button>

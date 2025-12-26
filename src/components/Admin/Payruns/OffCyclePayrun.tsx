@@ -7,16 +7,53 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+import { useApp, PayRun } from "@/context/AppContext"
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select"
+
 export default function OffCyclePayrunPage() {
   const router = useRouter()
-  const [employeeName, setEmployeeName] = useState("")
+  const { addPayRun, employees } = useApp()
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("")
   const [amount, setAmount] = useState("")
   const [paymentDate, setPaymentDate] = useState("")
+  const [reason, setReason] = useState<string>("")
+  const [remarks, setRemarks] = useState<string>("")
+  const [revisedAmount, setRevisedAmount] = useState<string>("")
+  const [previousAmount, setPreviousAmount] = useState<string>("")
 
   const handleSubmit = () => {
-    if (!employeeName || !amount || !paymentDate) return
-    // future API / state logic goes here
-    router.push("/admin/payrun")
+    if (!selectedEmployeeId || !reason || (!amount && !revisedAmount) || !paymentDate) return
+
+    const id = Math.random().toString(36).substr(2, 9)
+    const now = new Date()
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const employee = employees.find(e => e.id === selectedEmployeeId)
+    const finalAmount = parseFloat(revisedAmount) - parseFloat(previousAmount)
+
+    const newPayRun: PayRun = {
+      id: id,
+      month: monthNames[now.getMonth()],
+      year: now.getFullYear(),
+      status: 'draft',
+      type: 'offcycle',
+      totalAmount: isNaN(finalAmount) ? parseFloat(amount) : finalAmount,
+      employeeCount: 1,
+      createdAt: now.toISOString(),
+      paymentDate: paymentDate,
+      description: `Off-cycle (${reason}) for ${employee?.name || "Employee"}`,
+      remarks: remarks,
+      reasonType: reason as any,
+      employeeIds: [selectedEmployeeId]
+    }
+
+    addPayRun(newPayRun)
+    router.push(`/admin/payrun/record?id=${id}&type=offcycle`)
   }
 
   return (
@@ -39,29 +76,76 @@ export default function OffCyclePayrunPage() {
 
         {/* Body */}
         <div className="px-6 py-6 space-y-5">
-          {/* Employee Name */}
           <div className="space-y-2">
             <Label>
               Employee Name <span className="text-red-500">*</span>
             </Label>
-            <Input
-              type="text"
-              placeholder="Enter employee name"
-              value={employeeName}
-              onChange={(e) => setEmployeeName(e.target.value)}
-            />
+            <Select onValueChange={setSelectedEmployeeId} value={selectedEmployeeId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Employee" />
+              </SelectTrigger>
+              <SelectContent>
+                {employees.map(emp => (
+                  <SelectItem key={emp.id} value={emp.id}>{emp.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Amount */}
+          {/* Reason Selector */}
           <div className="space-y-2">
             <Label>
-              Amount <span className="text-red-500">*</span>
+              Reason <span className="text-red-500">*</span>
             </Label>
+            <Select onValueChange={setReason}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Reason" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Arrears">Arrears</SelectItem>
+                <SelectItem value="Correction">Correction</SelectItem>
+                <SelectItem value="F&F">Full & Final settlement</SelectItem>
+                <SelectItem value="Missed Salary">Missed Salary</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Amount / Calculations */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Previously Paid</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={previousAmount}
+                onChange={(e) => setPreviousAmount(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Revised Amount</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={revisedAmount}
+                onChange={(e) => setRevisedAmount(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="bg-blue-50 p-3 rounded-lg flex justify-between items-center text-sm">
+            <span className="text-blue-700 font-medium">Difference to Pay:</span>
+            <span className="text-blue-900 font-bold">
+              ₹ {(parseFloat(revisedAmount || "0") - parseFloat(previousAmount || "0")).toLocaleString()}
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Remarks</Label>
             <Input
-              type="number"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              type="text"
+              placeholder="Add any additional info"
+              value={remarks}
+              onChange={(e) => setRemarks(e.target.value)}
             />
           </div>
 
@@ -86,9 +170,9 @@ export default function OffCyclePayrunPage() {
           <Button
             className="bg-blue-600 hover:bg-blue-700 text-white"
             onClick={handleSubmit}
-            disabled={!employeeName || !amount || !paymentDate}
+            disabled={!selectedEmployeeId || !reason || (!revisedAmount && !amount) || !paymentDate}
           >
-            Save and Continue
+            Create Draft
           </Button>
 
           <Button variant="outline" onClick={() => router.back()}>
