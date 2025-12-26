@@ -103,12 +103,87 @@ export default function PayrollHistoryPage() {
   const handleDownloadPayslip = (employee: any) => {
     import("jspdf").then(({ jsPDF }) => {
       const doc = new jsPDF()
+      doc.setFontSize(20)
       doc.text("PAYSLIP", 105, 20, { align: "center" })
+      doc.setFontSize(12)
       doc.text(`Employee Name: ${employee.name}`, 20, 40)
       doc.text(`Employee ID: ${employee.id}`, 20, 50)
-      doc.text(`Month: ${selectedPayrun?.month} ${selectedPayrun?.year}`, 20, 60)
-      doc.text(`Net Pay: ${employee.netPay}`, 20, 80)
+      doc.text(`Department: ${employee.department}`, 20, 60)
+      doc.text(`Month: ${selectedPayrun?.month} ${selectedPayrun?.year}`, 20, 70)
+      doc.text(`Payment Date: ${selectedPayrun?.paymentDate}`, 20, 80)
+      doc.line(20, 90, 190, 90)
+      doc.text("Earnings", 20, 100)
+      doc.text(`${employee.grossPay}`, 170, 100, { align: "right" })
+      doc.text("Deductions", 20, 110)
+      doc.text(`${employee.deductions}`, 170, 110, { align: "right" })
+      doc.line(20, 120, 190, 120)
+      doc.setFont("helvetica", "bold")
+      doc.text("Net Pay", 20, 130)
+      doc.text(`${employee.netPay}`, 170, 130, { align: "right" })
       doc.save(`Payslip_${employee.name}_${selectedPayrun?.month}.pdf`)
+    })
+  }
+
+  const handleDownloadReport = () => {
+    import("jspdf").then(({ jsPDF }) => {
+      const doc = new jsPDF()
+      doc.setFontSize(18)
+      doc.text("Payroll Report", 105, 20, { align: "center" })
+      doc.setFontSize(10)
+      doc.text(`Period: ${payrollHistory.period}`, 20, 40)
+      doc.text(`Type: ${payrollHistory.type}`, 20, 50)
+      doc.text(`Payment Date: ${payrollHistory.paymentDate}`, 20, 60)
+      doc.text(`Processed Date: ${payrollHistory.processedDate}`, 20, 70)
+
+      doc.text(`Total Gross Pay: ${payrollHistory.totalGrossPay}`, 20, 90)
+      doc.text(`Total Deductions: ${payrollHistory.totalDeductions}`, 20, 100)
+      doc.text(`Total Net Pay: ${payrollHistory.totalNetPay}`, 20, 110)
+
+      doc.text("Employee Breakdown", 20, 130)
+      let y = 140
+      doc.setFont("helvetica", "bold")
+      doc.text("Name", 20, y)
+      doc.text("ID", 70, y)
+      doc.text("Net Pay", 170, y, { align: "right" })
+      doc.line(20, y + 2, 190, y + 2)
+      y += 10
+      doc.setFont("helvetica", "normal")
+
+      employeePayrolls.forEach(emp => {
+        doc.text(emp.name, 20, y)
+        doc.text(emp.id, 70, y)
+        doc.text(emp.netPay, 170, y, { align: "right" })
+        y += 10
+      })
+
+      doc.save(`Payroll_Report_${selectedPayrun?.month}_${selectedPayrun?.year}.pdf`)
+    })
+  }
+
+  const handleDownloadAllPayslips = () => {
+    import("jspdf").then(({ jsPDF }) => {
+      const doc = new jsPDF()
+      employeePayrolls.forEach((employee, index) => {
+        if (index > 0) doc.addPage()
+        doc.setFontSize(20)
+        doc.text("PAYSLIP", 105, 20, { align: "center" })
+        doc.setFontSize(12)
+        doc.text(`Employee Name: ${employee.name}`, 20, 40)
+        doc.text(`Employee ID: ${employee.id}`, 20, 50)
+        doc.text(`Department: ${employee.department}`, 20, 60)
+        doc.text(`Month: ${selectedPayrun?.month} ${selectedPayrun?.year}`, 20, 70)
+        doc.text(`Payment Date: ${selectedPayrun?.paymentDate}`, 20, 80)
+        doc.line(20, 90, 190, 90)
+        doc.text("Earnings", 20, 100)
+        doc.text(`${employee.grossPay}`, 170, 100, { align: "right" })
+        doc.text("Deductions", 20, 110)
+        doc.text(`${employee.deductions}`, 170, 110, { align: "right" })
+        doc.line(20, 120, 190, 120)
+        doc.setFont("helvetica", "bold")
+        doc.text("Net Pay", 20, 130)
+        doc.text(`${employee.netPay}`, 170, 130, { align: "right" })
+      })
+      doc.save(`All_Payslips_${selectedPayrun?.month}.pdf`)
     })
   }
 
@@ -190,19 +265,14 @@ export default function PayrollHistoryPage() {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-3 pt-4 border-t">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={handleDownloadReport}>
               <Download className="h-4 w-4 mr-2" />
               Download Report
             </Button>
 
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleDownloadAllPayslips}>
               <Download className="h-4 w-4 mr-2" />
               Download Payslips
-            </Button>
-
-            <Button variant="outline">
-              <Eye className="h-4 w-4 mr-2" />
-              View Tax Summary
             </Button>
           </div>
         </div>
