@@ -16,8 +16,8 @@ type TabId = "epf" | "esi" | "professional-tax" | "labour-welfare" | "statutory-
 const tabs = [
   { id: "epf" as TabId, label: "EPF" },
   { id: "esi" as TabId, label: "ESI" },
-  { id: "professional-tax" as TabId, label: "Professional Tax" },
-  { id: "labour-welfare" as TabId, label: "Labour Welfare Fund" },
+  // { id: "professional-tax" as TabId, label: "Professional Tax" },
+  // { id: "labour-welfare" as TabId, label: "Labour Welfare Fund" },
   { id: "statutory-bonus" as TabId, label: "Statutory Bonus" },
 ];
 
