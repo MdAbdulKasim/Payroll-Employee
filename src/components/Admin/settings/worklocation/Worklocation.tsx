@@ -68,16 +68,16 @@ export default function WorkLocationsPage() {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="p-8 space-y-8 max-w-5xl">
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-5xl">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4 text-center sm:text-left">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Work Locations</h1>
-            <p className="text-gray-600">Manage your organization&apos;s work locations</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Work Locations</h1>
+            <p className="text-sm sm:text-base text-gray-600">Manage your organization&apos;s work locations</p>
           </div>
           <Button
             onClick={openAddDialog}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="w-fit sm:w-auto min-w-[200px] px-8 bg-blue-600 hover:bg-blue-700"
           >
             <Plus className="h-4 w-4 mr-2" />
             Add Location
@@ -87,13 +87,13 @@ export default function WorkLocationsPage() {
         {/* Empty State */}
         {locations.length === 0 ? (
           <Card className="border-2 border-dashed">
-            <CardContent className="flex flex-col items-center justify-center py-16 space-y-4">
-              <div>
-                <p className="text-gray-600 text-lg">No work locations added yet</p>
+            <CardContent className="flex flex-col items-center justify-center py-10 sm:py-16 space-y-4">
+              <div className="text-center">
+                <p className="text-gray-600 text-base sm:text-lg">No work locations added yet</p>
               </div>
               <Button
                 onClick={openAddDialog}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="w-fit sm:w-auto min-w-[200px] px-8 bg-blue-600 hover:bg-blue-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add First Location
@@ -105,13 +105,13 @@ export default function WorkLocationsPage() {
           <div className="space-y-4">
             {locations.map((location) => (
               <Card key={location.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
+                <CardContent className="pt-4 sm:pt-6">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">
                         {location.locationName}
                       </h3>
-                      <div className="space-y-1 text-sm text-gray-600">
+                      <div className="space-y-1 text-xs sm:text-sm text-gray-600">
                         <p>{location.address}</p>
                         <p>
                           {location.city}
@@ -120,10 +120,11 @@ export default function WorkLocationsPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         variant="outline"
                         size="sm"
+                        className="flex-1 sm:flex-none"
                         onClick={() => openEditDialog(location)}
                       >
                         Edit
@@ -131,7 +132,7 @@ export default function WorkLocationsPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="flex-1 sm:flex-none text-red-600 hover:text-red-700 hover:bg-red-50"
                         onClick={() => handleDeleteLocation(location.id)}
                       >
                         Delete

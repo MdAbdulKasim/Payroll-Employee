@@ -149,7 +149,7 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
 
   const handleEditComponent = (component: SalaryComponent) => {
     setEditingComponent(component);
-    
+
     if (activeTab === "earnings") {
       setAddDialogType("earning");
     } else if (activeTab === "deductions") {
@@ -159,7 +159,7 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
     } else if (activeTab === "reimbursements") {
       setAddDialogType("reimbursement");
     }
-    
+
     setShowAddDialog(true);
     setShowActionMenu(null);
   };
@@ -282,7 +282,7 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
         <MoreVertical size={18} />
       </button>
       {showActionMenu === item.id && (
-        <div className="absolute top-full right-0 xs:left-1/2 xs:transform xs:-translate-x-1/2 mt-1 w-32 xs:w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute bottom-full right-0 mb-1 w-32 xs:w-40 bg-white border border-gray-200 rounded-lg shadow-xl z-[60]">
           <button
             onClick={() => handleEditComponent(item)}
             className="block w-full text-left px-3 xs:px-4 py-2 text-xs xs:text-sm text-blue-600 hover:bg-gray-50 first:rounded-t-lg"
@@ -640,12 +640,12 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
   return (
     <div className="space-y-4 xs:space-y-6 p-3 xs:p-4 sm:p-6 w-full bg-white rounded-lg border border-gray-200 mx-auto max-w-full overflow-hidden">
       {/* Header */}
-      <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-3 xs:gap-4">
+      <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-3 xs:gap-4 text-center sm:text-left">
         <h2 className="text-xl xs:text-2xl font-semibold text-gray-900">Salary Components</h2>
         <div className="relative">
           <button
             onClick={() => setShowAddMenu(!showAddMenu)}
-            className="px-3 xs:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center gap-1 xs:gap-2 text-sm xs:text-base w-full xs:w-auto justify-center"
+            className="px-3 py-1.5 xs:px-4 xs:py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors flex items-center gap-1 xs:gap-2 text-sm xs:text-base w-fit mx-auto sm:mx-0 justify-center"
           >
             Add Component <ChevronDown size={18} className="hidden xs:inline" /> <ChevronDown size={16} className="inline xs:hidden" />
           </button>
@@ -699,10 +699,9 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
               }}
               className={`
                 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors
-                ${
-                  activeTab === tab.id
-                    ? "border-blue-500 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                ${activeTab === tab.id
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }
               `}
             >
@@ -723,7 +722,7 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
           </span>
           {isMobileMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         </button>
-        
+
         {isMobileMenuOpen && (
           <div className="mt-2 border border-gray-200 rounded-md bg-white shadow-sm">
             {tabs.map((tab) => (
@@ -734,11 +733,10 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
                   setIsMobileMenuOpen(false);
                   setShowActionMenu(null);
                 }}
-                className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-b-0 ${
-                  activeTab === tab.id 
-                    ? "bg-blue-50 text-blue-600 font-medium" 
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
+                className={`w-full text-left px-4 py-3 border-b border-gray-100 last:border-b-0 ${activeTab === tab.id
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "text-gray-700 hover:bg-gray-50"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -770,61 +768,61 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
 
       {/* Dialogs */}
       {showAddDialog && addDialogType === "earning" && (
-        <AddEarningDialog 
+        <AddEarningDialog
           onClose={() => {
             setShowAddDialog(false);
             setEditingComponent(null);
-          }} 
+          }}
           onSave={handleSaveComponent}
           initialData={editingComponent}
         />
       )}
       {showAddDialog && addDialogType === "deduction" && (
-        <AddDeductionDialog 
+        <AddDeductionDialog
           onClose={() => {
             setShowAddDialog(false);
             setEditingComponent(null);
-          }} 
+          }}
           onSave={handleSaveComponent}
           initialData={editingComponent}
         />
       )}
       {showAddDialog && addDialogType === "benefit" && (
-        <AddBenefitDialog 
+        <AddBenefitDialog
           onClose={() => {
             setShowAddDialog(false);
             setEditingComponent(null);
-          }} 
+          }}
           onSave={handleSaveComponent}
           initialData={editingComponent}
         />
       )}
       {showAddDialog && addDialogType === "reimbursement" && (
-        <AddReimbursementDialog 
+        <AddReimbursementDialog
           onClose={() => {
             setShowAddDialog(false);
             setEditingComponent(null);
-          }} 
+          }}
           onSave={handleSaveComponent}
           initialData={editingComponent}
         />
       )}
       {showAddDialog && addDialogType === "correction" && (
-        <AddCorrectionDialog 
+        <AddCorrectionDialog
           onClose={() => {
             setShowAddDialog(false);
             setEditingComponent(null);
-          }} 
+          }}
           onSave={handleSaveComponent}
           initialData={editingComponent}
         />
       )}
 
       {/* Complete Button */}
-      <div className="flex justify-end pt-4 xs:pt-6 border-t">
+      <div className="flex justify-center sm:justify-end pt-4 xs:pt-6 border-t">
         <button
           onClick={handleComplete}
-          className="px-4 xs:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors text-sm xs:text-base w-full xs:w-auto"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors text-sm xs:text-base w-fit mx-auto sm:mx-0"
         >
           Save & Continue
         </button>
