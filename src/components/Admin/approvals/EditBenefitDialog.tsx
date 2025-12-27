@@ -18,16 +18,18 @@ interface Benefit {
   selectedEmployees?: string[];
 }
 
-interface AddBenefitDialogProps {
+interface EditBenefitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (benefit: Omit<Benefit, 'id' | 'assignedEmployees' | 'totalAmount'>) => void;
+  benefit: Benefit | null;
 }
 
-export const AddBenefitDialog: React.FC<AddBenefitDialogProps> = ({ 
+export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({ 
   open, 
   onOpenChange, 
-  onSubmit
+  onSubmit,
+  benefit 
 }) => {
   const [formData, setFormData] = useState({
     selectedEmployees: [] as string[],
@@ -61,24 +63,22 @@ export const AddBenefitDialog: React.FC<AddBenefitDialogProps> = ({
   ];
 
   useEffect(() => {
-    if (!open) {
-      setTimeout(() => {
-        setFormData({
-          selectedEmployees: [],
-          name: '',
-          type: '',
-          status: 'active',
-          limitAmount: 0,
-          frequency: 'Monthly',
-          requiresApproval: true,
-          description: ''
-        });
-        setNameSearch('');
-        setTypeSearch('');
-        setEmployeeSearch('');
-      }, 300);
+    if (benefit && open) {
+      setFormData({
+        selectedEmployees: benefit.selectedEmployees || [],
+        name: benefit.name,
+        type: benefit.type,
+        status: benefit.status,
+        limitAmount: benefit.limitAmount,
+        frequency: benefit.frequency,
+        requiresApproval: benefit.requiresApproval,
+        description: benefit.description
+      });
+      setNameSearch(benefit.name);
+      setTypeSearch(benefit.type);
+      setEmployeeSearch('');
     }
-  }, [open]);
+  }, [benefit, open]);
 
   useEffect(() => {
     const handleClickOutside = () => {
@@ -172,7 +172,7 @@ export const AddBenefitDialog: React.FC<AddBenefitDialogProps> = ({
     onOpenChange(false);
   };
 
-  if (!open) return null;
+  if (!open || !benefit) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -185,8 +185,12 @@ export const AddBenefitDialog: React.FC<AddBenefitDialogProps> = ({
         <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">Add Benefit</h2>
-              <p className="text-sm text-gray-600 mt-1">Create a new employee benefit</p>
+              <h2 className="text-xl font-semibold text-gray-900">
+                Edit Benefit
+              </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Update benefit details for {benefit.id}
+              </p>
             </div>
             <button
               onClick={handleCancel}
@@ -500,7 +504,7 @@ export const AddBenefitDialog: React.FC<AddBenefitDialogProps> = ({
               type="button"
               className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
-              Save Benefit
+              Update Benefit
             </button>
           </div>
         </div>
