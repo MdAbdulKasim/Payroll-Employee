@@ -55,6 +55,7 @@ interface LeaveRequest {
   name: string;
   email: string;
   department: string;
+  organization: string;
   month: string;
   lossOfPay: number;
 }
@@ -69,6 +70,7 @@ export default function LeaveTab() {
       name: "ajees",
       email: "ajees@company.com",
       department: "Engineering",
+      organization: "Tech Corp",
       month: "December 2025",
       lossOfPay: 2,
     },
@@ -77,6 +79,7 @@ export default function LeaveTab() {
       name: "John Doe",
       email: "john.doe@company.com",
       department: "Marketing",
+      organization: "Tech Corp",
       month: "December 2025",
       lossOfPay: 0,
     },
@@ -114,6 +117,7 @@ export default function LeaveTab() {
       (leave.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (leave.organization?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.month?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
     const matchesFilter = filterDepartment === "all" || leave.department === filterDepartment;
@@ -124,9 +128,9 @@ export default function LeaveTab() {
   const departments = Array.from(new Set(leaveRequests.map((l) => l.department))).filter(Boolean);
 
   const exportToCSV = () => {
-    const headers = ["Name", "Email", "Department", "Month", "Loss of Pay"];
+    const headers = ["Name", "Email", "Department", "Organization", "Month", "Loss of Pay"];
     const rows = filteredLeaveRequests.map((l) =>
-      [l.name, l.email, l.department, l.month, l.lossOfPay].join(",")
+      [l.name, l.email, l.department, l.organization, l.month, l.lossOfPay].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
 
@@ -156,7 +160,7 @@ export default function LeaveTab() {
       {/* ACTION BUTTONS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="text-sm text-gray-600">
-          Total Leave : {filteredLeaveRequests.length}
+          Total Leave Requests: {filteredLeaveRequests.length}
         </div>
 
         {/* Desktop Actions */}
@@ -272,7 +276,7 @@ export default function LeaveTab() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           className="w-full pl-9 pr-4 py-2 border rounded-lg"
-          placeholder="Search leave..."
+          placeholder="Search leave requests..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -286,6 +290,7 @@ export default function LeaveTab() {
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
+              <TableHead>Organization</TableHead>
               <TableHead>Month</TableHead>
               <TableHead>Loss of Pay</TableHead>
             </TableRow>
@@ -299,6 +304,7 @@ export default function LeaveTab() {
                 </TableCell>
                 <TableCell>{leave.email}</TableCell>
                 <TableCell>{leave.department}</TableCell>
+                <TableCell>{leave.organization}</TableCell>
                 <TableCell>{leave.month}</TableCell>
                 <TableCell>
                   <span className={leave.lossOfPay > 0 ? "text-red-600 font-medium" : "text-green-600"}>
