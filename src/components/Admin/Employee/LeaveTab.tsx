@@ -1,17 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Search,
-  Download,
-  Upload,
-  Filter,
-  Trash2,
-  Plus,
-  ChevronDown,
-  Menu,
-  X,
-} from "lucide-react";
+import { Search, Filter, Upload, Download, ChevronDown, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import {
@@ -20,8 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { useApp, Employee as ContextEmployee } from "@/context/AppContext";
 
 /* ---------------- TABLE COMPONENTS ---------------- */
 
@@ -63,78 +50,83 @@ const TableCell = ({ children, ...props }: React.TdHTMLAttributes<HTMLTableCellE
   </td>
 );
 
-/* ---------------- TYPES ---------------- */
-
-interface Employee extends ContextEmployee {
-  designation: string;
-  status: "active" | "inactive";
+interface LeaveRequest {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  month: string;
+  lossOfPay: number;
 }
 
-/* ---------------- MAIN COMPONENT ---------------- */
-
-export default function EmployeesPage() {
-  const router = useRouter();
+export default function LeaveTab() {
   const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const defaultEmployees: Employee[] = [
+  const defaultLeaveRequests: LeaveRequest[] = [
     {
-      id: "default-1",
+      id: "leave-default-1",
       name: "ajees",
-      email: "nan@gmail.com",
-      department: "Human Resources",
-      designation: "HR Manager",
-      joiningDate: "2025-12-25",
-      status: "active",
+      email: "ajees@company.com",
+      department: "Engineering",
+      month: "December 2025",
+      lossOfPay: 2,
+    },
+    {
+      id: "leave-default-2",
+      name: "John Doe",
+      email: "john.doe@company.com",
+      department: "Marketing",
+      month: "December 2025",
+      lossOfPay: 0,
     },
   ];
 
-  const [employees, setEmployees] = useState<Employee[]>(defaultEmployees);
+  const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>(defaultLeaveRequests);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("all");
 
   useEffect(() => {
     setMounted(true);
     
-    const saved = localStorage.getItem("employees");
+    const saved = localStorage.getItem("leaveRequests");
     if (saved) {
       try {
-        const savedEmployees = JSON.parse(saved);
-        const merged = [...defaultEmployees];
+        const savedRequests = JSON.parse(saved);
+        const merged = [...defaultLeaveRequests];
         
-        savedEmployees.forEach((savedEmp: Employee) => {
-          if (!merged.find(emp => emp.id === savedEmp.id)) {
-            merged.push(savedEmp);
+        savedRequests.forEach((savedReq: LeaveRequest) => {
+          if (!merged.find(req => req.id === savedReq.id)) {
+            merged.push(savedReq);
           }
         });
         
-        setEmployees(merged);
+        setLeaveRequests(merged);
       } catch (error) {
-        console.error("Error loading employees:", error);
-        setEmployees(defaultEmployees);
+        console.error("Error loading leave requests:", error);
+        setLeaveRequests(defaultLeaveRequests);
       }
     }
   }, []);
 
-  const filteredEmployees = employees.filter((emp) => {
+  const filteredLeaveRequests = leaveRequests.filter((leave) => {
     const matchesSearch =
-      (emp.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (emp.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (emp.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (emp.designation?.toLowerCase() || "").includes(searchQuery.toLowerCase());
+      (leave.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (leave.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (leave.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (leave.month?.toLowerCase() || "").includes(searchQuery.toLowerCase());
 
-    const matchesFilter =
-      filterDepartment === "all" || emp.department === filterDepartment;
+    const matchesFilter = filterDepartment === "all" || leave.department === filterDepartment;
 
     return matchesSearch && matchesFilter;
   });
 
-  const departments = (Array.from(new Set(employees.map((e) => e.department))) as string[]).filter(Boolean);
+  const departments = Array.from(new Set(leaveRequests.map((l) => l.department))).filter(Boolean);
 
   const exportToCSV = () => {
-    const headers = ["Name", "Email", "Department", "Designation", "Joining Date", "Status"];
-    const rows = filteredEmployees.map((e) =>
-      [e.name, e.email, e.department, e.designation, e.joiningDate, e.status].join(",")
+    const headers = ["Name", "Email", "Department", "Month", "Loss of Pay"];
+    const rows = filteredLeaveRequests.map((l) =>
+      [l.name, l.email, l.department, l.month, l.lossOfPay].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
 
@@ -142,37 +134,21 @@ export default function EmployeesPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "employees.csv";
+    a.download = "leave_requests.csv";
     a.click();
   };
 
   const exportToPDF = () => {
-    const blob = new Blob(["Employee Export"], { type: "text/plain" });
+    const blob = new Blob(["Leave Requests Export"], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "employees.pdf";
+    a.download = "leave_requests.pdf";
     a.click();
   };
 
   const handleBulkUploadClick = () => {
-    router.push("/admin/employee/importemployee");
-  };
-
-  const handleRowClick = (emp: Employee) => {
-    router.push(`/admin/employee/view?id=${emp.id}`);
-  };
-
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    if (!confirm("Delete employee?")) return;
-
-    const updated = employees.filter((e) => e.id !== id);
-    setEmployees(updated);
-    localStorage.setItem(
-      "employees",
-      JSON.stringify(updated.filter((e) => e.id !== "default-1"))
-    );
+    window.location.href = "/admin/employee/importleave";
   };
 
   return (
@@ -180,7 +156,7 @@ export default function EmployeesPage() {
       {/* ACTION BUTTONS */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="text-sm text-gray-600">
-          Total Employees: {filteredEmployees.length}
+          Total Leave : {filteredLeaveRequests.length}
         </div>
 
         {/* Desktop Actions */}
@@ -222,38 +198,23 @@ export default function EmployeesPage() {
                     All Departments
                   </DropdownMenuItem>
                   {departments.map((dept) => (
-                    <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept || "all")}>
+                    <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept)}>
                       {dept}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
             </ButtonGroup>
-
-            <Button
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => router.push("/admin/employee/basic")}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              New Employee
-            </Button>
           </div>
         )}
 
         {/* Mobile Menu Button */}
-        <div className="lg:hidden flex gap-2">
-          <Button
-            className="bg-blue-600 hover:bg-blue-700 flex-1"
-            onClick={() => router.push("/admin/employee/basic")}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            New Employee
-          </Button>
+        <div className="lg:hidden">
           <Button
             variant="outline"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            <Menu className="w-5 h-5" />
           </Button>
         </div>
       </div>
@@ -297,7 +258,7 @@ export default function EmployeesPage() {
                 All Departments
               </DropdownMenuItem>
               {departments.map((dept) => (
-                <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept || "all")}>
+                <DropdownMenuItem key={dept} onClick={() => setFilterDepartment(dept)}>
                   {dept}
                 </DropdownMenuItem>
               ))}
@@ -311,7 +272,7 @@ export default function EmployeesPage() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         <input
           className="w-full pl-9 pr-4 py-2 border rounded-lg"
-          placeholder="Search employees..."
+          placeholder="Search leave..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -325,46 +286,24 @@ export default function EmployeesPage() {
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
-              <TableHead>Designation</TableHead>
-              <TableHead>Joining Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead>Month</TableHead>
+              <TableHead>Loss of Pay</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {filteredEmployees.map((emp) => (
-              <TableRow
-                key={emp.id}
-                onClick={() => handleRowClick(emp)}
-                className="cursor-pointer"
-              >
+            {filteredLeaveRequests.map((leave) => (
+              <TableRow key={leave.id}>
                 <TableCell>
-                  <div className="font-medium">{emp.name}</div>
+                  <div className="font-medium">{leave.name}</div>
                 </TableCell>
-                <TableCell>{emp.email}</TableCell>
-                <TableCell>{emp.department}</TableCell>
-                <TableCell>{emp.designation}</TableCell>
-                <TableCell>{emp.joiningDate}</TableCell>
+                <TableCell>{leave.email}</TableCell>
+                <TableCell>{leave.department}</TableCell>
+                <TableCell>{leave.month}</TableCell>
                 <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs whitespace-nowrap ${emp.status === "active"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                      }`}
-                  >
-                    {emp.status}
+                  <span className={leave.lossOfPay > 0 ? "text-red-600 font-medium" : "text-green-600"}>
+                    {leave.lossOfPay} days
                   </span>
-                </TableCell>
-                <TableCell>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={(e) => handleDelete(e, emp.id)}
-                    className="hover:bg-red-50 hover:text-red-600"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
                 </TableCell>
               </TableRow>
             ))}
