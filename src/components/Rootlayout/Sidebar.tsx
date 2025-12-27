@@ -19,7 +19,8 @@ import {
   User,
   Building2,
   X,
-  LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -39,14 +40,21 @@ interface SidebarProps {
   onClose: () => void;
   mode?: 'admin' | 'employee';
   disabled?: boolean;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  isOpen, 
+  onClose, 
+  mode, 
+  disabled,
+  isCollapsed,
+  onToggleCollapse 
+}) => {
   const pathname = usePathname();
   const router = useRouter();
   const [approvalsOpen, setApprovalsOpen] = useState(false);
-
-
 
   // Get stored mode from localStorage (set during login)
   const storedMode = typeof window !== 'undefined'
@@ -102,9 +110,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
     }
   ];
 
-  const systemMenuItems: MenuItem[] = [
-    // { icon: <LogOut size={18} />, label: 'Logout', href: '#', isAction: true, onClick: handleLogout }
-  ];
+  const systemMenuItems: MenuItem[] = [];
 
   const menuSections: MenuSection[] =
     resolvedMode === 'admin' ? adminSections : employeeSections;
@@ -120,35 +126,67 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
           'bg-white border-r border-gray-200',
           'transform transition-all duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-          'w-64',
+          isCollapsed ? 'w-20' : 'w-64',
           'flex flex-col',
           disabled && 'opacity-50 pointer-events-none'
         )}
       >
         {/* Sidebar Header */}
-        <div className="h-20 flex items-center justify-between px-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-xl shadow-md">
-              <Building2 size={22} className="text-white" />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-lg font-bold text-gray-900 leading-tight">
-                PayrollPro
-              </h1>
-              <span className="text-xs text-gray-500 font-medium">
-                {resolvedMode === 'admin' ? 'Admin Portal' : 'Employee Portal'}
-              </span>
-            </div>
-          </div>
+        <div className={cn(
+          'h-20 flex items-center border-b border-gray-200',
+          isCollapsed ? 'flex-col justify-center gap-2 px-2' : 'justify-between px-6'
+        )}>
+          {isCollapsed ? (
+            <>
+              <div className="bg-blue-600 p-2 rounded-xl shadow-md">
+                <Building2 size={22} className="text-white" />
+              </div>
+              {/* Toggle Button - Always visible when collapsed */}
+              <button
+                onClick={onToggleCollapse}
+                className="hidden lg:block p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Expand sidebar"
+              >
+                <ChevronRight size={16} className="text-gray-600" />
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-600 p-2 rounded-xl shadow-md">
+                  <Building2 size={22} className="text-white" />
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-bold text-gray-900 leading-tight">
+                    PayrollPro
+                  </h1>
+                  <span className="text-xs text-gray-500 font-medium">
+                    {resolvedMode === 'admin' ? 'Admin Portal' : 'Employee Portal'}
+                  </span>
+                </div>
+              </div>
 
-          {/* Close button for mobile */}
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Close menu"
-          >
-            <X size={20} className="text-gray-600" />
-          </button>
+              <div className="flex items-center gap-2">
+                {/* Toggle Button - Desktop Only */}
+                <button
+                  onClick={onToggleCollapse}
+                  className="hidden lg:block p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Collapse sidebar"
+                >
+                  <ChevronLeft size={18} className="text-gray-600" />
+                </button>
+
+                {/* Close button for mobile */}
+                <button
+                  onClick={onClose}
+                  className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X size={20} className="text-gray-600" />
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Navigation Menu */}
@@ -163,7 +201,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
                     pathname?.startsWith(item.href + '/');
 
                   const linkClasses = cn(
-                    'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
+                    'w-full flex items-center rounded-lg transition-colors',
+                    isCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3',
                     isActive
                       ? 'bg-blue-50 border-l-4 border-blue-700 text-blue-700 font-medium'
                       : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
@@ -181,9 +220,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
                             linkClasses,
                             'hover:bg-red-50 hover:text-red-700'
                           )}
+                          title={isCollapsed ? item.label : undefined}
                         >
                           <span className="flex-shrink-0">{item.icon}</span>
-                          <span>{item.label}</span>
+                          {!isCollapsed && <span>{item.label}</span>}
                         </button>
                       </li>
                     );
@@ -195,9 +235,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
                         href={item.href}
                         onClick={onClose}
                         className={linkClasses}
+                        title={isCollapsed ? item.label : undefined}
                       >
                         <span className="flex-shrink-0">{item.icon}</span>
-                        <span>{item.label}</span>
+                        {!isCollapsed && <span>{item.label}</span>}
                       </Link>
                     </li>
                   );
@@ -207,7 +248,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
           ))}
 
           {/* Collapsible Approvals Section (Admin Only) */}
-          {showApprovals && (
+          {showApprovals && !isCollapsed && (
             <div className="mb-6">
               <button
                 onClick={() => setApprovalsOpen(!approvalsOpen)}
@@ -251,28 +292,51 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, mode, disabled }) =>
             </div>
           )}
 
+          {/* Approvals as single icon when collapsed */}
+          {showApprovals && isCollapsed && (
+            <div className="mb-6">
+              <Link
+                href="/admin/approvals/reimbursements"
+                onClick={onClose}
+                className={cn(
+                  'w-full flex items-center justify-center p-3 rounded-lg transition-colors',
+                  isApprovalsActive
+                    ? 'bg-blue-50 text-blue-700 font-medium'
+                    : 'text-gray-700 hover:bg-gray-100'
+                )}
+                title="Approvals"
+              >
+                <FileCheck className="h-5 w-5" />
+              </Link>
+            </div>
+          )}
+
           {/* System Menu Items (Logout) */}
-          <div className="border-t border-gray-200 pt-4">
-            <ul className="space-y-1">
-              {systemMenuItems.map((item, idx) => (
-                <li key={idx}>
-                  <button
-                    onClick={() => {
-                      item.onClick?.();
-                      onClose();
-                    }}
-                    className={cn(
-                      'w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors',
-                      'text-gray-700 hover:bg-red-50 hover:text-red-700'
-                    )}
-                  >
-                    <span className="flex-shrink-0">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {systemMenuItems.length > 0 && (
+            <div className="border-t border-gray-200 pt-4">
+              <ul className="space-y-1">
+                {systemMenuItems.map((item, idx) => (
+                  <li key={idx}>
+                    <button
+                      onClick={() => {
+                        item.onClick?.();
+                        onClose();
+                      }}
+                      className={cn(
+                        'w-full flex items-center rounded-lg transition-colors',
+                        isCollapsed ? 'justify-center p-3' : 'gap-3 px-4 py-3',
+                        'text-gray-700 hover:bg-red-50 hover:text-red-700'
+                      )}
+                      title={isCollapsed ? item.label : undefined}
+                    >
+                      <span className="flex-shrink-0">{item.icon}</span>
+                      {!isCollapsed && <span>{item.label}</span>}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </nav>
       </aside>
 

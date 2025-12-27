@@ -15,6 +15,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isSetupComplete, setIsSetupComplete] = useState(false);
   const pathname = usePathname();
 
@@ -72,10 +73,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         disabled={isSidebarDisabled}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
-      {/* Main Content */}
-      <main className="lg:ml-64 pt-16">
+      {/* Main Content - adjusts based on sidebar state */}
+      <main 
+        className={`
+          transition-all duration-300 ease-in-out
+          pt-20
+          ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'}
+        `}
+      >
         <div className="p-6 lg:p-8">
           {children}
         </div>
