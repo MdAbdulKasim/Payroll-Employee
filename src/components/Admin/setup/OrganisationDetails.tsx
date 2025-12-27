@@ -19,8 +19,7 @@ export default function OrganizationDetails({ onComplete }: OrganizationDetailsP
         businessLocation: organizationData?.businessLocation || '',
         industry: organizationData?.industry || '',
         dateFormat: organizationData?.dateFormat || 'DD/MM/YYYY',
-        address: organizationData?.address || '',
-        headOfOrganization: organizationData?.headOfOrganization || ''
+        address: organizationData?.address || ''
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -113,15 +112,7 @@ export default function OrganizationDetails({ onComplete }: OrganizationDetailsP
                     />
                 </div>
 
-                <div className="col-span-2 space-y-2">
-                    <Label htmlFor="headOfOrganization">Head of Organization</Label>
-                    <Input
-                        id="headOfOrganization"
-                        placeholder="Enter name of organization head"
-                        value={formData.headOfOrganization}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('headOfOrganization', e.target.value)}
-                    />
-                </div>
+
             </div>
 
             <div className="flex justify-end gap-4">

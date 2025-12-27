@@ -43,7 +43,6 @@ interface OrganizationData {
     industry: string;
     dateFormat: string;
     address: string;
-    headOfOrganization: string;
     headOffice?: string;
     headOfficeCity?: string;
     headOfficeState?: string;
@@ -78,8 +77,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         businessLocation: '',
         industry: '',
         dateFormat: 'DD/MM/YYYY',
-        address: '',
-        headOfOrganization: ''
+        address: ''
     });
 
     const [employees, setEmployees] = useState<Employee[]>([
