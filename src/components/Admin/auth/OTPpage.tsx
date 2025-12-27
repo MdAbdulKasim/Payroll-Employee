@@ -12,13 +12,23 @@ export default function PayrollProOTPVerify() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get user email from sessionStorage
+    // Get user email and role from sessionStorage
     const email = sessionStorage.getItem('userEmail');
+    const userRole = sessionStorage.getItem('userRole');
+
     if (email) {
       setUserEmail(email);
     } else {
       // If no email found, redirect back to login
       router.push('/login');
+      return;
+    }
+
+    // If user is an employee, they shouldn't be here - redirect to dashboard
+    if (userRole === 'employee') {
+      const redirectTo = sessionStorage.getItem('redirectTo') || '/employee/dashboard';
+      router.push(redirectTo);
+      return;
     }
 
     // Focus first input on mount
@@ -51,7 +61,7 @@ export default function PayrollProOTPVerify() {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text').slice(0, 6);
     const digits = pastedData.split('').filter(char => /^\d$/.test(char));
-    
+
     const newOtp = [...otp];
     digits.forEach((digit, index) => {
       if (index < 6) {
@@ -74,32 +84,28 @@ export default function PayrollProOTPVerify() {
     }
 
     setIsLoading(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
       setIsVerified(true);
-      
+
       // Redirect to appropriate dashboard after 2 seconds
       setTimeout(() => {
         const redirectTo = sessionStorage.getItem('redirectTo');
         const userRole = sessionStorage.getItem('userRole');
-        
-        // Clear session storage
-        sessionStorage.removeItem('userEmail');
-        sessionStorage.removeItem('userRole');
-        sessionStorage.removeItem('redirectTo');
-        
+
         // Redirect based on role
         if (redirectTo) {
           router.push(redirectTo);
         } else if (userRole === 'admin') {
-          router.push('/admin/setup');
-        } else if (userRole === 'employee') {
-          router.push('/employee/dashboard');
-        } else {
-          router.push('/dashboard');
+          router.push('/login');
         }
+
+        // Clear session storage after redirection (or just before)
+        sessionStorage.removeItem('userEmail');
+        sessionStorage.removeItem('userRole');
+        sessionStorage.removeItem('redirectTo');
       }, 2000);
     }, 1500);
   };
@@ -181,38 +187,38 @@ export default function PayrollProOTPVerify() {
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-2 xs:p-4">
       <div className="w-full max-w-[280px] xs:max-w-sm sm:max-w-md">
         {/* Logo and Brand */}
-        <div className="flex items-center justify-center mb-6 xs:mb-8">
-          <div className="bg-blue-600 rounded-xl p-2.5 xs:p-3 shadow-lg">
-            <FileText className="w-6 h-6 xs:w-7 xs:h-7 text-white" />
+        <div className="flex items-center justify-center mb-8">
+          <div className="bg-blue-600 rounded-xl p-3 shadow-lg shadow-blue-500/20">
+            <FileText className="w-7 h-7 text-white" />
           </div>
-          <div className="ml-3 xs:ml-4">
-            <h1 className="text-lg xs:text-xl sm:text-2xl font-bold text-gray-900">
+          <div className="ml-4 text-left">
+            <h1 className="text-2xl font-bold text-gray-900 leading-tight tracking-tight">
               PayrollPro
             </h1>
-            <p className="text-[10px] xs:text-xs text-gray-500">
-              Employee Portal
+            <p className="text-[10px] font-semibold text-gray-400 tracking-[0.2em] uppercase">
+              Financial Suite
             </p>
           </div>
         </div>
 
         {/* OTP Verification Card */}
-        <div className="bg-white rounded-lg xs:rounded-xl shadow-xl p-5 xs:p-6 sm:p-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
           {/* Lock Icon */}
-          <div className="flex justify-center mb-4 xs:mb-5">
-            <div className="bg-blue-50 rounded-full p-3 xs:p-4">
-              <Lock className="w-6 h-6 xs:w-7 xs:h-7 sm:w-8 sm:h-8 text-blue-600" />
+          <div className="flex justify-center mb-6">
+            <div className="bg-blue-50 rounded-full p-4">
+              <Lock className="w-8 h-8 text-blue-600" />
             </div>
           </div>
 
           {/* Title */}
-          <div className="text-center mb-4 xs:mb-5">
-            <h2 className="text-lg xs:text-xl sm:text-2xl font-semibold text-gray-900 mb-2">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Verify OTP
             </h2>
-            <p className="text-xs xs:text-sm text-gray-600 leading-relaxed px-2">
-              Enter the 6-digit code sent to
+            <p className="text-sm text-gray-500 leading-relaxed">
+              To secure your payroll data, please enter the 6-digit code sent to
             </p>
-            <p className="text-xs xs:text-sm font-medium text-gray-900 mt-1">
+            <p className="text-sm font-semibold text-gray-900 mt-1">
               {userEmail || 'your email'}
             </p>
           </div>

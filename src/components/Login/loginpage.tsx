@@ -33,7 +33,7 @@ export default function PayrollLogin() {
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("redirectTo", "/admin/setup");
         router.push("/admin/setup");
-       
+
         return;
       }
 
@@ -44,7 +44,7 @@ export default function PayrollLogin() {
         sessionStorage.setItem("userRole", "employee");
         sessionStorage.setItem("redirectTo", "/employee/dashboard");
         router.push("/employee/dashboard");
-    
+
         return;
       }
 
@@ -57,24 +57,24 @@ export default function PayrollLogin() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-blue-600 p-3 rounded-xl shadow">
-            <FileText className="w-7 h-7 text-white" />
+          <div className="bg-[#2563EB] p-3 rounded-xl shadow-lg shadow-blue-500/20">
+            <FileText className="w-8 h-8 text-white" />
           </div>
-          <h1 className="mt-3 text-2xl font-bold text-gray-900">
+          <h1 className="mt-3 text-3xl font-bold text-gray-900 tracking-tight">
             PayrollPro
           </h1>
-          <p className="text-sm text-gray-500">
-            Employee Portal
+          <p className="text-[10px] font-semibold text-gray-400 tracking-[0.2em] uppercase">
+            Financial Suite
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-xl shadow-md px-6 py-8">
-          <h2 className="text-xl font-semibold text-center text-gray-900">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 px-8 py-10">
+          <h2 className="text-2xl font-bold text-center text-gray-900">
             Welcome Back
           </h2>
-          <p className="text-sm text-center text-gray-500 mt-1">
-            Enter your email to receive a verification code
+          <p className="text-sm text-center text-gray-500 mt-2">
+            Securely access your payroll dashboard and manage team finances.
           </p>
 
           <div className="mt-6 space-y-4">

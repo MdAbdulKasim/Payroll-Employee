@@ -1,9 +1,9 @@
-import LoginPage from "@/components/Admin/auth/Registration";
+import RegistrationPage from "@/components/Admin/auth/Registration";
 
 export default function Page() {
   return(
 
-       <LoginPage/>
+       <RegistrationPage/>
   
   );
 }
