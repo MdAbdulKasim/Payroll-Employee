@@ -22,15 +22,16 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
             'Name',
             'Email',
             'Department',
+            'Organization',
             'Month',
             'Loss of Pay'
         ];
 
         const sampleData = [
-            ['John Doe', 'john.doe@company.com', 'Engineering', 'January 2025', '2'],
-            ['Jane Smith', 'jane.smith@company.com', 'Marketing', 'January 2025', '0'],
-            ['Mike Johnson', 'mike.johnson@company.com', 'Sales', 'February 2025', '1'],
-            ['Sarah Williams', 'sarah.williams@company.com', 'HR', 'February 2025', '3']
+            ['John Doe', 'john.doe@company.com', 'Engineering', 'Tech Corp', 'January 2025', '2'],
+            ['Jane Smith', 'jane.smith@company.com', 'Marketing', 'Tech Corp', 'January 2025', '0'],
+            ['Mike Johnson', 'mike.johnson@company.com', 'Sales', 'Business Inc', 'February 2025', '1'],
+            ['Sarah Williams', 'sarah.williams@company.com', 'HR', 'Tech Corp', 'February 2025', '3']
         ];
 
         if (format === 'csv') {
@@ -94,6 +95,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                     'Name',
                     'Email',
                     'Department',
+                    'Organization',
                     'Month',
                     'Loss of Pay'
                 ];
@@ -158,6 +160,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                 name: row['Name'] || '',
                 email: row['Email'] || '',
                 department: row['Department'] || '',
+                organization: row['Organization'] || '',
                 month: row['Month'] || '',
                 lossOfPay: parseInt(row['Loss of Pay'] || '0')
             }));
@@ -291,6 +294,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                                         <th className="px-4 py-2 text-left">Name</th>
                                         <th className="px-4 py-2 text-left">Email</th>
                                         <th className="px-4 py-2 text-left">Department</th>
+                                        <th className="px-4 py-2 text-left">Organization</th>
                                         <th className="px-4 py-2 text-left">Month</th>
                                         <th className="px-4 py-2 text-left">Loss of Pay</th>
                                     </tr>
@@ -301,6 +305,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                                             <td className="px-4 py-2">{row['Name']}</td>
                                             <td className="px-4 py-2">{row['Email']}</td>
                                             <td className="px-4 py-2">{row['Department']}</td>
+                                            <td className="px-4 py-2">{row['Organization']}</td>
                                             <td className="px-4 py-2">{row['Month']}</td>
                                             <td className="px-4 py-2">
                                                 <span className={parseInt(row['Loss of Pay'] || '0') > 0 ? 'text-red-600 font-medium' : 'text-green-600'}>
@@ -340,6 +345,10 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                                 <li className="flex gap-2 text-sm">
                                     <span className="text-red-600 font-bold">*</span>
                                     <span><strong>Department</strong> - Department name (e.g., Engineering, HR, Marketing)</span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span className="text-red-600 font-bold">*</span>
+                                    <span><strong>Organization</strong> - Organization name (e.g., Tech Corp, Business Inc)</span>
                                 </li>
                                 <li className="flex gap-2 text-sm">
                                     <span className="text-red-600 font-bold">*</span>
