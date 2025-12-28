@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -36,17 +36,29 @@ export default function RecordPaymentPage() {
   const [showPaymentDialog, setShowPaymentDialog] = useState(false)
   const [paymentDate, setPaymentDate] = useState("14/01/2026")
   const [sendPayslipNotification, setSendPayslipNotification] = useState(true)
+  const [payrun, setPayrun] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  const payrun = payruns.find(p => p.id === id) || {
-    id: "mock",
-    month: "December",
-    year: 2025,
-    employeeCount: 1,
-    totalAmount: 2000,
-    status: "draft",
-    type: "regular",
-    paymentDate: "15 Dec 2025",
-    employeeIds: []
+  useEffect(() => {
+    fetchPayrunDetails()
+  }, [id])
+
+  const fetchPayrunDetails = async () => {
+    setIsLoading(true)
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch(`/api/payruns/${id}`);
+      // const data = await response.json();
+      // setPayrun(data);
+      
+      // Temporary: Use context data
+      const foundPayrun = payruns.find(p => p.id === id)
+      setPayrun(foundPayrun)
+    } catch (error) {
+      console.error('Error fetching payrun details:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const title =
@@ -56,12 +68,46 @@ export default function RecordPaymentPage() {
         ? "Off Cycle Payroll"
         : "Regular Payroll"
 
-  const handleConfirmPayment = () => {
-    if (id) {
-      updatePayRun(id, { status: 'paid' })
+  const handleConfirmPayment = async () => {
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch(`/api/payruns/${id}/record-payment`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     paymentDate,
+      //     sendPayslipNotification
+      //   })
+      // });
+      // const data = await response.json();
+      
+      if (id) {
+        updatePayRun(id, { status: 'paid' })
+      }
+      setShowPaymentDialog(false)
+      router.push("/admin/payrun")
+    } catch (error) {
+      console.error('Error recording payment:', error)
     }
-    setShowPaymentDialog(false)
-    router.push("/admin/payrun")
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <p className="text-gray-500">Loading payrun details...</p>
+      </div>
+    )
+  }
+
+  if (!payrun) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500 mb-4">Payrun not found</p>
+          <Button onClick={() => router.back()}>Go Back</Button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -89,7 +135,7 @@ export default function RecordPaymentPage() {
       <div className="container mx-auto px-6 py-4">
         <div className="bg-gray-100 rounded-lg p-6 grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>
-            <p className="text-xs text-gray-500 mb-1">Period: December 2025</p>
+            <p className="text-xs text-gray-500 mb-1">Period: {payrun.month} {payrun.year}</p>
             <p className="text-2xl font-semibold">₹{payrun.totalAmount?.toLocaleString()}</p>
             <p className="text-xs text-gray-500">PAYROLL COST</p>
           </div>
@@ -103,28 +149,16 @@ export default function RecordPaymentPage() {
             <p className="text-xs text-gray-500">{payrun.month?.toUpperCase()}, {payrun.year}</p>
             <p className="text-xs text-gray-500 mt-1">{payrun.employeeCount} Employees</p>
           </div>
-          {/* <div>
-            <p className="text-sm font-medium mb-2">Taxes & Deductions</p>
-            <div className="space-y-1 text-sm">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Taxes</span>
-                <span>₹0.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Benefits</span>
-                <span>₹0.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Donations</span>
-                <span>₹0.00</span>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
 
       <div className="container mx-auto px-6 py-6">
-        <EmployeeSummaryTab payrunId={id!} employeeIds={payrun.employeeIds} totalAmount={payrun.totalAmount || 0} employeeCount={payrun.employeeCount || 0} />
+        <EmployeeSummaryTab 
+          payrunId={id!} 
+          employeeIds={payrun.employeeIds} 
+          totalAmount={payrun.totalAmount || 0} 
+          employeeCount={payrun.employeeCount || 0} 
+        />
       </div>
 
       {/* RECORD PAYMENT DIALOG */}
@@ -239,10 +273,8 @@ function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount 
 
   const payrunEmployees = employees.filter(emp => employeeIds?.includes(emp.id))
 
-  // Get unique departments for the filter
   const departments = ["All Departments", ...Array.from(new Set(payrunEmployees.map(emp => emp.department).filter(Boolean) as string[]))]
 
-  // Filter employees based on search and department
   const filteredEmployees = payrunEmployees.filter(emp => {
     const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.id.toLowerCase().includes(searchTerm.toLowerCase())
@@ -250,7 +282,6 @@ function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount 
     return matchesSearch && matchesDept
   })
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const paginatedEmployees = filteredEmployees.slice(startIndex, startIndex + itemsPerPage)
@@ -411,191 +442,3 @@ function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount 
     </div>
   )
 }
-
-/* ---------- TAXES & DEDUCTIONS TAB ---------- */
-function TaxesDeductionsTab() {
-  return (
-    <div className="space-y-6">
-      {/* TAX DETAILS */}
-      <div className="bg-white border rounded-lg p-6">
-        <h3 className="font-semibold mb-4">Tax Details</h3>
-        <table className="w-full text-sm">
-          <thead className="border-b">
-            <tr>
-              <th className="text-left py-3 font-medium">TAX NAME</th>
-              <th className="text-right py-3 font-medium">PAID BY EMPLOYER</th>
-              <th className="text-right py-3 font-medium">PAID BY EMPLOYEE</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="border-b">
-              <td className="py-3">Income Tax</td>
-              <td className="text-right py-3">₹0.00</td>
-              <td className="text-right py-3">₹0.00</td>
-            </tr>
-            <tr className="font-medium">
-              <td className="py-3">Total</td>
-              <td className="text-right py-3">₹0.00</td>
-              <td className="text-right py-3">₹0.00</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      {/* BENEFITS */}
-      {/* <div className="bg-white border rounded-lg p-6">
-        <h3 className="font-semibold mb-4">Benefits</h3>
-        <table className="w-full text-sm">
-          <thead className="border-b">
-            <tr>
-              <th className="text-left py-3 font-medium">BENEFIT NAME</th>
-              <th className="text-right py-3 font-medium">EMPLOYER'S CONTRIBUTION</th>
-              <th className="text-right py-3 font-medium">EMPLOYEES' CONTRIBUTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={3} className="text-center py-8 text-gray-500">
-                There are no deductions present in this payrun.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div> */}
-
-      {/* DONATIONS */}
-      {/* <div className="bg-white border rounded-lg p-6">
-        <h3 className="font-semibold mb-4">Donations</h3>
-        <table className="w-full text-sm">
-          <thead className="border-b">
-            <tr>
-              <th className="text-left py-3 font-medium">DEDUCTION NAME</th>
-              <th className="text-right py-3 font-medium">EMPLOYEES' CONTRIBUTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={2} className="text-center py-8 text-gray-500">
-                There are no donations present in this payrun.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div> */}
-    </div>
-  )
-}
-
-/* ---------- OVERALL INSIGHTS TAB ---------- */
-// function OverallInsightsTab() {
-//   return (
-//     <div className="space-y-6">
-//       <h2 className="text-lg font-semibold">Insights for December 2025 Payrun</h2>
-
-//       {/* EMPLOYEE BREAKDOWN */}
-//       <div className="bg-white border rounded-lg p-6">
-//         <h3 className="font-semibold mb-6">Employee Breakdown</h3>
-//         <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-//           <div className="text-center">
-//             <div className="text-3xl mb-2">👤</div>
-//             <div className="text-sm text-gray-500">Active Employees</div>
-//             <div className="text-2xl font-semibold">1</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">Paid Employees</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">Skipped Employees</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">New Joiners Skipped</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">Salary Withheld Employees</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">New Joiner's Arrear Released</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">Salary Released Employees</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//           <div className="text-center">
-//             <div className="text-sm text-gray-500">Lop Reversed Employees</div>
-//             <div className="text-2xl font-semibold">0</div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* STATUTORY & PAYMENT MODE */}
-//       <div className="grid md:grid-cols-2 gap-6">
-//         {/* STATUTORY SUMMARY */}
-//         <div className="bg-white border rounded-lg p-6">
-//           <h3 className="font-semibold mb-4">Statutory Summary</h3>
-//           <div className="text-center py-8 text-gray-500">No data to display</div>
-//         </div>
-
-//         {/* PAYMENT MODE SUMMARY */}
-//         <div className="bg-white border rounded-lg p-6">
-//           <h3 className="font-semibold mb-4">Payment Mode Summary</h3>
-//           <div className="space-y-3 text-sm">
-//             <div className="flex justify-between py-2 border-b">
-//               <span>Direct Deposit Payment Mode</span>
-//               <span className="font-medium">0</span>
-//             </div>
-//             <div className="flex justify-between py-2 border-b">
-//               <span>Bank Transfer Payment Mode</span>
-//               <span className="font-medium">0</span>
-//             </div>
-//             <div className="flex justify-between py-2 border-b">
-//               <span>Cheque Payment Mode</span>
-//               <span className="font-medium">1</span>
-//             </div>
-//             <div className="flex justify-between py-2">
-//               <span>Cash Payment Mode</span>
-//               <span className="font-medium">0</span>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* COMPONENT WISE BREAKDOWN */}
-//       <div className="bg-white border rounded-lg p-6">
-//         <h3 className="font-semibold mb-4">Component Wise Breakdown</h3>
-//         <table className="w-full text-sm">
-//           <thead className="border-b">
-//             <tr>
-//               <th className="text-left py-3 font-medium">COMPONENTS</th>
-//               <th className="text-right py-3 font-medium">EMPLOYEES INVOLVED</th>
-//               <th className="text-right py-3 font-medium">TOTAL AMOUNT</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             <tr className="border-b">
-//               <td className="py-3">
-//                 <button className="text-blue-600">▼ One Time Earning</button>
-//               </td>
-//               <td className="text-right py-3"></td>
-//               <td className="text-right py-3 font-medium">₹2,000.00</td>
-//             </tr>
-//             <tr className="border-b bg-gray-50">
-//               <td className="py-3 pl-8">Bonus</td>
-//               <td className="text-right py-3">1</td>
-//               <td className="text-right py-3">₹2,000.00</td>
-//             </tr>
-//             <tr className="font-medium">
-//               <td className="py-3">Total Earnings</td>
-//               <td className="text-right py-3"></td>
-//               <td className="text-right py-3">₹2,000.00</td>
-//             </tr>
-//           </tbody>
-//         </table>
-//       </div>
-//     </div>
-//   )
-// }

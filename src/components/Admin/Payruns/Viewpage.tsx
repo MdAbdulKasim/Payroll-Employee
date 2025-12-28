@@ -29,17 +29,22 @@ export default function PayrunDetailsPage() {
   const id = searchParams.get("id")
   const type = searchParams.get("type") // regular | onetime | offcycle
 
-  // 🔹 Mock data
-  const payrun = payruns.find(p => p.id === id) || {
-    id: "mock",
-    month: "December",
-    year: 2025,
-    employeeCount: 1,
-    totalAmount: 2000,
-    status: "draft",
-    type: "regular",
-    paymentDate: "15 Dec 2025",
-    employeeIds: []
+  // Get the actual payrun data or null
+  const payrun = payruns.find(p => p.id === id)
+
+  // Handle case where payrun is not found
+  if (!payrun) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Payrun not found</h2>
+          <p className="text-gray-600 mb-4">The requested payrun could not be found.</p>
+          <Button onClick={() => router.push("/admin/payrun")}>
+            Back to Payruns
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   const title =
@@ -49,9 +54,9 @@ export default function PayrunDetailsPage() {
         ? "Off Cycle Payroll"
         : "Regular Payroll"
 
-  // 🔹 EDIT STATE
-  const [netPay, setNetPay] = useState(2000)
-  const [grossPay, setGrossPay] = useState(2000)
+  // EDIT STATE
+  const [netPay, setNetPay] = useState(payrun.totalAmount || 0)
+  const [grossPay, setGrossPay] = useState(payrun.totalAmount || 0)
   const [openEdit, setOpenEdit] = useState(false)
   const [tempNet, setTempNet] = useState(netPay)
   const [tempGross, setTempGross] = useState(grossPay)
@@ -60,6 +65,7 @@ export default function PayrunDetailsPage() {
     setNetPay(tempNet)
     setGrossPay(tempGross)
     setOpenEdit(false)
+    // TODO: Update payrun with new amounts via updatePayRun
   }
 
   return (
@@ -90,7 +96,8 @@ export default function PayrunDetailsPage() {
       </div>
 
       {/* OVERDUE WARNING */}
-      {/* (payrun.overdue && (
+      {/* Uncomment when overdue property is added to PayRun type
+      {payrun.overdue && (
         <div className="container mx-auto px-6">
           <div className="flex gap-2 items-center bg-red-50 text-red-700 p-3 rounded-md">
             <AlertTriangle className="h-4 w-4" />
@@ -99,18 +106,25 @@ export default function PayrunDetailsPage() {
             </p>
           </div>
         </div>
-      )) */}
+      )}
+      */}
 
       {/* SUMMARY */}
       <div className="container mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-4 gap-4">
         <SummaryCard label="Period" value={`${payrun.month} ${payrun.year}`} />
-        <SummaryCard label="Payroll Cost" value={`₹${payrun.totalAmount}`} />
-        <SummaryCard label="Net Pay" value={`₹${payrun.totalAmount}`} />
+        <SummaryCard label="Payroll Cost" value={`₹${payrun.totalAmount?.toLocaleString() || 0}`} />
+        <SummaryCard label="Net Pay" value={`₹${payrun.totalAmount?.toLocaleString() || 0}`} />
         <SummaryCard label="Pay Day" value={payrun.paymentDate || "N/A"} />
       </div>
 
       <div className="container mx-auto px-6 py-6">
-        <EmployeeSummaryTab payrunId={id!} employeeIds={payrun.employeeIds} totalAmount={payrun.totalAmount || 0} employeeCount={payrun.employeeCount || 0} readOnly={payrun.status === 'paid'} />
+        <EmployeeSummaryTab 
+          payrunId={id} 
+          employeeIds={payrun.employeeIds || []} 
+          totalAmount={payrun.totalAmount || 0} 
+          employeeCount={payrun.employeeCount || 0} 
+          readOnly={payrun.status === 'paid'} 
+        />
       </div>
 
       {/* EDIT DIALOG */}
@@ -154,14 +168,26 @@ export default function PayrunDetailsPage() {
 
 /* ------------------ COMPONENT ------------------ */
 
-function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount, readOnly }: { payrunId: string, employeeIds?: string[], totalAmount: number, employeeCount: number, readOnly?: boolean }) {
+function EmployeeSummaryTab({ 
+  payrunId, 
+  employeeIds, 
+  totalAmount, 
+  employeeCount, 
+  readOnly 
+}: { 
+  payrunId: string | null
+  employeeIds: string[]
+  totalAmount: number
+  employeeCount: number
+  readOnly?: boolean 
+}) {
   const { employees, updatePayRun } = useApp()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedDept, setSelectedDept] = useState("All Departments")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 5
 
-  const payrunEmployees = employees.filter(emp => employeeIds?.includes(emp.id))
+  const payrunEmployees = employees.filter(emp => employeeIds.includes(emp.id))
 
   // Get unique departments for the filter
   const departments = ["All Departments", ...Array.from(new Set(payrunEmployees.map(emp => emp.department).filter(Boolean) as string[]))]
@@ -182,8 +208,9 @@ function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount,
   const amountPerEmployee = employeeCount > 0 ? totalAmount / employeeCount : 0
 
   const handleToggleEmployee = (id: string) => {
-    if (readOnly) return
-    let newIds = employeeIds ? [...employeeIds] : []
+    if (readOnly || !payrunId) return
+    
+    let newIds = [...employeeIds]
     if (newIds.includes(id)) {
       newIds = newIds.filter(eid => eid !== id)
     } else {
@@ -235,16 +262,22 @@ function EmployeeSummaryTab({ payrunId, employeeIds, totalAmount, employeeCount,
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 max-h-64 overflow-y-auto">
-                {employees.map(emp => (
-                  <DropdownMenuCheckboxItem
-                    key={emp.id}
-                    checked={employeeIds?.includes(emp.id)}
-                    onCheckedChange={() => handleToggleEmployee(emp.id)}
-                    onSelect={(e) => e.preventDefault()}
-                  >
-                    {emp.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
+                {employees.length === 0 ? (
+                  <div className="px-2 py-4 text-center text-sm text-gray-500">
+                    No employees available
+                  </div>
+                ) : (
+                  employees.map(emp => (
+                    <DropdownMenuCheckboxItem
+                      key={emp.id}
+                      checked={employeeIds.includes(emp.id)}
+                      onCheckedChange={() => handleToggleEmployee(emp.id)}
+                      onSelect={(e) => e.preventDefault()}
+                    >
+                      {emp.name}
+                    </DropdownMenuCheckboxItem>
+                  ))
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           )}

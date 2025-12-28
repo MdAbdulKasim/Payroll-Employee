@@ -18,18 +18,25 @@ interface Benefit {
   selectedEmployees?: string[];
 }
 
+interface Employee {
+  id: string;
+  name: string;
+}
+
 interface EditBenefitDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (benefit: Omit<Benefit, 'id' | 'assignedEmployees' | 'totalAmount'>) => void;
   benefit: Benefit | null;
+  employees: Employee[]; // Now required from parent
 }
 
 export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({ 
   open, 
   onOpenChange, 
   onSubmit,
-  benefit 
+  benefit,
+  employees // Get employees from parent component
 }) => {
   const [formData, setFormData] = useState({
     selectedEmployees: [] as string[],
@@ -49,19 +56,28 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
   const [showNameDropdown, setShowNameDropdown] = useState(false);
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
 
-  const allEmployees = [
-    { id: '1', name: 'Rajesh Kumar' },
-    { id: '2', name: 'Priya Sharma' },
-    { id: '3', name: 'Amit Patel' },
-    { id: '4', name: 'Sneha Reddy' },
-    { id: '5', name: 'Vikram Singh' },
-    { id: '6', name: 'Deepika Iyer' },
-    { id: '7', name: 'Arjun Mehta' },
-    { id: '8', name: 'Kavita Nair' },
-    { id: '9', name: 'Rahul Gupta' },
-    { id: '10', name: 'Anjali Desai' }
+  // Predefined options (can be moved to constants file or fetched from API)
+  const benefitNames = [
+    'Petrol Allowance', 'Housing Allowance', 'Travel Allowance', 'Meal Allowance',
+    'Internet Allowance', 'Health Insurance', 'Education Allowance', 'Phone Allowance',
+    'Fitness Allowance', 'Transportation Allowance', 'Medical Allowance', 'Book Allowance',
+    'Uniform Allowance', 'Parking Allowance', 'Child Care Allowance'
   ];
 
+  const benefitTypes = [
+    'Travel', 'Accommodation', 'Food', 'Utility', 'Insurance', 'Education',
+    'Communication', 'Health & Wellness', 'Transportation', 'Personal Development',
+    'Family Support', 'Entertainment'
+  ];
+
+  const frequencies = ['Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 'One-time'];
+  
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ];
+
+  // Load benefit data when dialog opens
   useEffect(() => {
     if (benefit && open) {
       setFormData({
@@ -80,6 +96,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
     }
   }, [benefit, open]);
 
+  // Handle click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = () => {
       setShowEmployeeDropdown(false);
@@ -96,26 +113,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
     };
   }, [open]);
 
-  const benefitNames = [
-    'Petrol Allowance', 'Housing Allowance', 'Travel Allowance', 'Meal Allowance',
-    'Internet Allowance', 'Health Insurance', 'Education Allowance', 'Phone Allowance',
-    'Fitness Allowance', 'Transportation Allowance', 'Medical Allowance', 'Book Allowance',
-    'Uniform Allowance', 'Parking Allowance', 'Child Care Allowance'
-  ];
-
-  const benefitTypes = [
-    'Travel', 'Accommodation', 'Food', 'Utility', 'Insurance', 'Education',
-    'Communication', 'Health & Wellness', 'Transportation', 'Personal Development',
-    'Family Support', 'Entertainment'
-  ];
-
-  const frequencies = ['Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 'One-time'];
-  const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' }
-  ];
-
-  const filteredEmployees = allEmployees.filter(emp => 
+  const filteredEmployees = employees.filter(emp => 
     emp.name.toLowerCase().includes(employeeSearch.toLowerCase())
   );
 
@@ -137,17 +135,18 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
   };
 
   const handleSelectAllEmployees = () => {
-    if (formData.selectedEmployees.length === allEmployees.length) {
+    if (formData.selectedEmployees.length === employees.length) {
       setFormData(prev => ({ ...prev, selectedEmployees: [] }));
     } else {
       setFormData(prev => ({ 
         ...prev, 
-        selectedEmployees: allEmployees.map(emp => emp.id) 
+        selectedEmployees: employees.map(emp => emp.id) 
       }));
     }
   };
 
   const handleSubmit = () => {
+    // Validation
     if (formData.selectedEmployees.length === 0) {
       alert('Please select at least one employee');
       return;
@@ -166,6 +165,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
     }
 
     onSubmit(formData);
+    onOpenChange(false);
   };
 
   const handleCancel = () => {
@@ -189,7 +189,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
                 Edit Benefit
               </h2>
               <p className="text-sm text-gray-600 mt-1">
-                Update benefit details for {benefit.id}
+                Update benefit details for {benefit.name}
               </p>
             </div>
             <button
@@ -226,18 +226,20 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
                 />
                 {showEmployeeDropdown && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-64 overflow-y-auto">
-                    <div 
-                      className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center gap-3"
-                      onClick={handleSelectAllEmployees}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={formData.selectedEmployees.length === allEmployees.length && allEmployees.length > 0}
-                        onChange={handleSelectAllEmployees}
-                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
-                      />
-                      <span className="text-sm font-medium text-gray-900">Select All</span>
-                    </div>
+                    {employees.length > 0 && (
+                      <div 
+                        className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b border-gray-100 flex items-center gap-3"
+                        onClick={handleSelectAllEmployees}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.selectedEmployees.length === employees.length && employees.length > 0}
+                          onChange={handleSelectAllEmployees}
+                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-2 focus:ring-blue-500"
+                        />
+                        <span className="text-sm font-medium text-gray-900">Select All</span>
+                      </div>
+                    )}
                     
                     {filteredEmployees.length > 0 ? (
                       filteredEmployees.map((employee) => (
@@ -257,7 +259,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
                       ))
                     ) : (
                       <div className="px-3 py-3 text-sm text-gray-500 text-center">
-                        No employees found
+                        {employees.length === 0 ? 'No employees available' : 'No employees found'}
                       </div>
                     )}
                   </div>
@@ -265,7 +267,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
               </div>
               {formData.selectedEmployees.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {allEmployees
+                  {employees
                     .filter(emp => formData.selectedEmployees.includes(emp.id))
                     .map(emp => (
                       <span 
@@ -361,7 +363,7 @@ export const EditBenefitDialog: React.FC<EditBenefitDialogProps> = ({
                   }}
                 />
                 {showTypeDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-64 overflow-y-auto">
+                  <div className="absolute z-10 Studios mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-64 overflow-y-auto">
                     {filteredTypes.length > 0 ? (
                       filteredTypes.map((type) => (
                         <div

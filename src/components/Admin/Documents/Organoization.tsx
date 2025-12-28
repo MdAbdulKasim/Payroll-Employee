@@ -91,7 +91,6 @@ const OrgFolderPage = () => {
       setUploadedFiles(prev => [...prev, ...newFiles]);
     }
 
-    // Reset input
     e.target.value = '';
   };
 
@@ -107,25 +106,26 @@ const OrgFolderPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO: Replace with actual API call
+      // Example:
+      // const formData = new FormData();
+      // formData.append('folderName', folderName.trim());
+      // formData.append('description', description.trim());
+      // uploadedFiles.forEach((fileData, index) => {
+      //   formData.append(`files[${index}]`, fileData.file);
+      // });
+      // 
+      // const response = await fetch('/api/org-folders', {
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      // 
+      // if (!response.ok) {
+      //   throw new Error('Failed to create org folder');
+      // }
+      // 
+      // const data = await response.json();
 
-      const newFolder: OrgFolder = {
-        id: Date.now().toString(),
-        folderName: folderName.trim(),
-        description: description.trim(),
-        createdDate: new Date().toLocaleDateString('en-GB'),
-        createdBy: 'Current User',
-      };
-
-      // Here you would typically save to your backend/database
-      console.log('Saving org folder:', newFolder);
-      console.log('Uploaded files:', uploadedFiles);
-      
-      // You can also save to localStorage or send to API
-      // Example: localStorage.setItem('orgFolders', JSON.stringify([...existingFolders, newFolder]));
-
-      // Close dialog and navigate back
       setIsOpen(false);
       setTimeout(() => {
         router.back();
@@ -247,7 +247,7 @@ const OrgFolderPage = () => {
                 Uploaded Files ({uploadedFiles.length})
               </Label>
               <div className="border border-gray-200 rounded-md p-2 max-h-[200px] overflow-y-auto space-y-2">
-                {uploadedFiles.map((uploadedFile, index) => (
+                {uploadedFiles.map((uploadedFile) => (
                   <div
                     key={uploadedFile.id}
                     className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-200 hover:bg-gray-100 transition-colors"

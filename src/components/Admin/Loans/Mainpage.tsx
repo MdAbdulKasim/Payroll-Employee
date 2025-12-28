@@ -32,33 +32,21 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+interface Loan {
+  employeeName: string;
+  employeeId: string;
+  loanNumber: string;
+  loanName: string;
+  status: string;
+  loanAmount: string;
+  amountRepaid: string;
+  remainingAmount: string;
+}
+
 export default function LoansPage() {
   const router = useRouter();
 
-  const loansData = [
-    {
-      employeeName: "Mohamed Faizul M",
-      employeeId: "EMP-0012416",
-      loanNumber: "LOAN-00001",
-      loanName: "BUISNESS",
-      status: "Open",
-      loanAmount: "₹40,000.00",
-      amountRepaid: "₹0.00",
-      remainingAmount: "₹40,000.00",
-    },
-    {
-      employeeName: "Shahrukh K",
-      employeeId: "EMP-0012417",
-      loanNumber: "LOAN-00002",
-      loanName: "Personal",
-      status: "Open",
-      loanAmount: "₹25,000.00",
-      amountRepaid: "₹5,000.00",
-      remainingAmount: "₹20,000.00",
-    },
-  ];
-
-  const [loans, setLoans] = useState(loansData);
+  const [loans, setLoans] = useState<Loan[]>([]);
   const [search, setSearch] = useState("");
   const [filtered, setFiltered] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -87,9 +75,9 @@ export default function LoansPage() {
   // Filter
   const handleFilter = () => {
     if (filtered) {
-      setLoans(loansData);
+      setLoans([]);
     } else {
-      setLoans(loansData.filter((loan) => loan.status === "Open"));
+      setLoans(loans.filter((loan) => loan.status === "Open"));
     }
     setFiltered(!filtered);
   };
@@ -168,8 +156,8 @@ export default function LoansPage() {
               </Button>
 
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-2">
+                <DropdownMenuTrigger asChild suppressHydrationWarning>
+                  <Button variant="outline" size="sm" className="gap-2" suppressHydrationWarning>
                     <Download className="w-4 h-4" />
                     <span className="hidden sm:inline">Export</span>
                   </Button>
@@ -256,62 +244,70 @@ export default function LoansPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLoans.map((loan, index) => (
-                  <tr key={index} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <div className="font-medium">{loan.employeeName}</div>
-                      <div className="text-xs text-gray-500">
-                        {loan.employeeId}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-blue-600 font-medium">
-                      {loan.loanNumber}
-                    </td>
-                    <td className="px-4 py-3">{loan.loanName}</td>
-                    <td className="px-4 py-3">
-                      <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                        {loan.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {loan.loanAmount}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {loan.amountRepaid}
-                    </td>
-                    <td className="px-4 py-3 text-right font-medium">
-                      {loan.remainingAmount}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleViewLoan(loan.loanNumber)}
-                          title="View Loan"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEditLoan(loan.loanNumber)}
-                          title="Edit Loan"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteClick(loan.loanNumber)}
-                          title="Delete Loan"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
-                      </div>
+                {filteredLoans.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                      No loans found
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredLoans.map((loan, index) => (
+                    <tr key={index} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <div className="font-medium">{loan.employeeName}</div>
+                        <div className="text-xs text-gray-500">
+                          {loan.employeeId}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-blue-600 font-medium">
+                        {loan.loanNumber}
+                      </td>
+                      <td className="px-4 py-3">{loan.loanName}</td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                          {loan.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {loan.loanAmount}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        {loan.amountRepaid}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        {loan.remainingAmount}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleViewLoan(loan.loanNumber)}
+                            title="View Loan"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEditLoan(loan.loanNumber)}
+                            title="Edit Loan"
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDeleteClick(loan.loanNumber)}
+                            title="Delete Loan"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

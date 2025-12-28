@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,6 @@ import {
   ArrowLeft, 
   Download, 
   FileText, 
-  Image as ImageIcon,
   Calendar,
   User,
   FolderOpen,
@@ -22,6 +21,7 @@ interface FileData {
   type: 'image' | 'file';
   uploadedDate: string;
   preview?: string;
+  url?: string;
 }
 
 interface FolderDetails {
@@ -39,71 +39,73 @@ const OrgFolderDetailsPage = () => {
   const searchParams = useSearchParams();
   const folderId = searchParams?.get('id') || '1';
 
-  // Mock data - Replace with actual data fetching
-  const [folderDetails] = useState<FolderDetails>({
-    id: folderId,
-    folderName: 'Payroll Report May',
-    description: 'Monthly payroll report containing salary details, deductions, and tax calculations for all employees for the month of May 2025.',
-    createdDate: '15/06/2025',
-    createdBy: 'Finance Team',
-    category: 'Payroll',
-    files: [
-      {
-        id: '1',
-        name: 'Payroll_Summary_May.pdf',
-        size: '1.2 MB',
-        type: 'file',
-        uploadedDate: '15/06/2025'
-      },
-      {
-        id: '2',
-        name: 'Salary_Breakdown.xlsx',
-        size: '856 KB',
-        type: 'file',
-        uploadedDate: '15/06/2025'
-      },
-      {
-        id: '3',
-        name: 'Chart_Analysis.png',
-        size: '245 KB',
-        type: 'image',
-        uploadedDate: '15/06/2025',
-        preview: 'https://via.placeholder.com/400x300/3B82F6/FFFFFF?text=Chart+Analysis'
-      },
-      {
-        id: '4',
-        name: 'Department_Report.pdf',
-        size: '1.8 MB',
-        type: 'file',
-        uploadedDate: '15/06/2025'
-      }
-    ]
-  });
+  const [folderDetails, setFolderDetails] = useState<FolderDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleView = (file: FileData) => {
-    // Implement view logic
-    console.log('Viewing:', file.name);
-    
-    if (file.type === 'image' && file.preview) {
-      // Open image in new window/tab
-      window.open(file.preview, '_blank');
-    } else {
-      // For PDFs and other files, you would typically open a viewer
-      alert(`Opening ${file.name} in viewer...`);
-      // In a real application, you might do:
-      // window.open(`/api/files/view/${file.id}`, '_blank');
+  useEffect(() => {
+    fetchFolderDetails();
+  }, [folderId]);
+
+  const fetchFolderDetails = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch(`/api/org-folders/${folderId}`);
+      // if (!response.ok) {
+      //   throw new Error('Failed to fetch folder details');
+      // }
+      // const data = await response.json();
+      // setFolderDetails(data);
+    } catch (error) {
+      console.error('Error fetching folder details:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleDownload = (fileName: string) => {
-    // Implement download logic
-    console.log('Downloading:', fileName);
-    alert(`Downloading ${fileName}...`);
+  const handleView = (file: FileData) => {
+    // TODO: Implement view logic with actual file URLs
+    // if (file.type === 'image' && file.url) {
+    //   window.open(file.url, '_blank');
+    // } else if (file.url) {
+    //   window.open(file.url, '_blank');
+    // }
   };
 
-  const handleDownloadAll = () => {
-    console.log('Downloading all files...');
-    alert('Downloading all files as ZIP...');
+  const handleDownload = async (file: FileData) => {
+    try {
+      // TODO: Replace with actual download logic
+      // const response = await fetch(`/api/files/download/${file.id}`);
+      // const blob = await response.blob();
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement('a');
+      // a.href = url;
+      // a.download = file.name;
+      // document.body.appendChild(a);
+      // a.click();
+      // window.URL.revokeObjectURL(url);
+      // document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    try {
+      // TODO: Replace with actual download all logic
+      // const response = await fetch(`/api/org-folders/${folderId}/download-all`);
+      // const blob = await response.blob();
+      // const url = window.URL.createObjectURL(blob);
+      // const a = document.createElement('a');
+      // a.href = url;
+      // a.download = `${folderDetails?.folderName || 'files'}.zip`;
+      // document.body.appendChild(a);
+      // a.click();
+      // window.URL.revokeObjectURL(url);
+      // document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error downloading all files:', error);
+    }
   };
 
   const handleBack = () => {
@@ -117,6 +119,31 @@ const OrgFolderDetailsPage = () => {
       <FileText className="w-8 h-8 text-blue-600" />
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <main className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8">
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Loading folder details...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!folderDetails) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <main className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 lg:p-8">
+          <div className="flex flex-col items-center justify-center h-64">
+            <p className="text-gray-500 mb-4">Folder not found</p>
+            <Button onClick={handleBack}>Go Back</Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -252,7 +279,7 @@ const OrgFolderDetailsPage = () => {
                           View
                         </Button>
                         <Button
-                          onClick={() => handleDownload(file.name)}
+                          onClick={() => handleDownload(file)}
                           variant="outline"
                           size="sm"
                           className="flex-1"

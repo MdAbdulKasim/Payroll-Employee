@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,71 +39,24 @@ const EmployeeFolderDetailsPage = () => {
   const searchParams = useSearchParams();
   const folderId = searchParams?.get('id') || '1';
 
-  // Mock data - Replace with actual data fetching
-  const [folderDetails] = useState<FolderDetails>({
-    id: folderId,
-    folderName: 'Employee Contract 2025',
-    description: 'Employment contract documents and related paperwork for new hires in 2025. Includes signed agreements, terms and conditions, and employee acknowledgment forms.',
-    createdDate: '30/06/2025',
-    createdBy: 'HR Admin',
-    category: 'Contracts',
-    files: [
-      {
-        id: '1',
-        name: 'Employment_Contract_John_Doe.pdf',
-        size: '856 KB',
-        type: 'file',
-        uploadedDate: '30/06/2025'
-      },
-      {
-        id: '2',
-        name: 'ID_Proof_Document.pdf',
-        size: '645 KB',
-        type: 'file',
-        uploadedDate: '30/06/2025'
-      },
-      {
-        id: '3',
-        name: 'Employee_Photo.jpg',
-        size: '342 KB',
-        type: 'image',
-        uploadedDate: '30/06/2025',
-        preview: 'https://via.placeholder.com/400x400/10B981/FFFFFF?text=Employee+Photo'
-      },
-      {
-        id: '4',
-        name: 'Signed_Agreement.pdf',
-        size: '1.1 MB',
-        type: 'file',
-        uploadedDate: '30/06/2025'
-      },
-      {
-        id: '5',
-        name: 'Qualification_Certificate.pdf',
-        size: '789 KB',
-        type: 'file',
-        uploadedDate: '30/06/2025'
-      }
-    ]
-  });
+  const [folderDetails, setFolderDetails] = useState<FolderDetails | null>(null);
+
+  useEffect(() => {
+    // TODO: Fetch folder details from backend API based on folderId
+    // Example: fetchFolderDetails(folderId).then(data => setFolderDetails(data));
+  }, [folderId]);
 
   const handleView = (file: FileData) => {
-    // Implement view logic
     console.log('Viewing:', file.name);
     
     if (file.type === 'image' && file.preview) {
-      // Open image in new window/tab
       window.open(file.preview, '_blank');
     } else {
-      // For PDFs and other files, you would typically open a viewer
       alert(`Opening ${file.name} in viewer...`);
-      // In a real application, you might do:
-      // window.open(`/api/files/view/${file.id}`, '_blank');
     }
   };
 
   const handleDownload = (fileName: string) => {
-    // Implement download logic
     console.log('Downloading:', fileName);
     alert(`Downloading ${fileName}...`);
   };
@@ -124,6 +77,16 @@ const EmployeeFolderDetailsPage = () => {
       <FileText className="w-8 h-8 text-green-600" />
     );
   };
+
+  if (!folderDetails) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500">Loading folder details...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -33,26 +33,46 @@ export default function RegularPayrun() {
     const [paymentDate, setPaymentDate] = useState(now.toISOString().split('T')[0])
 
     useEffect(() => {
-        const saved = localStorage.getItem("workWeekConfig")
-        if (saved) {
-            try {
-                setConfig(JSON.parse(saved))
-            } catch (error) {
-                console.error("Error loading work week configuration:", error)
-            }
-        }
+        fetchWorkWeekConfig()
+        fetchAutomationConfig()
+    }, [])
 
-        const savedAutomation = localStorage.getItem("automatedPayrunConfig")
-        if (savedAutomation) {
-            try {
+    const fetchWorkWeekConfig = async () => {
+        try {
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/settings/work-week-config');
+            // const data = await response.json();
+            // setConfig(data);
+            
+            // Temporary: Use localStorage
+            const saved = localStorage.getItem("workWeekConfig")
+            if (saved) {
+                setConfig(JSON.parse(saved))
+            }
+        } catch (error) {
+            console.error("Error loading work week configuration:", error)
+        }
+    }
+
+    const fetchAutomationConfig = async () => {
+        try {
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/settings/automation-config');
+            // const data = await response.json();
+            // setIsAutomated(data.isAutomated);
+            // setAutomationDate(data.automationDate);
+            
+            // Temporary: Use localStorage
+            const savedAutomation = localStorage.getItem("automatedPayrunConfig")
+            if (savedAutomation) {
                 const { isAutomated, automationDate } = JSON.parse(savedAutomation)
                 setIsAutomated(isAutomated)
                 setAutomationDate(automationDate)
-            } catch (error) {
-                console.error("Error loading automation configuration:", error)
             }
+        } catch (error) {
+            console.error("Error loading automation configuration:", error)
         }
-    }, [])
+    }
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -70,37 +90,65 @@ export default function RegularPayrun() {
         }
     }
 
-    const handleRunPayrun = () => {
+    const handleRunPayrun = async () => {
         if (selectedEmployees.length === 0) {
             toast.error("Please select at least one employee")
             return
         }
 
-        const newPayRun: PayRun = {
-            id: Math.random().toString(36).substr(2, 9),
-            month: selectedMonth,
-            year: parseInt(selectedYear),
-            status: 'draft',
-            type: 'regular',
-            totalAmount: selectedEmployees.length * 50000, // Mock amount
-            employeeCount: selectedEmployees.length,
-            employeeIds: selectedEmployees,
-            createdAt: new Date().toISOString(),
-            paymentDate: paymentDate,
-            description: `Regular Payrun for ${selectedMonth} ${selectedYear}`
-        };
+        try {
+            const newPayRun: any = {
+                id: '', // Will be assigned by backend
+                month: selectedMonth,
+                year: parseInt(selectedYear),
+                status: 'draft' as const,
+                type: 'regular' as const,
+                totalAmount: 0, // Will be calculated by backend
+                employeeCount: selectedEmployees.length,
+                employeeIds: selectedEmployees,
+                createdAt: new Date().toISOString(),
+                paymentDate: paymentDate,
+                description: `Regular Payrun for ${selectedMonth} ${selectedYear}`
+            };
 
-        addPayRun(newPayRun);
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/payruns/regular', {
+            //   method: 'POST',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify(newPayRun)
+            // });
+            // const data = await response.json();
+            // toast.success(`Regular payrun draft created for ${selectedMonth}`);
+            // router.push("/admin/payrun");
 
-        toast.success(`Regular payrun draft created for ${selectedMonth}`)
-        router.push("/admin/payrun")
+            addPayRun(newPayRun);
+            toast.success(`Regular payrun draft created for ${selectedMonth}`)
+            router.push("/admin/payrun")
+        } catch (error) {
+            console.error('Error creating payrun:', error)
+            toast.error("Failed to create payrun")
+        }
     }
 
-    const handleSaveAutomation = () => {
-        const config = { isAutomated, automationDate };
-        localStorage.setItem("automatedPayrunConfig", JSON.stringify(config))
-        console.log("Saved automation config:", config);
-        toast.success("Automation settings saved successfully")
+    const handleSaveAutomation = async () => {
+        try {
+            const automationConfig = { isAutomated, automationDate };
+            
+            // TODO: Replace with actual API call
+            // const response = await fetch('/api/settings/automation-config', {
+            //   method: 'POST',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify(automationConfig)
+            // });
+            // const data = await response.json();
+            
+            // Temporary: Use localStorage
+            localStorage.setItem("automatedPayrunConfig", JSON.stringify(automationConfig))
+            toast.success("Automation settings saved successfully")
+        } catch (error) {
+            console.error('Error saving automation config:', error)
+            toast.error("Failed to save automation settings")
+        }
     }
 
     return (

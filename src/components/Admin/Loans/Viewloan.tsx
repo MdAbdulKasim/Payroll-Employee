@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
@@ -14,57 +14,40 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+interface RepaymentHistory {
+  date: string;
+  amount: string;
+  status: string;
+}
+
+interface Loan {
+  employeeName: string;
+  employeeId: string;
+  loanNumber: string;
+  loanName: string;
+  status: string;
+  loanAmount: string;
+  amountRepaid: string;
+  remainingAmount: string;
+  startDate: string;
+  endDate: string;
+  interestRate: string;
+  installmentAmount: string;
+  frequency: string;
+  description: string;
+  repaymentHistory: RepaymentHistory[];
+}
+
 export default function LoanViewPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const loanNumber = searchParams.get("loanNumber");
+  const [loan, setLoan] = useState<Loan | null>(null);
 
-  // Mock data - in real app, fetch based on loanNumber
-  const loansData = [
-    {
-      employeeName: "Mohamed Faizul M",
-      employeeId: "EMP-0012416",
-      loanNumber: "LOAN-00001",
-      loanName: "BUISNESS",
-      status: "Open",
-      loanAmount: "₹40,000.00",
-      amountRepaid: "₹0.00",
-      remainingAmount: "₹40,000.00",
-      startDate: "2024-01-15",
-      endDate: "2025-01-15",
-      interestRate: "8%",
-      installmentAmount: "₹3,500.00",
-      frequency: "Monthly",
-      description: "Business expansion loan for equipment purchase",
-      repaymentHistory: [
-        { date: "2024-02-15", amount: "₹0.00", status: "Pending" },
-        { date: "2024-03-15", amount: "₹0.00", status: "Pending" },
-      ],
-    },
-    {
-      employeeName: "Shahrukh K",
-      employeeId: "EMP-0012417",
-      loanNumber: "LOAN-00002",
-      loanName: "Personal",
-      status: "Open",
-      loanAmount: "₹25,000.00",
-      amountRepaid: "₹5,000.00",
-      remainingAmount: "₹20,000.00",
-      startDate: "2024-02-01",
-      endDate: "2024-12-01",
-      interestRate: "10%",
-      installmentAmount: "₹2,500.00",
-      frequency: "Monthly",
-      description: "Personal loan for emergency medical expenses",
-      repaymentHistory: [
-        { date: "2024-03-01", amount: "₹2,500.00", status: "Paid" },
-        { date: "2024-04-01", amount: "₹2,500.00", status: "Paid" },
-        { date: "2024-05-01", amount: "₹0.00", status: "Pending" },
-      ],
-    },
-  ];
-
-  const loan = loansData.find((l) => l.loanNumber === loanNumber);
+  useEffect(() => {
+    // TODO: Fetch loan data from backend API based on loanNumber
+    // Example: fetchLoanByNumber(loanNumber).then(data => setLoan(data));
+  }, [loanNumber]);
 
   if (!loan) {
     return (
@@ -111,32 +94,6 @@ export default function LoanViewPage() {
                 {loan.loanNumber} - {loan.loanName}
               </p>
             </div>
-
-            {/* <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() =>
-                  router.push(`/admin/loans/edit?loanNumber=${loan.loanNumber}`)
-                }
-              >
-                Edit Loan
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  if (
-                    confirm(
-                      `Are you sure you want to delete loan ${loan.loanNumber}?`
-                    )
-                  ) {
-                    alert("Loan deleted (mock)");
-                    router.push("/admin/loans");
-                  }
-                }}
-              >
-                Delete Loan
-              </Button>
-            </div> */}
           </div>
         </div>
 
@@ -334,25 +291,33 @@ export default function LoanViewPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {loan.repaymentHistory.map((payment, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="px-4 py-3 text-sm">{payment.date}</td>
-                      <td className="px-4 py-3 text-sm text-right font-medium">
-                        {payment.amount}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            payment.status === "Paid"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {payment.status}
-                        </span>
+                  {loan.repaymentHistory.length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
+                        No repayment history available
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    loan.repaymentHistory.map((payment, index) => (
+                      <tr key={index} className="border-b hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm">{payment.date}</td>
+                        <td className="px-4 py-3 text-sm text-right font-medium">
+                          {payment.amount}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              payment.status === "Paid"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {payment.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

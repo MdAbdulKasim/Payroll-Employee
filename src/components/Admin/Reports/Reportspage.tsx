@@ -7,11 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 interface ReportCardProps {
   title: string;
   description: string;
-  onViewReport: () => void;
-  onDownload: () => void;
+  reportType: string;
+  onViewReport: (reportType: string) => void;
+  onDownload: (reportType: string) => void;
 }
 
-const ReportCard: React.FC<ReportCardProps> = ({ title, description, onViewReport, onDownload }) => {
+const ReportCard: React.FC<ReportCardProps> = ({ title, description, reportType, onViewReport, onDownload }) => {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-3">
@@ -26,7 +27,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ title, description, onViewRepor
           <Button 
             variant="outline" 
             className="flex-1 text-xs sm:text-sm"
-            onClick={onViewReport}
+            onClick={() => onViewReport(reportType)}
           >
             View Report
           </Button>
@@ -34,7 +35,7 @@ const ReportCard: React.FC<ReportCardProps> = ({ title, description, onViewRepor
             variant="outline" 
             size="icon"
             className="shrink-0"
-            onClick={onDownload}
+            onClick={() => onDownload(reportType)}
           >
             <Download className="w-4 h-4" />
           </Button>
@@ -45,38 +46,56 @@ const ReportCard: React.FC<ReportCardProps> = ({ title, description, onViewRepor
 };
 
 const ReportsPage: React.FC = () => {
-  const handleViewReport = (reportName: string) => {
-    console.log(`Viewing ${reportName}`);
+  const handleViewReport = async (reportType: string) => {
+    // TODO: Implement report viewing
+    // 1. Fetch raw data from backend: const response = await fetch(`/api/data?type=${reportType}`);
+    // 2. Navigate to report viewer: router.push(`/admin/reports/view?type=${reportType}`);
+    alert(`Viewing ${reportType} report. TODO: Implement report viewer page.`);
   };
 
-  const handleDownload = (reportName: string) => {
-    console.log(`Downloading ${reportName}`);
+  const handleDownload = async (reportType: string) => {
+    // TODO: Implement report download
+    // 1. Fetch raw data from backend
+    // 2. Generate PDF/Excel based on reportType
+    // 3. Trigger download
+    alert(`Downloading ${reportType} report. TODO: Implement download functionality.`);
+  };
+
+  const handleCreateCustomReport = () => {
+    // TODO: Navigate to custom report builder
+    alert('Opening custom report builder. TODO: Implement custom report page.');
   };
 
   const reports = [
     {
       title: 'Payroll Summary',
       description: 'Monthly payroll summary with earnings and deductions',
+      reportType: 'payroll-summary',
     },
     {
       title: 'Employee Salary Register',
       description: 'Detailed salary breakdown for all employees',
+      reportType: 'salary-register',
     },
     {
       title: 'Statutory Reports',
       description: 'EPF, ESI, PT and other statutory compliance reports',
+      reportType: 'statutory-reports',
     },
     {
       title: 'Tax Deduction Report',
       description: 'Income tax and TDS reports for employees',
+      reportType: 'tax-deduction',
     },
     {
       title: 'Leave and Attendance',
       description: 'Employee attendance and leave records',
+      reportType: 'leave-attendance',
     },
     {
       title: 'Loan Report',
       description: 'Outstanding loans and recovery details',
+      reportType: 'loan-report',
     },
   ];
 
@@ -100,8 +119,9 @@ const ReportsPage: React.FC = () => {
               key={index}
               title={report.title}
               description={report.description}
-              onViewReport={() => handleViewReport(report.title)}
-              onDownload={() => handleDownload(report.title)}
+              reportType={report.reportType}
+              onViewReport={handleViewReport}
+              onDownload={handleDownload}
             />
           ))}
         </div>
@@ -115,7 +135,10 @@ const ReportsPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto text-xs sm:text-sm">
+            <Button 
+              onClick={handleCreateCustomReport}
+              className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto text-xs sm:text-sm"
+            >
               Create Custom Report
             </Button>
           </CardContent>
