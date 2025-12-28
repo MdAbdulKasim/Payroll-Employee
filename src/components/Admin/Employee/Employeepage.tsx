@@ -66,6 +66,7 @@ const TableCell = ({ children, ...props }: React.TdHTMLAttributes<HTMLTableCellE
 /* ---------------- TYPES ---------------- */
 
 interface Employee extends ContextEmployee {
+  employeeId: string;
   designation: string;
   status: "active" | "inactive";
 }
@@ -80,6 +81,7 @@ export default function EmployeesPage() {
   const defaultEmployees: Employee[] = [
     {
       id: "default-1",
+      employeeId: "EMP001",
       name: "ajees",
       email: "nan@gmail.com",
       department: "Human Resources",
@@ -118,6 +120,7 @@ export default function EmployeesPage() {
 
   const filteredEmployees = employees.filter((emp) => {
     const matchesSearch =
+      (emp.employeeId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (emp.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (emp.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (emp.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
@@ -132,9 +135,9 @@ export default function EmployeesPage() {
   const departments = (Array.from(new Set(employees.map((e) => e.department))) as string[]).filter(Boolean);
 
   const exportToCSV = () => {
-    const headers = ["Name", "Email", "Department", "Designation", "Joining Date", "Status"];
+    const headers = ["Employee ID", "Name", "Email", "Department", "Designation", "Joining Date", "Status"];
     const rows = filteredEmployees.map((e) =>
-      [e.name, e.email, e.department, e.designation, e.joiningDate, e.status].join(",")
+      [e.employeeId, e.name, e.email, e.department, e.designation, e.joiningDate, e.status].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
 
@@ -322,6 +325,7 @@ export default function EmployeesPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Employee ID</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
@@ -339,6 +343,11 @@ export default function EmployeesPage() {
                 onClick={() => handleRowClick(emp)}
                 className="cursor-pointer"
               >
+                <TableCell>
+                  <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    {emp.employeeId}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <div className="font-medium">{emp.name}</div>
                 </TableCell>

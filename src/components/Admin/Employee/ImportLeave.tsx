@@ -19,6 +19,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
 
     const downloadTemplate = (format: 'csv' | 'excel') => {
         const headers = [
+            'Employee ID',
             'Name',
             'Email',
             'Department',
@@ -28,10 +29,10 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
         ];
 
         const sampleData = [
-            ['John Doe', 'john.doe@company.com', 'Engineering', 'Tech Corp', 'January 2025', '2'],
-            ['Jane Smith', 'jane.smith@company.com', 'Marketing', 'Tech Corp', 'January 2025', '0'],
-            ['Mike Johnson', 'mike.johnson@company.com', 'Sales', 'Business Inc', 'February 2025', '1'],
-            ['Sarah Williams', 'sarah.williams@company.com', 'HR', 'Tech Corp', 'February 2025', '3']
+            ['EMP001', 'John Doe', 'john.doe@company.com', 'Engineering', 'Tech Corp', 'January 2025', '2'],
+            ['EMP002', 'Jane Smith', 'jane.smith@company.com', 'Marketing', 'Tech Corp', 'January 2025', '0'],
+            ['EMP003', 'Mike Johnson', 'mike.johnson@company.com', 'Sales', 'Business Inc', 'February 2025', '1'],
+            ['EMP004', 'Sarah Williams', 'sarah.williams@company.com', 'HR', 'Tech Corp', 'February 2025', '3']
         ];
 
         if (format === 'csv') {
@@ -92,6 +93,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                 const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
 
                 const expectedHeaders = [
+                    'Employee ID',
                     'Name',
                     'Email',
                     'Department',
@@ -157,6 +159,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
 
             const importedLeaveRecords = previewData.map((row, index) => ({
                 id: `LEAVE_${Date.now()}_${index}`,
+                employeeId: row['Employee ID'] || '',
                 name: row['Name'] || '',
                 email: row['Email'] || '',
                 department: row['Department'] || '',
@@ -291,6 +294,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b bg-gray-50">
+                                        <th className="px-4 py-2 text-left">Employee ID</th>
                                         <th className="px-4 py-2 text-left">Name</th>
                                         <th className="px-4 py-2 text-left">Email</th>
                                         <th className="px-4 py-2 text-left">Department</th>
@@ -302,6 +306,11 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                                 <tbody>
                                     {previewData.map((row, index) => (
                                         <tr key={index} className="border-b hover:bg-gray-50">
+                                            <td className="px-4 py-2">
+                                                <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                                                    {row['Employee ID']}
+                                                </span>
+                                            </td>
                                             <td className="px-4 py-2">{row['Name']}</td>
                                             <td className="px-4 py-2">{row['Email']}</td>
                                             <td className="px-4 py-2">{row['Department']}</td>
@@ -336,6 +345,10 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                             <ul className="space-y-2">
                                 <li className="flex gap-2 text-sm">
                                     <span className="text-red-600 font-bold">*</span>
+                                    <span><strong>Employee ID</strong> - Unique employee identifier (e.g., EMP001, EMP002)</span>
+                                </li>
+                                <li className="flex gap-2 text-sm">
+                                    <span className="text-red-600 font-bold">*</span>
                                     <span><strong>Name</strong> - Employee's full name</span>
                                 </li>
                                 <li className="flex gap-2 text-sm">
@@ -365,6 +378,7 @@ export default function ImportLeave({ onComplete }: ImportLeaveProps) {
                             <h4 className="font-semibold mb-2 text-sm text-blue-900">Important Notes:</h4>
                             <ul className="space-y-1 text-sm text-blue-800">
                                 <li>• All fields marked with <span className="text-red-600">*</span> are required</li>
+                                <li>• Employee ID must be unique and follow your organization's format</li>
                                 <li>• Loss of Pay must be a number (0 for no loss, or positive numbers for days)</li>
                                 <li>• Month format should be consistent (e.g., "January 2025")</li>
                                 <li>• Make sure email addresses are valid and properly formatted</li>

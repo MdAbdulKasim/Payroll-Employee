@@ -52,6 +52,7 @@ const TableCell = ({ children, ...props }: React.TdHTMLAttributes<HTMLTableCellE
 
 interface LeaveRequest {
   id: string;
+  employeeId: string;
   name: string;
   email: string;
   department: string;
@@ -67,6 +68,7 @@ export default function LeaveTab() {
   const defaultLeaveRequests: LeaveRequest[] = [
     {
       id: "leave-default-1",
+      employeeId: "EMP001",
       name: "ajees",
       email: "ajees@company.com",
       department: "Engineering",
@@ -76,6 +78,7 @@ export default function LeaveTab() {
     },
     {
       id: "leave-default-2",
+      employeeId: "EMP002",
       name: "John Doe",
       email: "john.doe@company.com",
       department: "Marketing",
@@ -114,6 +117,7 @@ export default function LeaveTab() {
 
   const filteredLeaveRequests = leaveRequests.filter((leave) => {
     const matchesSearch =
+      (leave.employeeId?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (leave.department?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
@@ -128,9 +132,9 @@ export default function LeaveTab() {
   const departments = Array.from(new Set(leaveRequests.map((l) => l.department))).filter(Boolean);
 
   const exportToCSV = () => {
-    const headers = ["Name", "Email", "Department", "Organization", "Month", "Loss of Pay"];
+    const headers = ["Employee ID", "Name", "Email", "Department", "Organization", "Month", "Loss of Pay"];
     const rows = filteredLeaveRequests.map((l) =>
-      [l.name, l.email, l.department, l.organization, l.month, l.lossOfPay].join(",")
+      [l.employeeId, l.name, l.email, l.department, l.organization, l.month, l.lossOfPay].join(",")
     );
     const csv = [headers.join(","), ...rows].join("\n");
 
@@ -287,6 +291,7 @@ export default function LeaveTab() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Employee ID</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Department</TableHead>
@@ -299,6 +304,11 @@ export default function LeaveTab() {
           <TableBody>
             {filteredLeaveRequests.map((leave) => (
               <TableRow key={leave.id}>
+                <TableCell>
+                  <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    {leave.employeeId}
+                  </span>
+                </TableCell>
                 <TableCell>
                   <div className="font-medium">{leave.name}</div>
                 </TableCell>
