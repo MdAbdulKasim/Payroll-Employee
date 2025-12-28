@@ -45,11 +45,11 @@ export default function AddWorkLocationDialog({
   useEffect(() => {
     if (editingLocation) {
       setFormData({
-        locationName: editingLocation.locationName,
-        address: editingLocation.address,
-        city: editingLocation.city,
-        state: editingLocation.state,
-        country: editingLocation.country,
+        locationName: editingLocation.locationName || '',
+        address: editingLocation.address || '',
+        city: editingLocation.city || '',
+        state: editingLocation.state || '',
+        country: editingLocation.country || '',
       });
     } else {
       setFormData({
@@ -66,20 +66,11 @@ export default function AddWorkLocationDialog({
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.locationName.trim()) {
+    if (!formData.locationName?.trim()) {
       newErrors.locationName = 'Location name is required';
     }
-    if (!formData.address.trim()) {
+    if (!formData.address?.trim()) {
       newErrors.address = 'Address is required';
-    }
-    if (!formData.city.trim()) {
-      newErrors.city = 'City is required';
-    }
-    if (!formData.state.trim()) {
-      newErrors.state = 'State is required';
-    }
-    if (!formData.country.trim()) {
-      newErrors.country = 'Country is required';
     }
 
     setErrors(newErrors);
@@ -107,11 +98,9 @@ export default function AddWorkLocationDialog({
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      if (editingLocation) {
-        onEdit(formData);
-      } else {
-        onAdd(formData);
-      }
+      // Map back to what the parent expects if necessary, or just pass formData
+      // Since the parent expects Omit<WorkLocation, 'id' | 'createdAt'>
+      onEdit(formData as any);
     } finally {
       setIsSubmitting(false);
     }
