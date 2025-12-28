@@ -1,10 +1,12 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Briefcase, Calendar, Building, User, CreditCard, Landmark, Hash, Camera } from 'lucide-react';
+import { Mail, Phone, MapPin, Briefcase, Calendar, Building, User, CreditCard, Landmark, Hash, Camera, KeyRound } from 'lucide-react';
 
 const MyProfile: React.FC = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -20,14 +22,23 @@ const MyProfile: React.FC = () => {
   return (
     <div className="min-w-[280px] w-full min-h-screen bg-gray-50 p-2 sm:p-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-            My Profile
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1">
-            View and manage your personal information.
-          </p>
+        {/* Header with Change Password Button */}
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+              My Profile
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              View and manage your personal information.
+            </p>
+          </div>
+          <button
+            onClick={() => router.push('/employee/profile/changepassword')}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
+          >
+            <KeyRound className="w-4 h-4" />
+            Change Password
+          </button>
         </div>
 
         {/* Profile Header Card */}
