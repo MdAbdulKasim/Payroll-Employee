@@ -25,13 +25,6 @@ interface OrganizationFormData {
   industry: string;
   dateFormat: string;
   organizationAddress: string;
-  headOffice: string;
-  headOfficeCity: string;
-  headOfficeState: string;
-  headOfficePincode: string;
-  primaryContactEmail: string;
-  secondaryContactEmail: string;
-  secondaryContactName: string;
 }
 
 const DEFAULT_ORG_DATA = {
@@ -40,13 +33,6 @@ const DEFAULT_ORG_DATA = {
   industry: 'Technology',
   dateFormat: 'DD/MM/YYYY (16/12/2025)',
   address: '4,13:35 Arunachalapuram',
-  headOffice: '4,13:35 Arunachalapuram',
-  headOfficeCity: 'dindigul',
-  headOfficeState: 'Tamil Nadu',
-  headOfficePincode: '624708',
-  primaryContactEmail: 'yerrahadyusuf1@gmail.com',
-  secondaryContactEmail: '.yerrahadyusuf1@gmail.com',
-  secondaryContactName: 'Yerrala',
 };
 
 export default function SettingsProfile() {
@@ -76,13 +62,6 @@ export default function SettingsProfile() {
     industry: organizationData?.industry || DEFAULT_ORG_DATA.industry,
     dateFormat: organizationData?.dateFormat || DEFAULT_ORG_DATA.dateFormat,
     organizationAddress: organizationData?.address || DEFAULT_ORG_DATA.address,
-    headOffice: organizationData?.headOffice || DEFAULT_ORG_DATA.headOffice,
-    headOfficeCity: organizationData?.headOfficeCity || DEFAULT_ORG_DATA.headOfficeCity,
-    headOfficeState: organizationData?.headOfficeState || DEFAULT_ORG_DATA.headOfficeState,
-    headOfficePincode: organizationData?.headOfficePincode || DEFAULT_ORG_DATA.headOfficePincode,
-    primaryContactEmail: organizationData?.primaryContactEmail || DEFAULT_ORG_DATA.primaryContactEmail,
-    secondaryContactEmail: organizationData?.secondaryContactEmail || DEFAULT_ORG_DATA.secondaryContactEmail,
-    secondaryContactName: organizationData?.secondaryContactName || DEFAULT_ORG_DATA.secondaryContactName,
   });
 
   const handleInputChange = (
@@ -140,13 +119,6 @@ export default function SettingsProfile() {
           industry: formData.industry,
           dateFormat: formData.dateFormat,
           address: formData.organizationAddress,
-          headOffice: formData.headOffice,
-          headOfficeCity: formData.headOfficeCity,
-          headOfficeState: formData.headOfficeState,
-          headOfficePincode: formData.headOfficePincode,
-          primaryContactEmail: formData.primaryContactEmail,
-          secondaryContactEmail: formData.secondaryContactEmail,
-          secondaryContactName: formData.secondaryContactName,
         });
       }
 
@@ -167,13 +139,6 @@ export default function SettingsProfile() {
       industry: organizationData?.industry || DEFAULT_ORG_DATA.industry,
       dateFormat: organizationData?.dateFormat || DEFAULT_ORG_DATA.dateFormat,
       organizationAddress: organizationData?.address || DEFAULT_ORG_DATA.address,
-      headOffice: organizationData?.headOffice || DEFAULT_ORG_DATA.headOffice,
-      headOfficeCity: organizationData?.headOfficeCity || DEFAULT_ORG_DATA.headOfficeCity,
-      headOfficeState: organizationData?.headOfficeState || DEFAULT_ORG_DATA.headOfficeState,
-      headOfficePincode: organizationData?.headOfficePincode || DEFAULT_ORG_DATA.headOfficePincode,
-      primaryContactEmail: organizationData?.primaryContactEmail || DEFAULT_ORG_DATA.primaryContactEmail,
-      secondaryContactEmail: organizationData?.secondaryContactEmail || DEFAULT_ORG_DATA.secondaryContactEmail,
-      secondaryContactName: organizationData?.secondaryContactName || DEFAULT_ORG_DATA.secondaryContactName,
     });
     setLogoPreview(null);
     toast.info('Changes cancelled');
@@ -259,23 +224,16 @@ export default function SettingsProfile() {
 
               <div className="space-y-1.5 sm:space-y-2">
                 <Label htmlFor="businessLocation" className="text-xs sm:text-sm font-medium">
-                  Business Location <span className="text-red-500">*</span>
+                  Location <span className="text-red-500">*</span>
                 </Label>
-                <Select
+                <Input
+                  id="businessLocation"
+                  name="businessLocation"
                   value={formData.businessLocation}
-                  onValueChange={(value) => handleSelectChange('businessLocation', value)}
-                >
-                  <SelectTrigger id="businessLocation" className="text-sm">
-                    <SelectValue placeholder="Select location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="India">India</SelectItem>
-                    <SelectItem value="USA">USA</SelectItem>
-                    <SelectItem value="UK">UK</SelectItem>
-                    <SelectItem value="Canada">Canada</SelectItem>
-                    <SelectItem value="Australia">Australia</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={handleInputChange}
+                  placeholder="Enter location"
+                  className="w-full text-sm"
+                />
               </div>
             </div>
 
@@ -343,51 +301,6 @@ export default function SettingsProfile() {
           </CardContent>
         </Card>
 
-        {/* Head Office Section */}
-        <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg lg:text-xl">Head Office</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-6">
-            <div className="space-y-1 sm:space-y-2">
-              <p className="text-xs sm:text-sm font-medium text-gray-900">{formData.headOffice}</p>
-              <p className="text-xs sm:text-sm text-gray-600">
-                {formData.headOfficeCity}, {formData.headOfficeState}, {formData.headOfficePincode}
-              </p>
-            </div>
-            <Button variant="link" className="text-blue-600 p-0 h-auto text-xs sm:text-sm">
-              Change
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Contact Information Section */}
-        <Card>
-          <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-base sm:text-lg lg:text-xl">Contact Information</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
-            <div className="space-y-1 sm:space-y-2">
-              <Label className="text-xs sm:text-sm font-medium text-gray-900">Primary Contact Email</Label>
-              <p className="text-xs sm:text-sm text-gray-700 break-all">{formData.primaryContactEmail}</p>
-            </div>
-
-            <div className="space-y-2 sm:space-y-2">
-              <Label className="text-xs sm:text-sm font-medium text-gray-900">Email address of</Label>
-              <div className="flex flex-wrap gap-2">
-                <div className="px-2 sm:px-3 py-1.5 sm:py-2 bg-orange-50 text-orange-700 rounded text-xs sm:text-sm font-medium">
-                  {formData.secondaryContactName}
-                </div>
-                <p className="text-xs sm:text-sm text-gray-700 flex items-center break-all">
-                  {formData.secondaryContactEmail}
-                </p>
-              </div>
-              <p className="text-[10px] sm:text-xs text-gray-500 leading-relaxed">
-                You can configure the email addresses that would be used in the sender address field for emails sent via Zoho Payroll.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Action Buttons */}
         <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 pt-4 sm:pt-6 border-t">

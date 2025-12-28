@@ -58,17 +58,14 @@ export default function OrganizationDetails({ onComplete }: OrganizationDetailsP
                 </div>
 
                 <div className="space-y-2">
-                    <Label htmlFor="businessLocation">Business Location*</Label>
-                    <Select value={formData.businessLocation} onValueChange={(value: string) => handleChange('businessLocation', value)}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="Select location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="india">India</SelectItem>
-                            <SelectItem value="usa">United States</SelectItem>
-                            <SelectItem value="uk">United Kingdom</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <Label htmlFor="businessLocation">Location*</Label>
+                    <Input
+                        id="businessLocation"
+                        placeholder="Enter location"
+                        value={formData.businessLocation}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('businessLocation', e.target.value)}
+                        required
+                    />
                 </div>
 
                 <div className="space-y-2">

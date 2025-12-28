@@ -25,11 +25,11 @@ const AddEmployees = dynamic(() => import("@/components/Admin/setup/employee/Add
 // Define step type
 type StepId =
     | "organization-details"
-    | "tax-details"
+    // | "tax-details"
     | "setup-configuration"
-    | "statutory-components"
+    // | "statutory-components"
     | "salary-components"
-    | "add-employees"
+    // | "add-employees"
     // | "prior-payroll";
 
 interface Step {
@@ -44,21 +44,21 @@ const steps: Step[] = [
         title: "Add Organization Details",
         component: OrganizationDetails,
     },
-    {
-        id: "tax-details",
-        title: "Provide Your Tax Details",
-        component: TaxDetails,
-    },
+    // {
+    //     id: "tax-details",
+    //     title: "Provide Your Tax Details",
+    //     component: TaxDetails,
+    // },
     {
         id: "setup-configuration",
         title: "Setup & Configuration",
         component: SetupConfiguration,
     },
-    {
-        id: "statutory-components",
-        title: "Setup Statutory Components",
-        component: StatutoryComponents,
-    },
+    // {
+    //     id: "statutory-components",
+    //     title: "Setup Statutory Components",
+    //     component: StatutoryComponents,
+    // },
     {
         id: "salary-components",
         title: "Set Up Salary Components",
@@ -270,7 +270,7 @@ export default function SetupWizard() {
             {/* Note Section */}
             <div className="mt-8 p-4 sm:p-6 bg-blue-50 rounded-lg border border-blue-200">
                 <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> You need to complete all 5 steps to access
+                    <strong>Note:</strong> You need to complete all 3 steps to access
                     your dashboard and start managing payroll.
                 </p>
             </div>
