@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 interface OrganizationDetailsProps {
     onComplete?: () => void;
@@ -13,6 +14,7 @@ interface OrganizationDetailsProps {
 
 export default function OrganizationDetails({ onComplete }: OrganizationDetailsProps) {
     const { setOrganizationData, markStepComplete, organizationData } = useApp();
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: organizationData?.name || '',
         logo: organizationData?.logo || '',
@@ -22,12 +24,55 @@ export default function OrganizationDetails({ onComplete }: OrganizationDetailsP
         address: organizationData?.address || ''
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchOrg = async () => {
+            const orgId = sessionStorage.getItem("orgId");
+            if (!orgId) return;
+
+            try {
+                const response = await axios.get(`http://localhost:4000/api/payroll/organizations/${orgId}`);
+                if (response.data) {
+                    setFormData(prev => ({
+                        ...prev,
+                        name: response.data.organizationName || prev.name,
+                        businessLocation: response.data.location || prev.businessLocation,
+                        industry: response.data.industry || prev.industry,
+                        address: response.data.organizationAddress || prev.address
+                    }));
+                }
+            } catch (error) {
+                console.error("Error fetching organization:", error);
+            }
+        };
+        fetchOrg();
+    }, []);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setOrganizationData(formData);
-        markStepComplete('organization-details');
-        if (onComplete) onComplete();
-        toast.success('Organization details saved successfully');
+        setIsLoading(true);
+
+        const orgId = sessionStorage.getItem("orgId");
+
+        try {
+            if (orgId) {
+                await axios.patch(`http://localhost:4000/api/payroll/organizations/${orgId}`, {
+                    location: formData.businessLocation,
+                    industry: formData.industry,
+                    dateFormat: formData.dateFormat,
+                    organizationAddress: formData.address
+                });
+            }
+
+            setOrganizationData(formData);
+            markStepComplete('organization-details');
+            if (onComplete) onComplete();
+            toast.success('Organization details saved successfully');
+        } catch (error: any) {
+            console.error("Error saving organization details:", error);
+            toast.error(error.response?.data?.message || "Failed to save organization details");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (field: string, value: string) => {
@@ -119,8 +164,15 @@ export default function OrganizationDetails({ onComplete }: OrganizationDetailsP
                 <Button type="button" variant="outline">
                     Cancel
                 </Button>
-                <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                    Save & Continue
+                <Button type="submit" className="bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                    {isLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        'Save & Continue'
+                    )}
                 </Button>
             </div>
         </form>
