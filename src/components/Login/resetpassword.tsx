@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Eye, EyeOff, CheckCircle, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeOff, CheckCircle, CheckCircle2, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -23,7 +25,7 @@ export default function ResetPassword() {
     // Check if OTP was verified
     const otpVerified = sessionStorage.getItem("otpVerified");
     const resetEmail = sessionStorage.getItem("resetEmail");
-    
+
     if (!otpVerified || !resetEmail) {
       // If OTP not verified, redirect to forgot password
       router.push("/login/forgotpassword");
@@ -42,22 +44,39 @@ export default function ResetPassword() {
     return true;
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (!validatePassword()) return;
 
     setIsLoading(true);
 
-    // Simulate password reset
-    setTimeout(() => {
+    const email = sessionStorage.getItem("resetEmail");
+    const resetToken = sessionStorage.getItem("resetToken");
+
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/reset-password", {
+        email: email,
+        resetToken: resetToken,
+        newPassword: newPassword,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Password reset successfully!");
+
+        // Clear session storage
+        sessionStorage.removeItem("resetEmail");
+        sessionStorage.removeItem("otpVerified");
+        sessionStorage.removeItem("resetToken");
+
+        // Show success dialog
+        setShowSuccessDialog(true);
+      }
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to reset password. Please try again.";
+      toast.error(errorMessage);
+    } finally {
       setIsLoading(false);
-      
-      // Clear session storage
-      sessionStorage.removeItem("resetEmail");
-      sessionStorage.removeItem("otpVerified");
-      
-      // Show success dialog
-      setShowSuccessDialog(true);
-    }, 1500);
+    }
   };
 
   const handleDialogClose = () => {
@@ -164,9 +183,16 @@ export default function ResetPassword() {
             <button
               onClick={handleResetPassword}
               disabled={isLoading}
-              className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+              className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {isLoading ? "Resetting..." : "Reset Password"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Resetting...</span>
+                </>
+              ) : (
+                "Reset Password"
+              )}
             </button>
           </div>
         </div>

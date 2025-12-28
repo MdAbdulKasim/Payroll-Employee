@@ -7,7 +7,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 
 // Number of required setup steps (must match SetupWizard.tsx)
-const REQUIRED_SETUP_STEPS = 5;
+const REQUIRED_SETUP_STEPS = 3;
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -78,7 +78,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       />
 
       {/* Main Content - adjusts based on sidebar state */}
-      <main 
+      <main
         className={`
           transition-all duration-300 ease-in-out
           pt-20

@@ -37,6 +37,7 @@ export interface PayRun {
 }
 
 interface OrganizationData {
+    id?: string;
     name: string;
     logo: string;
     businessLocation: string;

@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef, useEffect } from 'react';
 import { Lock, FileText, CheckCircle2, RefreshCw, AlertCircle } from 'lucide-react';
+import axios from 'axios';
+import { toast } from 'sonner';
 
 export default function PayrollProOTPVerify() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -112,9 +114,9 @@ export default function PayrollProOTPVerify() {
     inputRefs.current[focusIndex]?.focus();
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const otpValue = otp.join('');
-    
+
     if (otpValue.length !== 6) {
       setError('Please enter all 6 digits');
       return;
@@ -128,12 +130,14 @@ export default function PayrollProOTPVerify() {
     setIsLoading(true);
     setError('');
 
-    // Simulate API call to verify OTP
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/verify-otp", {
+        email: userEmail,
+        otp: otpValue,
+      });
 
-      // Check if OTP is correct
-      if (otpValue === correctOTP) {
+      if (response.status === 200 || response.status === 201) {
+        toast.success("OTP verified successfully!");
         setIsVerified(true);
 
         // Clear timer
@@ -144,26 +148,31 @@ export default function PayrollProOTPVerify() {
         // Redirect to admin dashboard after 2 seconds
         setTimeout(() => {
           // Redirect to admin dashboard
-          window.location.href = '/admin/dashboard';
-          
+          window.location.href = '/login';
+
           // Clear session storage
           sessionStorage.removeItem('userEmail');
           sessionStorage.removeItem('userRole');
           sessionStorage.removeItem('redirectTo');
         }, 2000);
-      } else {
-        setError('Invalid OTP. Please try again.');
-        setOtp(['', '', '', '', '', '']);
-        inputRefs.current[0]?.focus();
       }
-    }, 1500);
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+      const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setOtp(['', '', '', '', '', '']);
+      inputRefs.current[0]?.focus();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResendClick = () => {
     setShowResendPage(true);
   };
 
-  const handleResendConfirm = () => {
+  const handleResendConfirm = async () => {
     // Clear timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -172,20 +181,28 @@ export default function PayrollProOTPVerify() {
     // Reset OTP
     setOtp(['', '', '', '', '', '']);
     setError('');
-    
-    // Simulate sending new OTP
+
     setIsLoading(true);
-    setTimeout(() => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/resend-otp", {
+        email: userEmail,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success(`New OTP has been sent to ${userEmail}`);
+        setShowResendPage(false);
+        setShowTimer(true); // Show timer after resend
+        startTimer();
+        inputRefs.current[0]?.focus();
+      }
+    } catch (error: any) {
+      console.error("Resend OTP error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
       setIsLoading(false);
-      setShowResendPage(false);
-      setShowTimer(true); // Show timer after resend
-      startTimer();
-      inputRefs.current[0]?.focus();
-      
-      // Show success message
-      setError('');
-      alert(`New OTP has been sent to ${userEmail}`);
-    }, 1500);
+    }
   };
 
   const handleChangeEmail = () => {
@@ -227,7 +244,7 @@ export default function PayrollProOTPVerify() {
                 Verification Successful!
               </h2>
               <p className="text-xs xs:text-sm text-gray-600 leading-relaxed">
-                Redirecting to admin dashboard...
+                Redirecting to login page...
               </p>
             </div>
 
@@ -388,11 +405,10 @@ export default function PayrollProOTPVerify() {
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
                 disabled={isExpired && showTimer}
-                className={`w-9 h-10 xs:w-11 xs:h-12 sm:w-12 sm:h-14 text-center text-base xs:text-lg sm:text-xl font-semibold border-2 rounded-lg focus:outline-none transition-all ${
-                  error 
-                    ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200' 
-                    : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
-                } ${isExpired && showTimer ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                className={`w-9 h-10 xs:w-11 xs:h-12 sm:w-12 sm:h-14 text-center text-base xs:text-lg sm:text-xl font-semibold border-2 rounded-lg focus:outline-none transition-all ${error
+                  ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200'
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200'
+                  } ${isExpired && showTimer ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
             ))}
           </div>
@@ -435,7 +451,7 @@ export default function PayrollProOTPVerify() {
                 Resend OTP
               </button>
             </div>
-            
+
             {/* Timer Display - Only show after resend */}
             {showTimer && (
               <div className="flex justify-center mt-4">

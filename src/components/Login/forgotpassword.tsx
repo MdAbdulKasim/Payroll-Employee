@@ -1,28 +1,41 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleSendOTP = () => {
+  const handleSendOTP = async () => {
     if (!email || !email.includes("@")) {
-      alert("Please enter a valid email");
+      toast.error("Please enter a valid email");
       return;
     }
 
     setIsLoading(true);
-    
-    // Simulate OTP sending
-    setTimeout(() => {
+
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/forgot-password", {
+        email: email,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("OTP sent successfully!");
+        // Store email in sessionStorage for OTP verification
+        sessionStorage.setItem("resetEmail", email);
+        router.push("/login/verifyotp");
+      }
+    } catch (error: any) {
+      console.error("Forgot password error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to send OTP. Please try again.";
+      toast.error(errorMessage);
+    } finally {
       setIsLoading(false);
-      // Store email in sessionStorage for OTP verification
-      sessionStorage.setItem("resetEmail", email);
-      router.push("/login/verifyotp");
-    }, 1500);
+    }
   };
 
   return (
@@ -74,9 +87,16 @@ export default function ForgotPassword() {
           <button
             onClick={handleSendOTP}
             disabled={isLoading}
-            className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed"
+            className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isLoading ? "Sending OTP..." : "Send OTP"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Sending...</span>
+              </>
+            ) : (
+              "Send OTP"
+            )}
           </button>
 
           {/* Info Text */}
