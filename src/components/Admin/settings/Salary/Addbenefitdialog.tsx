@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
-interface Benefit {
-    id: number;
-    name: string;
-    benefitType: string;
-    coverage: string;
-    contributionType: string;
-    status: string;
-}
-
 interface AddBenefitDialogProps {
     onClose: () => void;
     onSave: (component: any) => void;
@@ -24,7 +15,7 @@ export default function AddBenefitDialog({ onClose, onSave, initialData }: AddBe
         contributionType: initialData?.contributionType || 'Company Paid'
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const component = {
@@ -54,7 +45,7 @@ export default function AddBenefitDialog({ onClose, onSave, initialData }: AddBe
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                             <input
@@ -121,13 +112,14 @@ export default function AddBenefitDialog({ onClose, onSave, initialData }: AddBe
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={handleSubmit}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                             >
                                 Save
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

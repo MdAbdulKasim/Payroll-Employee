@@ -15,41 +15,22 @@ const EditDesignationPage = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Mock data - Replace with actual API call
-  const mockDesignations = [
-    {
-      id: 1,
-      designation: 'Software Engineer',
-      department: 'Engineering',
-      level: 'Junior'
-    },
-    {
-      id: 2,
-      designation: 'HR Manager',
-      department: 'Human Resources',
-      level: 'Senior'
-    }
-  ];
-
   useEffect(() => {
-    // Simulate fetching data
-    // Replace this with actual API call: fetch(`/api/designations/${designationId}`)
-    const fetchDesignation = () => {
-      const designation = mockDesignations.find(
-        (d) => d.id === Number(designationId)
-      );
-      
-      if (designation) {
-        setFormData({
-          designation: designation.designation,
-          department: designation.department,
-          level: designation.level
-        });
-      }
-      setLoading(false);
-    };
-
-    fetchDesignation();
+    // TODO: Fetch designation data from API
+    // Example:
+    // const fetchDesignation = async () => {
+    //   const response = await fetch(`/api/designations/${designationId}`);
+    //   const data = await response.json();
+    //   setFormData({
+    //     designation: data.designation,
+    //     department: data.department,
+    //     level: data.level
+    //   });
+    //   setLoading(false);
+    // };
+    // fetchDesignation();
+    
+    setLoading(false);
   }, [designationId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -64,9 +45,17 @@ const EditDesignationPage = () => {
   };
 
   const handleUpdate = () => {
-    // Handle form update
-    console.log('Form updated:', formData);
-    // Add your API call here: fetch(`/api/designations/${designationId}`, { method: 'PUT', body: JSON.stringify(formData) })
+    // TODO: Add API call here to update designation data
+    // Example:
+    // const updateDesignation = async () => {
+    //   await fetch(`/api/designations/${designationId}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    // };
+    // updateDesignation();
+    
     router.back();
   };
 

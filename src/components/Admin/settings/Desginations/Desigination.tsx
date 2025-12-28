@@ -1,37 +1,40 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+interface Designation {
+  id: number;
+  designation: string;
+  department: string;
+  level: string;
+  employees: number;
+}
 
 const DesignationsTable = () => {
   const router = useRouter();
 
-  const [designations, setDesignations] = useState([
-    {
-      id: 1,
-      designation: 'Software Engineer',
-      department: 'Engineering',
-      level: 'Junior',
-      employees: 0
-    },
-    {
-      id: 2,
-      designation: 'HR Manager',
-      department: 'Human Resources',
-      level: 'Senior',
-      employees: 0
-    }
-  ]);
-
+  const [designations, setDesignations] = useState<Designation[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // TODO: Fetch designations from API
+    // Example:
+    // const fetchDesignations = async () => {
+    //   const response = await fetch('/api/designations');
+    //   const data = await response.json();
+    //   setDesignations(data);
+    // };
+    // fetchDesignations();
+  }, []);
 
   const handleAddDesignation = () => {
     router.push('/admin/settings/desginations/add');
   };
 
   const handleEdit = (id: number) => {
-    router.push(`/admin/settings/desginations/edit`);
+    router.push(`/admin/settings/desginations/edit/${id}`);
   };
 
   const handleDeleteClick = (id: number) => {
@@ -39,7 +42,13 @@ const DesignationsTable = () => {
     setShowDeleteDialog(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    // TODO: Add API call here to delete designation
+    // Example:
+    // await fetch(`/api/designations/${selectedId}`, {
+    //   method: 'DELETE'
+    // });
+    
     setDesignations(prev =>
       prev.filter(item => item.id !== selectedId)
     );
@@ -144,7 +153,7 @@ const DesignationsTable = () => {
         )}
       </div>
 
-      {/* 🔴 Delete Confirmation Dialog */}
+      {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">

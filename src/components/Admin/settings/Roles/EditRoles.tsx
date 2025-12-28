@@ -8,12 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-interface Role {
-  id: string;
-  name: string;
-  description: string;
-}
-
 export default function EditRolePage() {
   const router = useRouter();
   const params = useParams();
@@ -22,32 +16,16 @@ export default function EditRolePage() {
   const [roleName, setRoleName] = useState("");
   const [description, setDescription] = useState("");
 
-  // 🔹 Mock data (replace with API later)
-  const roles: Role[] = [
-    {
-      id: "1",
-      name: "Admin",
-      description: "Full system access",
-    },
-    {
-      id: "2",
-      name: "HR Manager",
-      description: "Manage employees and departments",
-    },
-    {
-      id: "3",
-      name: "Payroll Manager",
-      description: "Manage payroll and payruns",
-    },
-  ];
-
-  // 🔹 Load role details on page load
   useEffect(() => {
-    const role = roles.find((r) => r.id === roleId);
-    if (role) {
-      setRoleName(role.name);
-      setDescription(role.description);
-    }
+    // TODO: Fetch role data from API
+    // Example:
+    // const fetchRole = async () => {
+    //   const response = await fetch(`/api/roles/${roleId}`);
+    //   const role = await response.json();
+    //   setRoleName(role.name);
+    //   setDescription(role.description);
+    // };
+    // fetchRole();
   }, [roleId]);
 
   const handleUpdateRole = () => {
@@ -56,12 +34,16 @@ export default function EditRolePage() {
       return;
     }
 
-    // 🔹 Update logic (API call later)
-    console.log("Updating role:", {
-      id: roleId,
-      roleName,
-      description,
-    });
+    // TODO: Add API call here to update role data
+    // Example:
+    // const updateRole = async () => {
+    //   await fetch(`/api/roles/${roleId}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ roleName, description })
+    //   });
+    // };
+    // updateRole();
 
     router.push("/admin/settings/roles");
   };

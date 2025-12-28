@@ -13,8 +13,8 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
   const [formData, setFormData] = useState({
     esiNumber: "",
     deductionCycle: "Monthly",
-    employeeContribution: "0.75",
-    employerContribution: "3.25",
+    employeeContribution: "",
+    employerContribution: "",
     includeEmployerInSalary: false,
   });
 
@@ -43,6 +43,29 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
       return;
     }
 
+    if (!formData.employeeContribution) {
+      toast.error("Please enter Employee Contribution percentage");
+      return;
+    }
+
+    if (!formData.employerContribution) {
+      toast.error("Please enter Employer Contribution percentage");
+      return;
+    }
+
+    const empContribution = parseFloat(formData.employeeContribution);
+    const empRContribution = parseFloat(formData.employerContribution);
+
+    if (empContribution < 0 || empContribution > 100) {
+      toast.error("Employee contribution must be between 0% and 100%");
+      return;
+    }
+
+    if (empRContribution < 0 || empRContribution > 100) {
+      toast.error("Employer contribution must be between 0% and 100%");
+      return;
+    }
+
     const config = {
       ...formData,
       isEnabled: true,
@@ -65,12 +88,10 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
   if (!showForm && !isEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <div className="w-48 h-48 relative">
-          {/* <img
-            src="/api/placeholder/200/200"
-            alt="ESI Illustration"
-            className="w-full h-full object-contain"
-          /> */}
+        <div className="w-48 h-48 relative flex items-center justify-center bg-gray-100 rounded-lg">
+          <svg className="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-900">
           Are you registered for ESI?
@@ -116,7 +137,7 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
       <div className="space-y-6">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            ESI Number
+            ESI Number <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -145,11 +166,15 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Employees' Contribution
+            Employees' Contribution <span className="text-red-500">*</span>
           </label>
           <div className="flex items-center gap-2">
             <input
-              type="text"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              placeholder="Enter percentage"
               value={formData.employeeContribution}
               onChange={(e) =>
                 setFormData({
@@ -159,17 +184,22 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
               }
               className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">of Gross Pay</span>
+            <span className="text-sm text-gray-700">% of Gross Pay</span>
           </div>
+          <p className="text-xs text-gray-500">Standard rate is typically 0.75%</p>
         </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Employer's Contribution
+            Employer's Contribution <span className="text-red-500">*</span>
           </label>
           <div className="flex items-center gap-2">
             <input
-              type="text"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              placeholder="Enter percentage"
               value={formData.employerContribution}
               onChange={(e) =>
                 setFormData({
@@ -179,8 +209,9 @@ export default function ESIComponent({ onComplete }: ESIComponentProps) {
               }
               className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">of Gross Pay</span>
+            <span className="text-sm text-gray-700">% of Gross Pay</span>
           </div>
+          <p className="text-xs text-gray-500">Standard rate is typically 3.25%</p>
         </div>
 
         <div className="flex items-start space-x-3">

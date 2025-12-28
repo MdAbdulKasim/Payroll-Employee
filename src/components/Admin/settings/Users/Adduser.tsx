@@ -26,9 +26,17 @@ const AddUserPage: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic here
-    console.log('Form data:', formData);
-    // After successful submission, redirect to users page
+    // TODO: Add API call here to save user data
+    // Example:
+    // const saveUser = async () => {
+    //   await fetch('/api/users', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    // };
+    // saveUser();
+    
     router.push('/admin/settings/users');
   };
 

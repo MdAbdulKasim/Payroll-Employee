@@ -22,10 +22,17 @@ export default function CreateRolePage() {
       return;
     }
 
-    // Here you would typically save the role data
-    console.log('Creating role:', { roleName, description });
+    // TODO: Add API call here to save role data
+    // Example:
+    // const saveRole = async () => {
+    //   await fetch('/api/roles', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ roleName, description })
+    //   });
+    // };
+    // saveRole();
     
-    // Navigate back
     router.push('/admin/settings/roles');
   };
 
@@ -75,22 +82,6 @@ export default function CreateRolePage() {
                   className="w-full text-sm h-10"
                 />
               </div>
-
-              {/* Description Field */}
-              {/* <div className="space-y-2">
-                <Label 
-                  htmlFor="roleCode" 
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Role Code
-                </Label>
-                <Input
-                  id="roleCode"
-                  type="text"
-                  placeholder=""
-                  className="w-full text-sm h-10"
-                />
-              </div> */}
             </div>
 
             {/* Row 2: Permissions/Level Field */}

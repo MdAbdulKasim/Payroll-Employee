@@ -15,7 +15,7 @@ export default function StatutoryBonusComponent({
   const [formData, setFormData] = useState({
     paymentFrequency: "Monthly",
     monthlyPercentage: "",
-    state: "Tamil Nadu",
+    state: "",
     hasMinimumWage: false,
   });
 
@@ -70,18 +70,20 @@ export default function StatutoryBonusComponent({
   };
 
   const handleAddMinimumWage = () => {
-    toast.info("Add minimum wage functionality");
+    toast.info("Add minimum wage functionality - to be implemented");
+  };
+
+  const handleConfigureState = () => {
+    toast.info("Configure state functionality - to be implemented");
   };
 
   if (!showForm && !isEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <div className="w-48 h-48 relative">
-          {/* <img
-            src="/api/placeholder/200/200"
-            alt="Statutory Bonus Illustration"
-            className="w-full h-full object-contain"
-          /> */}
+        <div className="w-48 h-48 relative flex items-center justify-center bg-gray-100 rounded-lg">
+          <svg className="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-900">
           Are your employees eligible to receive statutory bonus?
@@ -184,7 +186,7 @@ export default function StatutoryBonusComponent({
               step="0.01"
               min="8.33"
               max="20"
-              placeholder=""
+              placeholder="Enter percentage (8.33 - 20)"
               value={formData.monthlyPercentage}
               onChange={(e) =>
                 setFormData({
@@ -192,16 +194,13 @@ export default function StatutoryBonusComponent({
                   monthlyPercentage: e.target.value,
                 })
               }
-              className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <span className="text-sm text-gray-700">
-              % of salary or minimum wage earned this year
-            </span>
+            <span className="text-sm text-gray-700 whitespace-nowrap">%</span>
           </div>
           <p className="text-xs text-gray-500 flex items-start gap-1">
             <span className="text-gray-400">ⓘ</span>
-            Statutory Bonus rate should be in-between 8.33% and 20%, based on the
-            Statutory Bonus Act.
+            Percentage of salary or minimum wage earned this year. Must be between 8.33% and 20% as per the Statutory Bonus Act.
           </p>
         </div>
 
@@ -220,7 +219,7 @@ export default function StatutoryBonusComponent({
 
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-gray-900">
-            Minumum Wage in Each State
+            Minimum Wage in Each State
           </h4>
           <p className="text-sm text-gray-600">
             Statutory Bonus is a percentage of either the minimum wage or Basic + DA
@@ -228,16 +227,28 @@ export default function StatutoryBonusComponent({
           </p>
 
           <div className="border border-gray-200 rounded-lg p-6">
-            <h5 className="text-base font-semibold text-gray-900 mb-4">
-              {formData.state}
-            </h5>
+            <div className="flex items-center justify-between mb-4">
+              <h5 className="text-base font-semibold text-gray-900">
+                {formData.state || "State Not Selected"}
+              </h5>
+              {!formData.state && (
+                <button
+                  type="button"
+                  onClick={handleConfigureState}
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Select State
+                </button>
+              )}
+            </div>
 
             <div className="flex flex-col items-center justify-center py-8 space-y-4">
               <div className="text-orange-500 text-4xl">⚠</div>
-              <p className="text-sm text-gray-600">
-                Minimum wage details are not added for
+              <p className="text-sm text-gray-600 text-center">
+                {formData.state 
+                  ? `Minimum wage details are not configured for ${formData.state}`
+                  : "Please select a state and configure minimum wage details"}
               </p>
-              <p className="text-sm font-medium text-gray-900">{formData.state}</p>
               <button
                 type="button"
                 onClick={handleAddMinimumWage}

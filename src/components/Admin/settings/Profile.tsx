@@ -9,15 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Upload, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Try to use context, but provide fallback if it fails
-let useApp: any = () => ({});
-try {
-  const AppContext = require('@/context/AppContext');
-  useApp = AppContext.useApp;
-} catch (e) {
-  console.log('AppContext not available, using defaults');
-}
-
 interface OrganizationFormData {
   logo?: File;
   organizationName: string;
@@ -34,55 +25,24 @@ interface OrganizationFormData {
   secondaryContactName: string;
 }
 
-const DEFAULT_ORG_DATA = {
-  name: 'nila',
-  businessLocation: 'India',
-  industry: 'Technology',
-  dateFormat: 'DD/MM/YYYY (16/12/2025)',
-  address: '4,13:35 Arunachalapuram',
-  headOffice: '4,13:35 Arunachalapuram',
-  headOfficeCity: 'dindigul',
-  headOfficeState: 'Tamil Nadu',
-  headOfficePincode: '624708',
-  primaryContactEmail: 'yerrahadyusuf1@gmail.com',
-  secondaryContactEmail: '.yerrahadyusuf1@gmail.com',
-  secondaryContactName: 'Yerrala',
-};
-
 export default function SettingsProfile() {
-  // Safe context usage
-  let organizationData = DEFAULT_ORG_DATA;
-  let updateOrganization: ((data: any) => void) | null = null;
-
-  try {
-    const context = useApp();
-    if (context && context.organizationData) {
-      organizationData = { ...DEFAULT_ORG_DATA, ...context.organizationData };
-    }
-    if (context && context.updateOrganization) {
-      updateOrganization = context.updateOrganization;
-    }
-  } catch (error) {
-    console.log('Using default organization data');
-  }
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState<OrganizationFormData>({
-    organizationName: organizationData?.name || DEFAULT_ORG_DATA.name,
-    businessLocation: organizationData?.businessLocation || DEFAULT_ORG_DATA.businessLocation,
-    industry: organizationData?.industry || DEFAULT_ORG_DATA.industry,
-    dateFormat: organizationData?.dateFormat || DEFAULT_ORG_DATA.dateFormat,
-    organizationAddress: organizationData?.address || DEFAULT_ORG_DATA.address,
-    headOffice: organizationData?.headOffice || DEFAULT_ORG_DATA.headOffice,
-    headOfficeCity: organizationData?.headOfficeCity || DEFAULT_ORG_DATA.headOfficeCity,
-    headOfficeState: organizationData?.headOfficeState || DEFAULT_ORG_DATA.headOfficeState,
-    headOfficePincode: organizationData?.headOfficePincode || DEFAULT_ORG_DATA.headOfficePincode,
-    primaryContactEmail: organizationData?.primaryContactEmail || DEFAULT_ORG_DATA.primaryContactEmail,
-    secondaryContactEmail: organizationData?.secondaryContactEmail || DEFAULT_ORG_DATA.secondaryContactEmail,
-    secondaryContactName: organizationData?.secondaryContactName || DEFAULT_ORG_DATA.secondaryContactName,
+    organizationName: '',
+    businessLocation: '',
+    industry: '',
+    dateFormat: 'DD/MM/YYYY (16/12/2025)',
+    organizationAddress: '',
+    headOffice: '',
+    headOfficeCity: '',
+    headOfficeState: '',
+    headOfficePincode: '',
+    primaryContactEmail: '',
+    secondaryContactEmail: '',
+    secondaryContactName: '',
   });
 
   const handleInputChange = (
@@ -127,28 +87,36 @@ export default function SettingsProfile() {
   };
 
   const handleSave = async () => {
+    // Validation
+    if (!formData.organizationName.trim()) {
+      toast.error('Organization name is required');
+      return;
+    }
+    if (!formData.businessLocation) {
+      toast.error('Business location is required');
+      return;
+    }
+    if (!formData.industry) {
+      toast.error('Industry is required');
+      return;
+    }
+    if (!formData.organizationAddress.trim()) {
+      toast.error('Organization address is required');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Simulate API call
+      // TODO: Replace with actual API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Update organization data if function exists
-      if (updateOrganization) {
-        updateOrganization({
-          name: formData.organizationName,
-          businessLocation: formData.businessLocation,
-          industry: formData.industry,
-          dateFormat: formData.dateFormat,
-          address: formData.organizationAddress,
-          headOffice: formData.headOffice,
-          headOfficeCity: formData.headOfficeCity,
-          headOfficeState: formData.headOfficeState,
-          headOfficePincode: formData.headOfficePincode,
-          primaryContactEmail: formData.primaryContactEmail,
-          secondaryContactEmail: formData.secondaryContactEmail,
-          secondaryContactName: formData.secondaryContactName,
-        });
-      }
+      // Here you would typically:
+      // - Upload the logo if changed
+      // - Save the form data to your backend
+      // const response = await fetch('/api/organization', {
+      //   method: 'POST',
+      //   body: JSON.stringify(formData)
+      // });
 
       toast.success('Organization settings updated successfully');
     } catch (error) {
@@ -160,20 +128,20 @@ export default function SettingsProfile() {
   };
 
   const handleCancel = () => {
-    // Reset form to original values
+    // Reset form to empty/default values
     setFormData({
-      organizationName: organizationData?.name || DEFAULT_ORG_DATA.name,
-      businessLocation: organizationData?.businessLocation || DEFAULT_ORG_DATA.businessLocation,
-      industry: organizationData?.industry || DEFAULT_ORG_DATA.industry,
-      dateFormat: organizationData?.dateFormat || DEFAULT_ORG_DATA.dateFormat,
-      organizationAddress: organizationData?.address || DEFAULT_ORG_DATA.address,
-      headOffice: organizationData?.headOffice || DEFAULT_ORG_DATA.headOffice,
-      headOfficeCity: organizationData?.headOfficeCity || DEFAULT_ORG_DATA.headOfficeCity,
-      headOfficeState: organizationData?.headOfficeState || DEFAULT_ORG_DATA.headOfficeState,
-      headOfficePincode: organizationData?.headOfficePincode || DEFAULT_ORG_DATA.headOfficePincode,
-      primaryContactEmail: organizationData?.primaryContactEmail || DEFAULT_ORG_DATA.primaryContactEmail,
-      secondaryContactEmail: organizationData?.secondaryContactEmail || DEFAULT_ORG_DATA.secondaryContactEmail,
-      secondaryContactName: organizationData?.secondaryContactName || DEFAULT_ORG_DATA.secondaryContactName,
+      organizationName: '',
+      businessLocation: '',
+      industry: '',
+      dateFormat: 'DD/MM/YYYY (16/12/2025)',
+      organizationAddress: '',
+      headOffice: '',
+      headOfficeCity: '',
+      headOfficeState: '',
+      headOfficePincode: '',
+      primaryContactEmail: '',
+      secondaryContactEmail: '',
+      secondaryContactName: '',
     });
     setLogoPreview(null);
     toast.info('Changes cancelled');
@@ -349,15 +317,65 @@ export default function SettingsProfile() {
             <CardTitle className="text-base sm:text-lg lg:text-xl">Head Office</CardTitle>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-6">
-            <div className="space-y-1 sm:space-y-2">
-              <p className="text-xs sm:text-sm font-medium text-gray-900">{formData.headOffice}</p>
-              <p className="text-xs sm:text-sm text-gray-600">
-                {formData.headOfficeCity}, {formData.headOfficeState}, {formData.headOfficePincode}
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="headOffice" className="text-xs sm:text-sm font-medium">
+                  Head Office Address
+                </Label>
+                <Input
+                  id="headOffice"
+                  name="headOffice"
+                  value={formData.headOffice}
+                  onChange={handleInputChange}
+                  placeholder="Enter head office address"
+                  className="w-full text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="headOfficeCity" className="text-xs sm:text-sm font-medium">
+                  City
+                </Label>
+                <Input
+                  id="headOfficeCity"
+                  name="headOfficeCity"
+                  value={formData.headOfficeCity}
+                  onChange={handleInputChange}
+                  placeholder="Enter city"
+                  className="w-full text-sm"
+                />
+              </div>
             </div>
-            <Button variant="link" className="text-blue-600 p-0 h-auto text-xs sm:text-sm">
-              Change
-            </Button>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="headOfficeState" className="text-xs sm:text-sm font-medium">
+                  State
+                </Label>
+                <Input
+                  id="headOfficeState"
+                  name="headOfficeState"
+                  value={formData.headOfficeState}
+                  onChange={handleInputChange}
+                  placeholder="Enter state"
+                  className="w-full text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="headOfficePincode" className="text-xs sm:text-sm font-medium">
+                  Pincode
+                </Label>
+                <Input
+                  id="headOfficePincode"
+                  name="headOfficePincode"
+                  value={formData.headOfficePincode}
+                  onChange={handleInputChange}
+                  placeholder="Enter pincode"
+                  className="w-full text-sm"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -367,23 +385,50 @@ export default function SettingsProfile() {
             <CardTitle className="text-base sm:text-lg lg:text-xl">Contact Information</CardTitle>
           </CardHeader>
           <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4 sm:space-y-6">
-            <div className="space-y-1 sm:space-y-2">
-              <Label className="text-xs sm:text-sm font-medium text-gray-900">Primary Contact Email</Label>
-              <p className="text-xs sm:text-sm text-gray-700 break-all">{formData.primaryContactEmail}</p>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="primaryContactEmail" className="text-xs sm:text-sm font-medium">
+                Primary Contact Email
+              </Label>
+              <Input
+                id="primaryContactEmail"
+                name="primaryContactEmail"
+                type="email"
+                value={formData.primaryContactEmail}
+                onChange={handleInputChange}
+                placeholder="Enter primary contact email"
+                className="w-full text-sm"
+              />
             </div>
 
-            <div className="space-y-2 sm:space-y-2">
-              <Label className="text-xs sm:text-sm font-medium text-gray-900">Email address of</Label>
-              <div className="flex flex-wrap gap-2">
-                <div className="px-2 sm:px-3 py-1.5 sm:py-2 bg-orange-50 text-orange-700 rounded text-xs sm:text-sm font-medium">
-                  {formData.secondaryContactName}
-                </div>
-                <p className="text-xs sm:text-sm text-gray-700 flex items-center break-all">
-                  {formData.secondaryContactEmail}
-                </p>
-              </div>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="secondaryContactName" className="text-xs sm:text-sm font-medium">
+                Secondary Contact Name
+              </Label>
+              <Input
+                id="secondaryContactName"
+                name="secondaryContactName"
+                value={formData.secondaryContactName}
+                onChange={handleInputChange}
+                placeholder="Enter secondary contact name"
+                className="w-full text-sm"
+              />
+            </div>
+
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="secondaryContactEmail" className="text-xs sm:text-sm font-medium">
+                Secondary Contact Email
+              </Label>
+              <Input
+                id="secondaryContactEmail"
+                name="secondaryContactEmail"
+                type="email"
+                value={formData.secondaryContactEmail}
+                onChange={handleInputChange}
+                placeholder="Enter secondary contact email"
+                className="w-full text-sm"
+              />
               <p className="text-[10px] sm:text-xs text-gray-500 leading-relaxed">
-                You can configure the email addresses that would be used in the sender address field for emails sent via Zoho Payroll.
+                You can configure the email addresses that would be used in the sender address field for emails sent from the system.
               </p>
             </div>
           </CardContent>

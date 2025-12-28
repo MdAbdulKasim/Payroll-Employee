@@ -57,26 +57,28 @@ export default function Payschedule({ onComplete }: SetupConfigurationProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date(2025, 5, 1));
 
   useEffect(() => {
-    const saved = localStorage.getItem("workWeekConfig");
-    if (saved) {
-      const config: WorkWeekConfig = JSON.parse(saved);
-      setWorkWeek(config.workWeek || workWeek);
-      setSalaryCalculation(config.salaryCalculation || "actual");
-      setOrganizationWorkingDays(config.organizationWorkingDays || "");
-      setPayDay(config.payDay || "specific-day");
-      setSpecificPayDay(config.specificPayDay || "1");
-      setFirstPayrollMonth(config.firstPayrollMonth || "June-2025");
-
-      if (config.firstPayrollDate) {
-        setFirstPayrollDate(
-          new Date(
-            currentMonth.getFullYear(),
-            currentMonth.getMonth(),
-            Number(config.firstPayrollDate)
-          )
-        );
-      }
-    }
+    // TODO: Fetch pay schedule configuration from API
+    // Example:
+    // const fetchConfig = async () => {
+    //   const response = await fetch('/api/payschedule/config');
+    //   const config = await response.json();
+    //   setWorkWeek(config.workWeek || workWeek);
+    //   setSalaryCalculation(config.salaryCalculation || "actual");
+    //   setOrganizationWorkingDays(config.organizationWorkingDays || "");
+    //   setPayDay(config.payDay || "specific-day");
+    //   setSpecificPayDay(config.specificPayDay || "1");
+    //   setFirstPayrollMonth(config.firstPayrollMonth || "June-2025");
+    //   if (config.firstPayrollDate) {
+    //     setFirstPayrollDate(
+    //       new Date(
+    //         currentMonth.getFullYear(),
+    //         currentMonth.getMonth(),
+    //         Number(config.firstPayrollDate)
+    //       )
+    //     );
+    //   }
+    // };
+    // fetchConfig();
   }, []);
 
   const handleDayToggle = (day: string) => {
@@ -85,7 +87,7 @@ export default function Payschedule({ onComplete }: SetupConfigurationProps) {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (workWeek.length === 0) {
@@ -114,10 +116,21 @@ export default function Payschedule({ onComplete }: SetupConfigurationProps) {
       firstPayrollDate: firstPayrollDate.getDate().toString(),
     };
 
-    localStorage.setItem("workWeekConfig", JSON.stringify(config));
+    // TODO: Add API call here to save pay schedule configuration
+    // Example:
+    // try {
+    //   await fetch('/api/payschedule/config', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(config)
+    //   });
+    //   toast.success("Pay schedule configuration saved successfully");
+    //   if (onComplete) onComplete();
+    // } catch (error) {
+    //   toast.error("Failed to save configuration");
+    // }
 
     if (onComplete) onComplete();
-
     toast.success("Pay schedule configuration saved successfully");
   };
 

@@ -13,14 +13,14 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
   const [formData, setFormData] = useState({
     epfNumber: "",
     deductionCycle: "Monthly",
-    employeeContributionRate: "12% of Actual PF Wage",
-    employerContributionRate: "12% of Actual PF Wage",
-    includeEmployerInSalary: true,
+    employeeContributionRate: "",
+    employerContributionRate: "",
+    includeEmployerInSalary: false,
     includeEmployerEDLI: false,
     includeAdminCharges: false,
     overridePFContribution: false,
     proRateRestrictedPF: false,
-    considerAllComponents: true,
+    considerAllComponents: false,
   });
 
   useEffect(() => {
@@ -48,6 +48,16 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
       return;
     }
 
+    if (!formData.employeeContributionRate) {
+      toast.error("Please select Employee Contribution Rate");
+      return;
+    }
+
+    if (!formData.employerContributionRate) {
+      toast.error("Please select Employer Contribution Rate");
+      return;
+    }
+
     const config = {
       ...formData,
       isEnabled: true,
@@ -70,12 +80,10 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
   if (!showForm && !isEnabled) {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <div className="w-48 h-48 relative">
-          {/* <img
-            src="/api/placeholder/200/200"
-            alt="EPF Illustration"
-            className="w-full h-full object-contain"
-          /> */}
+        <div className="w-48 h-48 relative flex items-center justify-center bg-gray-100 rounded-lg">
+          <svg className="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
         <h3 className="text-xl font-semibold text-gray-900">
           Are you registered for EPF?
@@ -123,7 +131,7 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
         <div className="space-y-6">
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              EPF Number
+              EPF Number <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -152,7 +160,7 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Employee Contribution Rate
+              Employee Contribution Rate <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.employeeContributionRate}
@@ -164,14 +172,15 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <option>12% of Actual PF Wage</option>
-              <option>10% of Actual PF Wage</option>
+              <option value="">Select Rate</option>
+              <option value="12">12% of Actual PF Wage</option>
+              <option value="10">10% of Actual PF Wage</option>
             </select>
           </div>
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Employer Contribution Rate
+              Employer Contribution Rate <span className="text-red-500">*</span>
               <button type="button" className="ml-2 text-blue-600 text-sm hover:underline">
                 View Splitup
               </button>
@@ -186,8 +195,9 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <option>12% of Actual PF Wage</option>
-              <option>10% of Actual PF Wage</option>
+              <option value="">Select Rate</option>
+              <option value="12">12% of Actual PF Wage</option>
+              <option value="10">10% of Actual PF Wage</option>
             </select>
           </div>
 
@@ -319,64 +329,31 @@ export default function EPFComponent({ onComplete }: EPFComponentProps) {
           </div>
         </div>
 
-        {/* Right Column - Sample Calculation */}
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-6 h-fit">
+        {/* Right Column - Information Box */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 h-fit">
           <h4 className="text-base font-semibold text-gray-900 mb-4">
-            Sample EPF Calculation
+            EPF Calculation Information
           </h4>
-          <p className="text-sm text-gray-700 mb-4">
-            Let's assume the PF wage is ₹ 20,000. The breakup of contribution will be:
-          </p>
-
-          <div className="space-y-4">
-            <div>
-              <h5 className="text-sm font-semibold text-gray-900 mb-2">
-                Employee's Contribution
-              </h5>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-700">EPF (12% of 20000)</span>
-                <span className="font-medium">₹ 2400</span>
-              </div>
-            </div>
-
-            <div>
-              <h5 className="text-sm font-semibold text-gray-900 mb-2">
-                Employer's Contribution
-              </h5>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-700">
-                    EPS (8.33% of 20000 (Max of ₹ 15,000))
-                  </span>
-                  <span className="font-medium">₹ 1250</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-700">EPF (12% of 20000 - EPS)</span>
-                  <span className="font-medium">₹ 1150</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-orange-300">
-              <div className="flex justify-between text-sm font-semibold">
-                <span>Total</span>
-                <span>₹ 2400</span>
-              </div>
-            </div>
+          <div className="space-y-3 text-sm text-gray-700">
+            <p>
+              <strong>Employee Contribution:</strong> Deducted from employee salary based on selected rate.
+            </p>
+            <p>
+              <strong>Employer Contribution:</strong> Split between EPF and EPS (Employee Pension Scheme).
+            </p>
+            <p>
+              <strong>EPS:</strong> 8.33% of PF wage (maximum of ₹15,000)
+            </p>
+            <p>
+              <strong>EPF:</strong> Remaining amount from employer contribution after EPS
+            </p>
           </div>
 
-          <div className="mt-6 p-3 bg-white rounded border border-orange-200">
+          <div className="mt-6 p-3 bg-white rounded border border-blue-200">
             <p className="text-xs text-gray-600 flex items-start gap-2">
-              <span className="text-orange-500">💡</span>
-              Do you want to preview EPF calculation for multiple cases, based on the
-              preferences you have configured?
+              <span className="text-blue-500">💡</span>
+              Configure the rates above and save to apply EPF deductions to employee salaries.
             </p>
-            <button
-              type="button"
-              className="mt-2 text-sm text-blue-600 hover:underline flex items-center gap-1"
-            >
-              👁 Preview EPF Calculation
-            </button>
           </div>
         </div>
       </div>

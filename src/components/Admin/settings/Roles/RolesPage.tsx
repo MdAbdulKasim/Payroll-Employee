@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,32 +24,23 @@ interface Role {
 export default function RolesPage() {
   const router = useRouter();
   
-  const [roles, setRoles] = useState<Role[]>([
-    {
-      id: '1',
-      name: 'Admin',
-      description: 'Full system access',
-      permissions: ['all'],
-    },
-    {
-      id: '2',
-      name: 'HR Manager',
-      description: 'Manage employees and departments',
-      permissions: ['employees', 'departments'],
-    },
-    {
-      id: '3',
-      name: 'Payroll Manager',
-      description: 'Manage payroll and payruns',
-      permissions: ['payroll', 'payruns'],
-    },
-  ]);
-
+  const [roles, setRoles] = useState<Role[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<string | null>(null);
 
+  useEffect(() => {
+    // TODO: Fetch roles from API
+    // Example:
+    // const fetchRoles = async () => {
+    //   const response = await fetch('/api/roles');
+    //   const data = await response.json();
+    //   setRoles(data);
+    // };
+    // fetchRoles();
+  }, []);
+
   const handleEdit = (roleId: string) => {
-    router.push(`/admin/settings/roles/edit`);
+    router.push(`/admin/settings/roles/edit/${roleId}`);
   };
 
   const handleDeleteClick = (roleId: string) => {
@@ -57,8 +48,14 @@ export default function RolesPage() {
     setDeleteDialogOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (roleToDelete) {
+      // TODO: Add API call here to delete role
+      // Example:
+      // await fetch(`/api/roles/${roleToDelete}`, {
+      //   method: 'DELETE'
+      // });
+      
       setRoles(roles.filter(role => role.id !== roleToDelete));
       setRoleToDelete(null);
     }

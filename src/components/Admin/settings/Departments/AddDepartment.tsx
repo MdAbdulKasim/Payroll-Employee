@@ -27,8 +27,8 @@ export default function AddDepartmentPage() {
       return;
     }
 
-    // Here you would typically save to your backend/database
-    console.log('Saving department:', formData);
+    // Ready for backend integration
+    // TODO: Add API call here to save department data
     
     // Navigate back to departments page
     router.push('/admin/settings/departments');

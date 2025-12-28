@@ -36,83 +36,16 @@ const tabs = [
   { id: "reimbursements" as TabId, label: "Reimbursements" },
 ];
 
-const initialEarnings: SalaryComponent[] = [
-  {
-    id: "1",
-    name: "Basic",
-    type: "Basic",
-    earningType: "Basic",
-    calculationType: "Fixed; 50% of CTC",
-    considerForEPF: true,
-    considerForESI: true,
-    status: "Active",
-  },
-  {
-    id: "2",
-    name: "House Rent Allowance",
-    type: "House Rent Allowance",
-    earningType: "House Rent Allowance",
-    calculationType: "Fixed; 50% of Basic",
-    considerForEPF: false,
-    considerForESI: true,
-    status: "Active",
-  },
-  {
-    id: "3",
-    name: "Conveyance Allowance",
-    type: "Conveyance Allowance",
-    earningType: "Conveyance Allowance",
-    calculationType: "Fixed; Flat Amount",
-    considerForEPF: true,
-    considerForESI: false,
-    status: "Active",
-  },
-];
 
-const initialDeductions: SalaryComponent[] = [
-  {
-    id: "d1",
-    name: "Notice Pay Deduction",
-    type: "Notice Pay Deduction",
-    deductionType: "Notice Pay Deduction",
-    frequency: "One Time",
-    considerForEPF: false,
-    considerForESI: false,
-    status: "Active",
-  },
-  {
-    id: "d2",
-    name: "Withheld Salary",
-    type: "Withheld Salary",
-    deductionType: "Withheld Salary",
-    frequency: "One Time",
-    considerForEPF: false,
-    considerForESI: false,
-    status: "Active",
-  },
-];
 
-const initialBenefits: SalaryComponent[] = [
-  {
-    id: "b1",
-    name: "Voluntary Provident Fund",
-    type: "Voluntary Provident Fund",
-    benefitType: "Voluntary Provident Fund",
-    frequency: "Recurring",
-    considerForEPF: false,
-    considerForESI: false,
-    status: "Inactive",
-  },
-];
 
-const initialReimbursements: SalaryComponent[] = [];
 
 export default function SalaryComponents({ onComplete }: SalaryComponentsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("earnings");
-  const [earnings, setEarnings] = useState<SalaryComponent[]>(initialEarnings);
-  const [deductions, setDeductions] = useState<SalaryComponent[]>(initialDeductions);
-  const [benefits, setBenefits] = useState<SalaryComponent[]>(initialBenefits);
-  const [reimbursements, setReimbursements] = useState<SalaryComponent[]>(initialReimbursements);
+  const [earnings, setEarnings] = useState<SalaryComponent[]>([]);
+  const [deductions, setDeductions] = useState<SalaryComponent[]>([]);
+  const [benefits, setBenefits] = useState<SalaryComponent[]>([]);
+  const [reimbursements, setReimbursements] = useState<SalaryComponent[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [addDialogType, setAddDialogType] = useState<"earning" | "correction" | "deduction" | "benefit" | "reimbursement">("earning");
   const [editingComponent, setEditingComponent] = useState<SalaryComponent | null>(null);
@@ -125,10 +58,10 @@ export default function SalaryComponents({ onComplete }: SalaryComponentsProps) 
     if (saved) {
       try {
         const data = JSON.parse(saved);
-        setEarnings(data.earnings || initialEarnings);
-        setDeductions(data.deductions || initialDeductions);
-        setBenefits(data.benefits || initialBenefits);
-        setReimbursements(data.reimbursements || initialReimbursements);
+        setEarnings(data.earnings || []);
+        setDeductions(data.deductions || []);
+        setBenefits(data.benefits || []);
+        setReimbursements(data.reimbursements || []);
       } catch (error) {
         console.error("Error loading salary components:", error);
       }
