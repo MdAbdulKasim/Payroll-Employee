@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
+import axios from 'axios';
 
 // Try to use context, but provide fallback if it fails
 let useApp: any = () => ({});
@@ -64,6 +65,40 @@ export default function SettingsProfile() {
     organizationAddress: organizationData?.address || DEFAULT_ORG_DATA.address,
   });
 
+  useEffect(() => {
+    const fetchOrg = async () => {
+      const orgId = sessionStorage.getItem("orgId");
+      if (!orgId) return;
+
+      try {
+        const response = await axios.get(`http://localhost:4000/api/payroll/organizations/${orgId}`);
+        if (response.data) {
+          const fetchedData = {
+            organizationName: response.data.organizationName || formData.organizationName,
+            businessLocation: response.data.location || formData.businessLocation,
+            industry: response.data.industry || formData.industry,
+            dateFormat: response.data.dateFormat || formData.dateFormat,
+            organizationAddress: response.data.organizationAddress || formData.organizationAddress
+          };
+          setFormData(prev => ({ ...prev, ...fetchedData }));
+
+          if (updateOrganization) {
+            updateOrganization({
+              name: response.data.organizationName,
+              businessLocation: response.data.location,
+              industry: response.data.industry,
+              dateFormat: response.data.dateFormat,
+              address: response.data.organizationAddress
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching organization in Profile:", error);
+      }
+    };
+    fetchOrg();
+  }, []);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -107,9 +142,17 @@ export default function SettingsProfile() {
 
   const handleSave = async () => {
     setIsLoading(true);
+    const orgId = sessionStorage.getItem("orgId");
+
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (orgId) {
+        await axios.patch(`http://localhost:4000/api/payroll/organizations/${orgId}`, {
+          location: formData.businessLocation,
+          industry: formData.industry,
+          dateFormat: formData.dateFormat,
+          organizationAddress: formData.organizationAddress
+        });
+      }
 
       // Update organization data if function exists
       if (updateOrganization) {

@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, FileText } from "lucide-react";
+import { Eye, EyeOff, FileText, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function RegistrationPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     organizationName: "",
@@ -15,7 +18,7 @@ export default function RegistrationPage() {
     password: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate all fields are filled
@@ -26,17 +29,42 @@ export default function RegistrationPage() {
       !formData.phone ||
       !formData.password
     ) {
+      toast.error("Please fill in all fields");
       return;
     }
 
-    // Store authentication state and session info for OTP page
-    localStorage.setItem("isAuthenticated", "true");
-    sessionStorage.setItem("userEmail", formData.email);
-    sessionStorage.setItem("userRole", "admin");
-    sessionStorage.setItem("redirectTo", "/login"); // Go to login after registration verification
+    setIsLoading(true);
 
-    // Redirect to OTP page
-    router.push("/admin/auth/otp");
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/register", {
+        fullName: formData.fullName,
+        organizationName: formData.organizationName,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        password: formData.password,
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        toast.success("Account created successfully!");
+
+        // Store authentication state and session info for OTP page
+        localStorage.setItem("isAuthenticated", "true");
+        sessionStorage.setItem("userEmail", formData.email);
+        sessionStorage.setItem("userRole", "admin");
+        sessionStorage.setItem("orgId", response.data.orgId);
+        sessionStorage.setItem("organizationName", response.data.organizationName || formData.organizationName);
+        sessionStorage.setItem("redirectTo", "/login");
+
+        // Redirect to OTP page
+        router.push("/admin/auth/otp");
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
@@ -165,10 +193,17 @@ export default function RegistrationPage() {
 
           <button
             type="submit"
-            disabled={!isFormValid}
-            className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:shadow-none mt-4"
+            disabled={!isFormValid || isLoading}
+            className="w-full bg-[#2563EB] hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:shadow-none mt-4 flex items-center justify-center gap-2"
           >
-            Create Account
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Creating Account...</span>
+              </>
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
 

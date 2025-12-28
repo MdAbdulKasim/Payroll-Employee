@@ -1,7 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, ArrowLeft } from "lucide-react";
+import { Shield, ArrowLeft, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function VerifyOTP() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -42,28 +44,56 @@ export default function VerifyOTP() {
     }
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     const otpCode = otp.join("");
-    
+
     if (otpCode.length !== 6) {
-      alert("Please enter the complete 6-digit OTP");
+      toast.error("Please enter the complete 6-digit OTP");
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate OTP verification (accept any 6-digit code for demo)
-    setTimeout(() => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/verify-reset-otp", {
+        email: email,
+        otp: otpCode,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("OTP verified successfully!");
+        // Store verification status and resetToken if provided
+        sessionStorage.setItem("otpVerified", "true");
+        if (response.data.resetToken) {
+          sessionStorage.setItem("resetToken", response.data.resetToken);
+        }
+        router.push("/login/resetpassword");
+      }
+    } catch (error: any) {
+      console.error("OTP verification error:", error);
+      const errorMessage = error.response?.data?.message || "Invalid OTP. Please try again.";
+      toast.error(errorMessage);
+    } finally {
       setIsLoading(false);
-      // Store verification status
-      sessionStorage.setItem("otpVerified", "true");
-      router.push("/login/resetpassword");
-    }, 1500);
+    }
   };
 
-  const handleResendOTP = () => {
-    setOtp(["", "", "", "", "", ""]);
-    alert("OTP has been resent to your email");
+  const handleResendOTP = async () => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/forgot-password", {
+        email: email,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("OTP has been resent to your email");
+        setOtp(["", "", "", "", "", ""]);
+        document.getElementById(`otp-0`)?.focus();
+      }
+    } catch (error: any) {
+      console.error("Resend OTP error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to resend OTP. Please try again.";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -122,9 +152,16 @@ export default function VerifyOTP() {
           <button
             onClick={handleVerifyOTP}
             disabled={isLoading}
-            className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed mb-4"
+            className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors disabled:bg-blue-400 disabled:cursor-not-allowed mb-4 flex items-center justify-center gap-2"
           >
-            {isLoading ? "Verifying..." : "Verify OTP"}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Verifying...</span>
+              </>
+            ) : (
+              "Verify OTP"
+            )}
           </button>
 
           {/* Resend OTP */}

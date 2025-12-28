@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, FileText, ArrowRight } from "lucide-react";
+import { Mail, Lock, FileText, ArrowRight, Loader2 } from "lucide-react";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function PayrollLogin() {
   const [email, setEmail] = useState("");
@@ -9,38 +11,48 @@ export default function PayrollLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !email.includes("@")) {
-      alert("Please enter a valid email");
+      toast.error("Please enter a valid email");
       return;
     }
     if (!password) {
-      alert("Please enter your password");
+      toast.error("Please enter your password");
       return;
     }
 
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await axios.post("http://localhost:4000/api/payroll/auth/login", {
+        email: email,
+        password: password,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Login successful!");
+
+        // Store in localStorage/sessionStorage
+        localStorage.setItem("isAuthenticated", "true");
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userRole", response.data.role || "admin");
+
+        // Store token in cookies (7 days)
+        if (response.data.token) {
+          const expires = new Date();
+          expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
+          document.cookie = `token=${response.data.token};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
+        }
+
+        router.push("/admin/dashboard");
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      const errorMessage = error.response?.data?.message || "Invalid credentials or server error.";
+      toast.error(errorMessage);
+    } finally {
       setIsLoading(false);
-      // Admin
-      if (email === "admin@company.com" && password === "admin123") {
-        sessionStorage.setItem("userEmail", email);
-        sessionStorage.setItem("userRole", "admin");
-        sessionStorage.setItem("redirectTo", "/admin/setup");
-        router.push("/admin/setup");
-        return;
-      }
-      // Employee
-      if (email === "employee@company.com" && password === "emp123") {
-        sessionStorage.setItem("userEmail", email);
-        sessionStorage.setItem("userRole", "employee");
-        sessionStorage.setItem("redirectTo", "/employee/dashboard");
-        router.push("/employee/dashboard");
-        return;
-      }
-      alert("Invalid credentials");
-    }, 1200);
+    }
   };
 
   return (
@@ -113,8 +125,17 @@ export default function PayrollLogin() {
             disabled={isLoading}
             className="w-full h-11 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:bg-blue-400 disabled:cursor-not-allowed mb-6"
           >
-            {isLoading ? "Sending..." : "Login"}
-            {!isLoading && <ArrowRight className="w-4 h-4" />}
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Logging in...</span>
+              </>
+            ) : (
+              <>
+                <span>Login</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
 
           {/* Register */}
