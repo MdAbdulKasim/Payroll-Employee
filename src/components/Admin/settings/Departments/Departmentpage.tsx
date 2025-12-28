@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
@@ -13,19 +13,32 @@ interface Department {
 
 export default function DepartmentsManager() {
   const router = useRouter();
-  const [departments, setDepartments] = useState<Department[]>([
-    { id: 1, name: 'Engineering', head: '-', employees: 0 },
-    { id: 2, name: 'Human Resources', head: '-', employees: 0 },
-  ]);
-
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // TODO: Fetch departments from API
+    // Example:
+    // const fetchDepartments = async () => {
+    //   const response = await fetch('/api/departments');
+    //   const data = await response.json();
+    //   setDepartments(data);
+    // };
+    // fetchDepartments();
+  }, []);
 
   const handleAddDepartment = () => {
     router.push('/admin/settings/departments/add');
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (deleteId !== null) {
+      // TODO: Add API call here to delete department
+      // Example:
+      // await fetch(`/api/departments/${deleteId}`, {
+      //   method: 'DELETE'
+      // });
+      
       setDepartments(prev => prev.filter(d => d.id !== deleteId));
       setDeleteId(null);
     }
@@ -94,7 +107,7 @@ export default function DepartmentsManager() {
                         <Pencil
                           className="w-4 h-4 text-gray-600 cursor-pointer hover:text-green-600"
                           onClick={() =>
-                            router.push(`/admin/settings/departments/edit`)
+                            router.push(`/admin/settings/departments/edit/${dept.id}`)
                           }
                         />
                         <Trash2
@@ -123,7 +136,7 @@ export default function DepartmentsManager() {
                     <Pencil
                       className="w-4 h-4 cursor-pointer hover:text-green-600"
                       onClick={() =>
-                        router.push(`/admin/settings/departments/edit`)
+                        router.push(`/admin/settings/departments/edit/${dept.id}`)
                       }
                     />
                     <Trash2

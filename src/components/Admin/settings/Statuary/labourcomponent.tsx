@@ -11,9 +11,9 @@ export default function LabourWelfareFundComponent({
   onComplete,
 }: LabourWelfareFundComponentProps) {
   const [formData, setFormData] = useState({
-    state: "Tamil Nadu",
-    employeeContribution: "20.00",
-    employerContribution: "40.00",
+    state: "",
+    employeeContribution: "",
+    employerContribution: "",
     deductionCycle: "Yearly",
     status: "Disabled",
   });
@@ -31,6 +31,21 @@ export default function LabourWelfareFundComponent({
   }, []);
 
   const handleEnable = () => {
+    if (!formData.state) {
+      toast.error("Please configure state information first");
+      return;
+    }
+
+    if (!formData.employeeContribution) {
+      toast.error("Please configure employee contribution");
+      return;
+    }
+
+    if (!formData.employerContribution) {
+      toast.error("Please configure employer contribution");
+      return;
+    }
+
     const config = {
       ...formData,
       status: "Enabled",
@@ -59,6 +74,10 @@ export default function LabourWelfareFundComponent({
     }
   };
 
+  const handleConfigure = () => {
+    toast.info("Configuration functionality - to be implemented");
+  };
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -72,21 +91,37 @@ export default function LabourWelfareFundComponent({
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">{formData.state}</h4>
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-lg font-semibold text-gray-900">
+            {formData.state || "Not Configured"}
+          </h4>
+          {!formData.state && (
+            <button
+              onClick={handleConfigure}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Configure State
+            </button>
+          )}
+        </div>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between py-2">
             <span className="text-sm font-medium text-gray-700">
               Employees' Contribution
             </span>
-            <span className="text-sm text-gray-900">₹ {formData.employeeContribution}</span>
+            <span className="text-sm text-gray-900">
+              {formData.employeeContribution ? `₹ ${formData.employeeContribution}` : "Not configured"}
+            </span>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t">
             <span className="text-sm font-medium text-gray-700">
               Employer's Contribution
             </span>
-            <span className="text-sm text-gray-900">₹ {formData.employerContribution}</span>
+            <span className="text-sm text-gray-900">
+              {formData.employerContribution ? `₹ ${formData.employerContribution}` : "Not configured"}
+            </span>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t">
@@ -104,7 +139,7 @@ export default function LabourWelfareFundComponent({
               }`}
             >
               {formData.status}{" "}
-              {formData.status === "Disabled" && (
+              {formData.status === "Disabled" && formData.state && (
                 <button
                   onClick={handleEnable}
                   className="text-blue-600 hover:underline ml-1"
@@ -115,6 +150,14 @@ export default function LabourWelfareFundComponent({
             </span>
           </div>
         </div>
+
+        {!formData.state && (
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-gray-700">
+              <strong>Configuration Required:</strong> Please configure state-specific Labour Welfare Fund details including contribution amounts.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Action Button */}

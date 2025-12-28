@@ -15,23 +15,19 @@ export default function EditDepartmentPage() {
     description: "",
   });
 
-  /* -------------------------------------------------
-     Mock fetch (replace with API later)
-  --------------------------------------------------*/
   useEffect(() => {
-    // Simulated existing department data
-    const existingDepartment = {
-      id: departmentId,
-      departmentName: "Engineering",
-      departmentCode: "ENG",
-      description: "Handles all engineering tasks",
-    };
-
-    setFormData({
-      departmentName: existingDepartment.departmentName,
-      departmentCode: existingDepartment.departmentCode,
-      description: existingDepartment.description,
-    });
+    // TODO: Fetch existing department data from API
+    // Example:
+    // const fetchDepartment = async () => {
+    //   const response = await fetch(`/api/departments/${departmentId}`);
+    //   const data = await response.json();
+    //   setFormData({
+    //     departmentName: data.departmentName,
+    //     departmentCode: data.departmentCode,
+    //     description: data.description,
+    //   });
+    // };
+    // fetchDepartment();
   }, [departmentId]);
 
   const handleChange = (
@@ -50,11 +46,16 @@ export default function EditDepartmentPage() {
       return;
     }
 
-    // Update logic (API later)
-    console.log("Updating department:", {
-      id: departmentId,
-      ...formData,
-    });
+    // TODO: Add API call here to update department data
+    // Example:
+    // const updateDepartment = async () => {
+    //   await fetch(`/api/departments/${departmentId}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    // };
+    // updateDepartment();
 
     router.push("/admin/settings/departments");
   };

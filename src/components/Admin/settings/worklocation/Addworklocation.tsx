@@ -80,7 +80,6 @@ export default function AddWorkLocationDialog({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }));
     }
@@ -95,12 +94,11 @@ export default function AddWorkLocationDialog({
 
     setIsSubmitting(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Map back to what the parent expects if necessary, or just pass formData
-      // Since the parent expects Omit<WorkLocation, 'id' | 'createdAt'>
-      onEdit(formData as any);
+      if (editingLocation) {
+        onEdit(formData);
+      } else {
+        onAdd(formData);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -123,7 +121,6 @@ export default function AddWorkLocationDialog({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">
@@ -144,9 +141,7 @@ export default function AddWorkLocationDialog({
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Location Name */}
+        <div className="p-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="locationName" className="text-sm font-medium">
               Location Name <span className="text-red-500">*</span>
@@ -165,7 +160,6 @@ export default function AddWorkLocationDialog({
             )}
           </div>
 
-          {/* Address */}
           <div className="space-y-2">
             <Label htmlFor="address" className="text-sm font-medium">
               Address <span className="text-red-500">*</span>
@@ -184,7 +178,6 @@ export default function AddWorkLocationDialog({
             )}
           </div>
 
-          {/* City and State */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="city" className="text-sm font-medium">
@@ -223,7 +216,6 @@ export default function AddWorkLocationDialog({
             </div>
           </div>
 
-          {/* Country */}
           <div className="space-y-2">
             <Label htmlFor="country" className="text-sm font-medium">
               Country <span className="text-red-500">*</span>
@@ -242,7 +234,6 @@ export default function AddWorkLocationDialog({
             )}
           </div>
 
-          {/* Buttons */}
           <div className="flex gap-3 pt-4 border-t">
             <Button
               type="button"
@@ -255,6 +246,7 @@ export default function AddWorkLocationDialog({
             </Button>
             <Button
               type="submit"
+              onClick={handleSubmit}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               disabled={isSubmitting}
             >
@@ -267,7 +259,7 @@ export default function AddWorkLocationDialog({
                   : 'Add Location'}
             </Button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );

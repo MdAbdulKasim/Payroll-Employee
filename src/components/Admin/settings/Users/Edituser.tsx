@@ -25,44 +25,22 @@ const EditUserPage: React.FC = () => {
     status: 'active',
   });
 
-  // Mock users data - In real app, this would come from API/database
-  const users = [
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'admin',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'hr-manager',
-      status: 'active',
-    },
-    {
-      id: '3',
-      name: 'Mike Johnson',
-      email: 'mike@example.com',
-      role: 'payroll-manager',
-      status: 'active',
-    },
-  ];
-
   useEffect(() => {
-    // Load user data based on userId
-    if (userId) {
-      const user = users.find(u => u.id === userId);
-      if (user) {
-        setFormData({
-          fullName: user.name,
-          email: user.email,
-          role: user.role,
-          status: user.status,
-        });
-      }
-    }
+    // TODO: Fetch user data from API
+    // Example:
+    // const fetchUser = async () => {
+    //   const response = await fetch(`/api/users/${userId}`);
+    //   const user = await response.json();
+    //   setFormData({
+    //     fullName: user.name,
+    //     email: user.email,
+    //     role: user.role,
+    //     status: user.status,
+    //   });
+    // };
+    // if (userId) {
+    //   fetchUser();
+    // }
   }, [userId]);
 
   const handleCancel = () => {
@@ -70,9 +48,17 @@ const EditUserPage: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission logic here
-    console.log('Updated form data:', { ...formData, userId });
-    // After successful submission, redirect to users page
+    // TODO: Add API call here to update user data
+    // Example:
+    // const updateUser = async () => {
+    //   await fetch(`/api/users/${userId}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    // };
+    // updateUser();
+    
     router.push('/admin/settings/users');
   };
 

@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useApp } from '@/context/AppContext';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
@@ -21,21 +20,128 @@ export interface WorkLocation {
 export default function WorkLocationsPage() {
   const { organizationData, updateOrganization } = useApp();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<WorkLocation | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const hasLocation = organizationData?.businessLocation || organizationData?.address;
+  // Fetch locations on mount
+  useEffect(() => {
+    const fetchLocations = async () => {
+      setIsLoading(true);
+      try {
+        // TODO: Replace with actual API call
+        // const response = await fetch('/api/work-locations');
+        // const data = await response.json();
+        // setLocations(data);
+        
+        // Simulating API call
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setLocations([]);
+      } catch (error) {
+        toast.error('Failed to load work locations');
+        console.error('Error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const handleEditLocation = (locationData: Omit<WorkLocation, 'id' | 'createdAt'>) => {
-    updateOrganization({
-      businessLocation: locationData.locationName,
-      address: locationData.address,
-    });
-    setShowAddDialog(false);
-    toast.success('Work location updated successfully');
+    fetchLocations();
+  }, []);
+
+  const handleAddLocation = async (locationData: Omit<WorkLocation, 'id' | 'createdAt'>) => {
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch('/api/work-locations', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(locationData)
+      // });
+      // const newLocation = await response.json();
+
+      const newLocation: WorkLocation = {
+        id: `LOC_${Date.now()}`,
+        ...locationData,
+        createdAt: new Date().toISOString(),
+      };
+
+      setLocations([...locations, newLocation]);
+      setShowAddDialog(false);
+      setEditingLocation(null);
+      toast.success('Work location added successfully');
+    } catch (error) {
+      toast.error('Failed to add work location');
+      console.error('Error:', error);
+    }
   };
 
-  const openEditDialog = () => {
+  const handleEditLocation = async (locationData: Omit<WorkLocation, 'id' | 'createdAt'>) => {
+    if (!editingLocation) return;
+
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch(`/api/work-locations/${editingLocation.id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(locationData)
+      // });
+      // const updatedLocation = await response.json();
+
+      setLocations(
+        locations.map((loc) =>
+          loc.id === editingLocation.id
+            ? { ...loc, ...locationData }
+            : loc
+        )
+      );
+
+      setShowAddDialog(false);
+      setEditingLocation(null);
+      toast.success('Work location updated successfully');
+    } catch (error) {
+      toast.error('Failed to update work location');
+      console.error('Error:', error);
+    }
+  };
+
+  const handleDeleteLocation = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this work location?')) {
+      return;
+    }
+
+    try {
+      // TODO: Replace with actual API call
+      // await fetch(`/api/work-locations/${id}`, {
+      //   method: 'DELETE'
+      // });
+
+      setLocations(locations.filter((loc) => loc.id !== id));
+      toast.success('Work location deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete work location');
+      console.error('Error:', error);
+    }
+  };
+
+  const openAddDialog = () => {
+    setEditingLocation(null);
     setShowAddDialog(true);
   };
+
+  const openEditDialog = (location: WorkLocation) => {
+    setEditingLocation(location);
+    setShowAddDialog(true);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-5xl">
+          <div className="flex items-center justify-center py-16">
+            <p className="text-gray-600">Loading work locations...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 overflow-y-auto">

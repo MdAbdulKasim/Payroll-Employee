@@ -19,9 +19,7 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
         markAsActive: initialData?.status === "Active" || false,
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmit = async () => {
         const component = {
             id: Date.now().toString(),
             name: formData.earningName,
@@ -44,7 +42,7 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
                         New Correction Component
                     </h2>
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-6">
                         {/* Create Correction for */}
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-900">
@@ -58,7 +56,7 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                                 required
                             >
-                                <option value="">Overtime Allowance</option>
+                                <option value="">Select Component</option>
                                 <option value="Basic">Basic</option>
                                 <option value="House Rent Allowance">House Rent Allowance</option>
                                 <option value="Conveyance Allowance">Conveyance Allowance</option>
@@ -69,14 +67,16 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
                             </select>
 
                             {/* Info Box */}
-                            <div className="p-3 bg-blue-50 rounded border border-blue-200 flex items-start gap-2">
-                                <span className="text-blue-600 mt-0.5">ℹ</span>
-                                <p className="text-sm text-gray-700">
-                                    You can use this correction component to make corrections to{" "}
-                                    <strong>Overtime Allowance</strong> in a pay run. It will have the same
-                                    configuration as Overtime Allowance.
-                                </p>
-                            </div>
+                            {formData.createCorrectionFor && (
+                                <div className="p-3 bg-blue-50 rounded border border-blue-200 flex items-start gap-2">
+                                    <span className="text-blue-600 mt-0.5">ℹ</span>
+                                    <p className="text-sm text-gray-700">
+                                        You can use this correction component to make corrections to{" "}
+                                        <strong>{formData.createCorrectionFor}</strong> in a pay run. It will have the same
+                                        configuration as {formData.createCorrectionFor}.
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Earning Name */}
@@ -192,7 +192,8 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={handleSubmit}
                                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
                             >
                                 Save
@@ -201,7 +202,7 @@ export default function AddCorrectionDialog({ onClose, onSave, initialData }: Ad
 
                         {/* Mandatory fields note */}
                         <p className="text-sm text-red-500 text-right">* indicates mandatory fields</p>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

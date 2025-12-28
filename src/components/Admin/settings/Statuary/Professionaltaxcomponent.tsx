@@ -11,9 +11,9 @@ export default function ProfessionalTaxComponent({
   onComplete,
 }: ProfessionalTaxComponentProps) {
   const [formData, setFormData] = useState({
-    state: "Tamil Nadu",
+    state: "",
     ptNumber: "",
-    deductionCycle: "Half Yearly",
+    deductionCycle: "",
   });
 
   useEffect(() => {
@@ -29,16 +29,19 @@ export default function ProfessionalTaxComponent({
   }, []);
 
   const handleUpdatePTNumber = () => {
-    // This would typically open a modal or navigate to an edit page
-    toast.info("PT Number update functionality");
+    toast.info("PT Number update functionality - to be implemented");
   };
 
   const handleViewTaxSlabs = () => {
-    // This would typically open a modal or navigate to view tax slabs
-    toast.info("View tax slabs functionality");
+    toast.info("View tax slabs functionality - to be implemented");
   };
 
   const handleComplete = () => {
+    if (!formData.state) {
+      toast.error("State information is required");
+      return;
+    }
+
     const config = {
       ...formData,
       isConfigured: true,
@@ -70,25 +73,34 @@ export default function ProfessionalTaxComponent({
         <div className="space-y-4">
           <div className="flex items-center justify-between py-2">
             <span className="text-sm font-medium text-gray-700">PT Number</span>
-            <button
-              type="button"
-              onClick={handleUpdatePTNumber}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Update PT Number
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-900">
+                {formData.ptNumber || "Not configured"}
+              </span>
+              <button
+                type="button"
+                onClick={handleUpdatePTNumber}
+                className="text-sm text-blue-600 hover:underline"
+              >
+                {formData.ptNumber ? "Update" : "Add"} PT Number
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t">
             <span className="text-sm font-medium text-gray-700">State</span>
-            <span className="text-sm text-gray-900">{formData.state}</span>
+            <span className="text-sm text-gray-900">
+              {formData.state || "Not configured"}
+            </span>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t">
             <span className="text-sm font-medium text-gray-700">
               Deduction Cycle
             </span>
-            <span className="text-sm text-gray-900">{formData.deductionCycle}</span>
+            <span className="text-sm text-gray-900">
+              {formData.deductionCycle || "Not configured"}
+            </span>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t">
@@ -103,6 +115,14 @@ export default function ProfessionalTaxComponent({
             </button>
           </div>
         </div>
+
+        {!formData.state && (
+          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-gray-700">
+              <strong>Configure Required:</strong> Please configure your state and PT details to enable Professional Tax deductions.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Action Button */}

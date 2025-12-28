@@ -16,9 +16,7 @@ export default function AddDeductionDialog({ onClose, onSave, initialData }: Add
         frequency: initialData?.frequency || "Monthly",
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const handleSubmit = async () => {
         const component = {
             id: initialData?.id || Date.now().toString(),
             name: formData.name,
@@ -46,7 +44,7 @@ export default function AddDeductionDialog({ onClose, onSave, initialData }: Add
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Name *</label>
                             <input
@@ -99,13 +97,14 @@ export default function AddDeductionDialog({ onClose, onSave, initialData }: Add
                                 Cancel
                             </button>
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={handleSubmit}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                             >
                                 Save
                             </button>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

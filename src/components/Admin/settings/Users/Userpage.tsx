@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Edit, Trash2, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -24,39 +24,27 @@ interface User {
 const UsersPage: React.FC = () => {
   const router = useRouter();
 
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      name: 'John Doe',
-      email: 'john@example.com',
-      role: 'Admin',
-      status: 'active',
-    },
-    {
-      id: '2',
-      name: 'Jane Smith',
-      email: 'jane@example.com',
-      role: 'HR Manager',
-      status: 'active',
-    },
-    {
-      id: '3',
-      name: 'Mike Johnson',
-      email: 'mike@example.com',
-      role: 'Payroll Manager',
-      status: 'active',
-    },
-  ]);
-
+  const [users, setUsers] = useState<User[]>([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // TODO: Fetch users from API
+    // Example:
+    // const fetchUsers = async () => {
+    //   const response = await fetch('/api/users');
+    //   const data = await response.json();
+    //   setUsers(data);
+    // };
+    // fetchUsers();
+  }, []);
 
   const handleAddUser = () => {
     router.push('/admin/settings/users/add');
   };
 
   const handleEdit = (userId: string) => {
-    router.push(`/admin/settings/users/edit`);
+    router.push(`/admin/settings/users/edit?id=${userId}`);
   };
 
   const handleDeleteClick = (userId: string) => {
@@ -64,7 +52,13 @@ const UsersPage: React.FC = () => {
     setShowDeleteDialog(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    // TODO: Add API call here to delete user
+    // Example:
+    // await fetch(`/api/users/${selectedUserId}`, {
+    //   method: 'DELETE'
+    // });
+    
     setUsers(prev => prev.filter(user => user.id !== selectedUserId));
     setShowDeleteDialog(false);
     setSelectedUserId(null);
@@ -194,7 +188,7 @@ const UsersPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 🔴 Delete Confirmation Dialog */}
+      {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">

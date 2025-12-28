@@ -23,9 +23,17 @@ const AddDesignationPage = () => {
   };
 
   const handleSubmit = () => {
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    // Add your API call here
+    // TODO: Add API call here to save designation data
+    // Example:
+    // const saveDesignation = async () => {
+    //   await fetch('/api/designations', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    // };
+    // saveDesignation();
+    
     router.back();
   };
 
