@@ -33,18 +33,6 @@ interface FormData {
   exemptFromPerquisite: boolean;
 }
 
-const initialLoanOptions: LoanOption[] = [
-  { value: 'business', label: 'BUSINESS' },
-  { value: 'personal', label: 'Personal' },
-  { value: 'medical', label: 'Medical' },
-  { value: 'education', label: 'Education' },
-];
-
-const initialEmployeeOptions: EmployeeOption[] = [
-  { value: 'emp1', label: 'Mohamed Faizul M' },
-  { value: 'emp2', label: 'Shahrukh K' },
-];
-
 export default function CreateLoanPage() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -56,8 +44,8 @@ export default function CreateLoanPage() {
     exemptFromPerquisite: false
   });
 
-  const [loanOptions, setLoanOptions] = useState<LoanOption[]>(initialLoanOptions);
-  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>(initialEmployeeOptions);
+  const [loanOptions, setLoanOptions] = useState<LoanOption[]>([]);
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>([]);
   const [openLoan, setOpenLoan] = useState<boolean>(false);
   const [openEmployee, setOpenEmployee] = useState<boolean>(false);
   const [loanSearchQuery, setLoanSearchQuery] = useState<string>('');
@@ -313,23 +301,29 @@ export default function CreateLoanPage() {
                       </div>
 
                       <div className="max-h-[200px] overflow-y-auto">
-                        {filteredEmployeeOptions.map((emp) => (
-                          <button
-                            key={emp.value}
-                            onClick={() => {
-                              setFormData({ ...formData, employeeName: emp.value });
-                              setOpenEmployee(false);
-                              setEmployeeSearchQuery("");
-                            }}
-                            className={cn(
-                              "w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2",
-                              formData.employeeName === emp.value && "bg-blue-50"
-                            )}
-                          >
-                            <MapPin className="h-4 w-4 text-gray-400" />
-                            {emp.label}
-                          </button>
-                        ))}
+                        {filteredEmployeeOptions.length > 0 ? (
+                          filteredEmployeeOptions.map((emp) => (
+                            <button
+                              key={emp.value}
+                              onClick={() => {
+                                setFormData({ ...formData, employeeName: emp.value });
+                                setOpenEmployee(false);
+                                setEmployeeSearchQuery("");
+                              }}
+                              className={cn(
+                                "w-full px-3 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2",
+                                formData.employeeName === emp.value && "bg-blue-50"
+                              )}
+                            >
+                              <MapPin className="h-4 w-4 text-gray-400" />
+                              {emp.label}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-2 text-sm text-gray-500">
+                            No employee found.
+                          </div>
+                        )}
                       </div>
 
                       <div className="border-t p-2">

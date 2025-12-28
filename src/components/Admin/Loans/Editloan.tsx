@@ -27,23 +27,19 @@ interface FormData {
   exemptFromPerquisite: boolean
 }
 
-/* ---------------- STATIC DATA ---------------- */
-
-const initialFormData: FormData = {
-  loanName: "BUSINESS",
-  employeeName: "Mohamed Faizul M",
-  loanAmount: "40000",
-  disbursementDate: new Date("2025-06-01"),
-  reason: "Office setup expenses",
-  exemptFromPerquisite: false,
-}
-
 /* ---------------- PAGE ---------------- */
 
 export default function EditLoan() {
   const router = useRouter()
 
-  const [formData, setFormData] = useState<FormData>(initialFormData)
+  const [formData, setFormData] = useState<FormData>({
+    loanName: "",
+    employeeName: "",
+    loanAmount: "",
+    disbursementDate: null,
+    reason: "",
+    exemptFromPerquisite: false,
+  })
 
   /* -------- HELPERS -------- */
 

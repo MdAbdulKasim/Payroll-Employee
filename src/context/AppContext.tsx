@@ -81,12 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         address: ''
     });
 
-    const [employees, setEmployees] = useState<Employee[]>([
-        { id: "1", name: "John Doe", department: "Engineering", email: "john@example.com", joiningDate: "2023-01-15" },
-        { id: "2", name: "Jane Smith", department: "HR", email: "jane@example.com", joiningDate: "2023-02-20" },
-        { id: "3", name: "Bob Johnson", department: "Sales", email: "bob@example.com", joiningDate: "2023-03-10" },
-        { id: "4", name: "Alice Brown", department: "Engineering", email: "alice@example.com", joiningDate: "2023-04-05" }
-    ]);
+    const [employees, setEmployees] = useState<Employee[]>([]);
     const [payruns, setPayruns] = useState<PayRun[]>([]);
 
     // Persistence

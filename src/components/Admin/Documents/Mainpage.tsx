@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ChevronDown, Filter, X } from 'lucide-react';
+import { ChevronDown, X } from 'lucide-react';
 
 interface Document {
   id: string;
@@ -32,54 +32,29 @@ const PayRunsPage = () => {
   const router = useRouter();
   const [selectedEmployee, setSelectedEmployee] = useState('');
   const [selectedFolderType, setSelectedFolderType] = useState<'all' | 'org' | 'employee'>('all');
+  const [allDocuments, setAllDocuments] = useState<Document[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [allDocuments] = useState<Document[]>([
-    {
-      id: '1',
-      documentName: 'Employee_Contract_2025.pdf',
-      createdDate: '30/06/2025',
-      category: 'Contracts',
-      size: '2.5 MB',
-      uploadedBy: 'HR Admin',
-      folderType: 'employee',
-    },
-    {
-      id: '2',
-      documentName: 'Payroll_Report_May.xlsx',
-      createdDate: '15/06/2025',
-      category: 'Payroll',
-      size: '1.8 MB',
-      uploadedBy: 'Finance Team',
-      folderType: 'org',
-    },
-    {
-      id: '3',
-      documentName: 'Tax_Documents_Q2.pdf',
-      createdDate: '10/06/2025',
-      category: 'Tax',
-      size: '3.2 MB',
-      uploadedBy: 'Accounting',
-      folderType: 'org',
-    },
-    {
-      id: '4',
-      documentName: 'Employee_Handbook_2025.pdf',
-      createdDate: '05/06/2025',
-      category: 'Policies',
-      size: '5.1 MB',
-      uploadedBy: 'HR Manager',
-      folderType: 'org',
-    },
-    {
-      id: '5',
-      documentName: 'Benefits_Enrollment.xlsx',
-      createdDate: '01/06/2025',
-      category: 'Benefits',
-      size: '920 KB',
-      uploadedBy: 'Benefits Admin',
-      folderType: 'employee',
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  const fetchDocuments = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Replace with actual API call
+      // const response = await fetch('/api/documents');
+      // if (!response.ok) {
+      //   throw new Error('Failed to fetch documents');
+      // }
+      // const data = await response.json();
+      // setAllDocuments(data);
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ]);
+  };
 
   // Filter documents based on selected filters
   const filteredDocuments = allDocuments.filter(doc => {
@@ -108,6 +83,18 @@ const PayRunsPage = () => {
   };
 
   const hasActiveFilters = selectedEmployee || selectedFolderType !== 'all';
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 min-w-0">
+          <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">Loading documents...</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-50">

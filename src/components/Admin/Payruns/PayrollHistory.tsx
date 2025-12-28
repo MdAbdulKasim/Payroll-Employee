@@ -100,8 +100,14 @@ export default function PayrollHistoryPage() {
     netPay: `₹${((selectedPayrun?.totalAmount || 0) / (selectedPayrun?.employeeCount || 1)).toLocaleString()}`,
   }))
 
-  const handleDownloadPayslip = (employee: any) => {
-    import("jspdf").then(({ jsPDF }) => {
+  const handleDownloadPayslip = async (employee: any) => {
+    try {
+      // TODO: Replace with actual API call to get detailed payslip data
+      // const response = await fetch(`/api/payslips/${selectedPayrunId}/${employee.id}`);
+      // const payslipData = await response.json();
+      // Then generate PDF with the actual data
+      
+      const { jsPDF } = await import("jspdf")
       const doc = new jsPDF()
       doc.setFontSize(20)
       doc.text("PAYSLIP", 105, 20, { align: "center" })
@@ -121,11 +127,19 @@ export default function PayrollHistoryPage() {
       doc.text("Net Pay", 20, 130)
       doc.text(`${employee.netPay}`, 170, 130, { align: "right" })
       doc.save(`Payslip_${employee.name}_${selectedPayrun?.month}.pdf`)
-    })
+    } catch (error) {
+      console.error('Error downloading payslip:', error)
+    }
   }
 
-  const handleDownloadReport = () => {
-    import("jspdf").then(({ jsPDF }) => {
+  const handleDownloadReport = async () => {
+    try {
+      // TODO: Replace with actual API call to get detailed payroll report data
+      // const response = await fetch(`/api/payroll-reports/${selectedPayrunId}`);
+      // const reportData = await response.json();
+      // Then generate PDF with the actual data
+      
+      const { jsPDF } = await import("jspdf")
       const doc = new jsPDF()
       doc.setFontSize(18)
       doc.text("Payroll Report", 105, 20, { align: "center" })
@@ -157,11 +171,19 @@ export default function PayrollHistoryPage() {
       })
 
       doc.save(`Payroll_Report_${selectedPayrun?.month}_${selectedPayrun?.year}.pdf`)
-    })
+    } catch (error) {
+      console.error('Error downloading report:', error)
+    }
   }
 
-  const handleDownloadAllPayslips = () => {
-    import("jspdf").then(({ jsPDF }) => {
+  const handleDownloadAllPayslips = async () => {
+    try {
+      // TODO: Replace with actual API call to get all payslips data
+      // const response = await fetch(`/api/payslips/${selectedPayrunId}/all`);
+      // const payslipsData = await response.json();
+      // Then generate PDF with the actual data
+      
+      const { jsPDF } = await import("jspdf")
       const doc = new jsPDF()
       employeePayrolls.forEach((employee, index) => {
         if (index > 0) doc.addPage()
@@ -184,7 +206,9 @@ export default function PayrollHistoryPage() {
         doc.text(`${employee.netPay}`, 170, 130, { align: "right" })
       })
       doc.save(`All_Payslips_${selectedPayrun?.month}.pdf`)
-    })
+    } catch (error) {
+      console.error('Error downloading all payslips:', error)
+    }
   }
 
   return (

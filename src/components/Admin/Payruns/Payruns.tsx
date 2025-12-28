@@ -1,11 +1,11 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Badge } from "@/components/ui/badge"
-import { InfoIcon, ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,12 +21,32 @@ export default function RunPayrollPage() {
   const router = useRouter()
   const { payruns } = useApp()
   const [activeFilter, setActiveFilter] = useState<PayrollType>("all")
+  const [isLoading, setIsLoading] = useState(false)
+
+  // TODO: Fetch payruns from backend on component mount
+  useEffect(() => {
+    // fetchPayruns();
+  }, [])
+
+  // const fetchPayruns = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch('/api/payruns');
+  //     const data = await response.json();
+  //     // Update context or state with fetched data
+  //   } catch (error) {
+  //     console.error('Error fetching payruns:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const filteredData = payruns.filter((item) => {
     const matchesFilter = activeFilter === "all" || item.type === activeFilter
     const isPending = item.status !== "paid"
     return matchesFilter && isPending
   })
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -88,7 +108,7 @@ export default function RunPayrollPage() {
         </div>
       </div>
 
-      {/* FILTER PILLS (NOW WORKING) */}
+      {/* FILTER PILLS */}
       <div className="container mx-auto px-6 py-4 flex gap-3 flex-wrap">
         <Button
           variant="outline"
@@ -198,9 +218,6 @@ export default function RunPayrollPage() {
             </tbody>
           </table>
         </div>
-
-        {/* Info */}
-
       </div>
     </div>
   )

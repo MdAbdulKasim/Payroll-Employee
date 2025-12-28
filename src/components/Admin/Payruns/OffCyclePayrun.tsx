@@ -27,17 +27,16 @@ export default function OffCyclePayrunPage() {
   const [revisedAmount, setRevisedAmount] = useState<string>("")
   const [previousAmount, setPreviousAmount] = useState<string>("")
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedEmployeeId || !reason || (!amount && !revisedAmount) || !paymentDate) return
 
-    const id = Math.random().toString(36).substr(2, 9)
     const now = new Date()
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const employee = employees.find(e => e.id === selectedEmployeeId)
     const finalAmount = parseFloat(revisedAmount) - parseFloat(previousAmount)
 
     const newPayRun: PayRun = {
-      id: id,
+      id: '', // Will be assigned by backend
       month: monthNames[now.getMonth()],
       year: now.getFullYear(),
       status: 'draft',
@@ -52,8 +51,17 @@ export default function OffCyclePayrunPage() {
       employeeIds: [selectedEmployeeId]
     }
 
+    // TODO: Replace with actual API call
+    // const response = await fetch('/api/payruns/offcycle', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(newPayRun)
+    // });
+    // const data = await response.json();
+    // router.push(`/admin/payrun/record?id=${data.id}&type=offcycle`)
+
     addPayRun(newPayRun)
-    router.push(`/admin/payrun/record?id=${id}&type=offcycle`)
+    router.push(`/admin/payrun/record?id=${newPayRun.id}&type=offcycle`)
   }
 
   return (

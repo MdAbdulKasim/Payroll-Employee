@@ -27,20 +27,19 @@ export default function OneTimePayoutPage() {
   const [remarks, setRemarks] = useState<string>("")
   const [isTaxable, setIsTaxable] = useState<boolean>(true)
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!component || !paymentDate || !selectedEmployeeId || !amount) return
 
-    const id = Math.random().toString(36).substr(2, 9)
     const now = new Date()
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const employee = employees.find(e => e.id === selectedEmployeeId)
 
-    addPayRun({
-      id: id,
+    const newPayRun: any = {
+      id: '', // Will be assigned by backend
       month: monthNames[now.getMonth()],
       year: now.getFullYear(),
-      status: 'draft',
-      type: 'onetime',
+      status: 'draft' as const,
+      type: 'onetime' as const,
       totalAmount: parseFloat(amount),
       employeeCount: 1,
       createdAt: now.toISOString(),
@@ -50,9 +49,19 @@ export default function OneTimePayoutPage() {
       isTaxable: isTaxable,
       reasonType: component.charAt(0).toUpperCase() + component.slice(1) as any,
       employeeIds: [selectedEmployeeId]
-    })
+    }
 
-    router.push(`/admin/payrun/record?id=${id}&type=onetime`)
+    // TODO: Replace with actual API call
+    // const response = await fetch('/api/payruns/onetime', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(newPayRun)
+    // });
+    // const data = await response.json();
+    // router.push(`/admin/payrun/record?id=${data.id}&type=onetime`)
+
+    addPayRun(newPayRun)
+    router.push(`/admin/payrun/record?id=${newPayRun.id}&type=onetime`)
   }
 
   return (
